@@ -9,7 +9,7 @@
 
 [Script]
 # 岭南通开屏广告
-岭南通开屏广告 = type=http-request, pattern=http-response,pattern=^https?:\/\/alipd\.lingnanpass\.com\/\/APPMall\/advertisement\/advertisement!adConfig\.action, script-path=https://kelee.one/Resource/Script/12306/12306_remove_splashscreen_ads.js, requires-body=true
+岭南通开屏广告 = type=http-request, pattern=http-response,pattern=^https?:\/\/alipd\.lingnanpass\.com\/\/APPMall\/advertisement\/advertisement!adConfig\.action, script-path=https://github.com/LamJIson/HY2/blob/main/%E5%B2%AD%E5%8D%97%E9%80%9A, requires-body=true
 
 [MITM]
 hostname = %APPEND% wuqa.lingnanpass.com, alipd.lingnanpass.com
