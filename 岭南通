@@ -1,0 +1,26 @@
+$loon.onResponse(async (response) => {
+    // 匹配广告URL
+    if (response.url.match(/^https?:\/\/alipd\.lingnanpass\.com\/\/APPMall\/advertisement\/advertisement!adConfig\.action/)) {
+        // 修改响应内容
+        const modifiedResponse = {
+            "isShowMsg": false,  // 关闭广告显示
+            "time": "2025-03-07 22:22:03",
+            "data": {
+                "throttleTime": "20",
+                "adInfoList": [],  // 清空广告列表
+                "adPosition": "APP_START_SCREEN",
+                "countdownTime": "5"
+            },
+            "code": 0,
+            "msg": "",
+            "type": "iOS",
+            "token": "e7b695844936417b8a4e6114ba27a209"
+        };
+        return {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(modifiedResponse)
+        };
+    }
+    return response;
+});
