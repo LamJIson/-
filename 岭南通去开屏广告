@@ -1,1 +1,15 @@
-岭南通 = type=http-response,pattern=^https?:\/\/alipd\.lingnanpass\.com\/\/APPMall\/advertisement\/advertisement!adConfig\.action,requires-body=0,script-path=
+#!name=岭南通去开屏广告
+#!desc=开屏广告
+#!author=ian
+#!category=ian
+#!openUrl=https://apps.apple.com/app/id1194423452
+#!tag=去广告
+#!date=2025-03-07
+
+
+[Script]
+# 岭南通开屏广告
+岭南通开屏广告 = type=http-request, pattern=http-response,pattern=^https?:\/\/alipd\.lingnanpass\.com\/\/APPMall\/advertisement\/advertisement!adConfig\.action, script-path=https://kelee.one/Resource/Script/12306/12306_remove_splashscreen_ads.js, requires-body=true
+
+[MITM]
+hostname = %APPEND% wuqa.lingnanpass.com, alipd.lingnanpass.com
