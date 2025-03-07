@@ -1,0 +1,1 @@
+岭南通 = type=http-response,pattern=^https?:\/\/alipd\.lingnanpass\.com\/\/APPMall\/advertisement\/advertisement!adConfig\.action,requires-body=0,script-path=
