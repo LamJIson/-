@@ -13,8 +13,8 @@ $loon.onResponse(async (response) => {
             },
             "code": 0,
             "msg": "",
-            "type": "iOS",
-            "token": "e7b695844936417b8a4e6114ba27a209"
+            "type": "",
+            "token": null
         };
         return {
             status: 200,
