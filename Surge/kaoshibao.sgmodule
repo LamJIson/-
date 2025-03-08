@@ -5,7 +5,7 @@
 #!tag=去广告
 #!date=2025-03-07
 
-[Rewrite]
+[Url Rewrite]
 # 修改用户信息为 VIP
 ^https:\/\/api\.ankianki\.com\/user\/userInfo\/get url response-body "vip_type":"0" response-body "vip_type":"1"
 ^https:\/\/api\.ankianki\.com\/user\/userInfo\/get url response-body "vip_level":"0" response-body "vip_level":"1"
