@@ -1,30 +1,15 @@
-const url = $request.url;
-const method = $request.method;
+#!name=岭南通去开屏广告
+#!desc=开屏广告
+#!author=ian
+#!category=ian
+#!openUrl=https://apps.apple.com/app/id1194423452
+#!tag=去广告
+#!date=2025-03-07
 
-if (method === "GET" && url.includes("/APPMall/advertisement/advertisement!adConfig.action")) {
-    // 修改响应内容
-    const modifiedResponse = {
-        "isShowMsg": false,  // 关闭广告显示
-        "time": null,  // 将时间设置为 null
-        "data": {
-            "throttleTime": "20",
-            "adInfoList": [],  // 清空广告列表
-            "adPosition": "APP_START_SCREEN",
-            "countdownTime": "5"
-        },
-        "code": 0,
-        "msg": "",
-        "type": "iOS",
-        "token": null  // 将 token 设置为 null
-    };
 
-    // 返回修改后的响应
-    $done({
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(modifiedResponse)
-    });
-} else {
-    // 其他请求直接放行
-    $done({});
-}
+[Script]
+# 岭南通开屏广告
+岭南通开屏广告 = type=http-request, pattern=http-response,pattern=^https?:\/\/alipd\.lingnanpass\.com\/\/APPMall\/advertisement\/advertisement!adConfig\.action, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/%E5%B2%AD%E5%8D%97%E9%80%9A, requires-body=true
+
+[MITM]
+hostname = %APPEND% wuqa.lingnanpass.com, alipd.lingnanpass.com
