@@ -4,7 +4,7 @@ $loon.onResponse(async (response) => {
         // 修改响应内容
         const modifiedResponse = {
             "isShowMsg": false,  // 关闭广告显示
-            "time": "2025-03-07 22:22:03",
+            "time": null,
             "data": {
                 "throttleTime": "20",
                 "adInfoList": [],  // 清空广告列表
