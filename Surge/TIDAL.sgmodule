@@ -6,6 +6,13 @@
 #!tag=去广告
 #!date=2025-03-08
 
+[General]
+mitm-hostname = api.tidal.com
+
+[Rule]
+URL-REWRITE,^https:\/\/api\.tidal\.com\/v1\/users\/\d+\/subscription$,https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/tidal.js
+URL-REWRITE,^https:\/\/api\.tidal\.com\/v1\/tracks\/\d+\/playbackinfo$,https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/tidalhifi.js
+
 [Script]
 TIDAL = type=http-request, pattern=http-response,pattern=^https:\/\/api\.tidal\.com\/v1\/users\/\d+\/subscription, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/tidal.js, requires-body=true
 TIDAL = type=http-request, pattern=http-response,pattern=^https:\/\/api\.tidal\.com\/v1\/tracks\/\d+\/playbackinfo, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/tidalhifi.js, requires-body=true
