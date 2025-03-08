@@ -5,6 +5,19 @@
 #!tag=去广告
 #!date=2025-03-07
 
+[Rewrite]
+# 修改用户信息为 VIP
+^https:\/\/api\.ankianki\.com\/user\/userInfo\/get url response-body "vip_type":"0" response-body "vip_type":"1"
+^https:\/\/api\.ankianki\.com\/user\/userInfo\/get url response-body "vip_level":"0" response-body "vip_level":"1"
+^https:\/\/api\.ankianki\.com\/user\/userInfo\/get url response-body "vip_expiration_time":"" response-body "vip_expiration_time":"2099-12-31 23:59:59"
+^https:\/\/api\.ankianki\.com\/user\/userInfo\/get url response-body "is_show_ad":"1" response-body "is_show_ad":"0"
+
+# 修改免费次数为无限
+^https:\/\/api\.ankianki\.com\/user\/uploadAiFile\/getFreeNumber url response-body "rest":"0" response-body "rest":"9999"
+^https:\/\/api\.ankianki\.com\/user\/uploadAiFile\/getFreeNumber url response-body "total":"3" response-body "total":"9999"
+
+# 修改余额为无限
+^https:\/\/api\.ankianki\.com\/user\/applePay\/getBalance url response-body "balance":"0" response-body "balance":"999999"
 
 [Script]
 # 考试宝
