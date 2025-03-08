@@ -3,7 +3,7 @@
   "canGetTrial": true,
   "startDate": "2024-03-08T05:18:21.623+0000",
   "subscription": {
-    "type": "PREMIUM",
+    "type": "PREMIUM_PLUS",
     "offlineGracePeriod": 9999
   },
   "premiumAccess": true,
