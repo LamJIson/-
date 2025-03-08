@@ -12,6 +12,7 @@
 考试宝解锁 = type=http-request, pattern=http-response,pattern=^https:\/\/api\.ankianki\.com\/indexRecommend\/categoryListNew, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/ksb3.js, requires-body=true
 考试宝解锁 = type=http-request, pattern=http-response,pattern=^https:\/\/api\.ankianki\.com\/user\/userInfo\/get, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/ksb4.js, requires-body=true
 考试宝解锁 = type=http-request, pattern=http-response,pattern=^https:\/\/api\.ankianki\.com\/user\/uploadAiFile\/getFreeNumber, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/ksb5.js, requires-body=true
+考试宝解锁 = type=http-request, pattern=http-response,pattern=^https:\/\/api\.ankianki\.com\/user\/applePay\/getBalance, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/ksb6.js, requires-body=true
 
 # 考试宝广告
 考试宝广告 = type=http-request, pattern=http-response,pattern=http-response ^https:\/\/api\.ankianki\.com\/config\/vipIcons, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/kaoshibao.js, requires-body=true
