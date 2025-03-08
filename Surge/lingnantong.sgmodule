@@ -6,6 +6,9 @@
 #!tag=去广告
 #!date=2025-03-07
 
+[Rule]
+URL-REGEX,^https:\/\/alipd\.lingnanpass\.com\/\/APPMall\/advertisement\/advertisement!adConfig\.action$,REJECT
+
 [Url Rewrite]
 ^https?:\/\/alipd\.lingnanpass\.com\/\/APPMall\/advertisement\/advertisement!adConfig\.action url script-response-body https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/lingnantong.js
 
