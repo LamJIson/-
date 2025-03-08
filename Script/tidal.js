@@ -4,7 +4,7 @@
   "startDate": "2024-03-08T05:18:21.623+0000",
   "subscription": {
     "type": "PREMIUM",
-    "offlineGracePeriod": 30
+    "offlineGracePeriod": 9999
   },
   "premiumAccess": true,
   "paymentType": "CREDIT_CARD",
