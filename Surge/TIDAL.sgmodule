@@ -1,0 +1,13 @@
+#!name=TIDAL
+#!desc=解锁VIP
+#!author=ian
+#!category=ian
+#!openUrl=https://apps.apple.com/app/id1194423452
+#!tag=去广告
+#!date=2025-03-08
+
+[Script]
+TIDAL = http-response ^https:\/\/api\.tidal\.com\/v1\/users\/\d+\/subscription script-path=https://example.com/surge-script-tidal.js
+
+[MITM]
+hostname = api.tidal.com
