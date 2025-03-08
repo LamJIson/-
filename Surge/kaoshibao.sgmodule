@@ -8,7 +8,7 @@
 
 [Script]
 # 考试宝解锁
-考试宝1 = type=http-request, pattern=http-response,pattern=^https:\/\/api\.ankianki\.com\/user\/question\/useFreeAnalysis, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/lingnantong.js, requires-body=true
+考试宝1 = type=http-request, pattern=http-response,pattern=^https:\/\/api\.ankianki\.com\/user\/question\/useFreeAnalysis, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/ksb1.js, requires-body=true
 
 [MITM]
 hostname = %APPEND% api.ankianki.com
