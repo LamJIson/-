@@ -5,7 +5,10 @@
 #!tag=去广告
 #!date=2025-03-07
 
-[Url Rewrite]
+[Rewrite]
+# 隐藏图标（假设图标的 URL 包含 "hide_icon"）
+^https:\/\/api\.ankianki\.com\/user\/getIcons url response-body "hide_icon":"1" response-body "hide_icon":"0"
+
 # 修改用户信息为 VIP
 ^https:\/\/api\.ankianki\.com\/user\/userInfo\/get url response-body "vip_type":"0" response-body "vip_type":"1"
 ^https:\/\/api\.ankianki\.com\/user\/userInfo\/get url response-body "vip_level":"0" response-body "vip_level":"1"
