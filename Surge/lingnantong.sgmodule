@@ -9,12 +9,5 @@
 [Rule]
 URL-REGEX,^https:\/\/alipd\.lingnanpass\.com\/\/APPMall\/advertisement\/advertisement!adConfig\.action$,REJECT
 
-[Url Rewrite]
-^https?:\/\/alipd\.lingnanpass\.com\/\/APPMall\/advertisement\/advertisement!adConfig\.action url script-response-body https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/lingnantong.js
-
-[Script]
-# 岭南通开屏广告
-岭南通开屏广告 = type=http-request, pattern=http-response,pattern=^https?:\/\/alipd\.lingnanpass\.com\/\/APPMall\/advertisement\/advertisement!adConfig\.action, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/lingnantong.js, requires-body=true
-
 [MITM]
-hostname = %APPEND% wuqa.lingnanpass.com, alipd.lingnanpass.com
+hostname = %APPEND% alipd.lingnanpass.com
