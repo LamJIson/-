@@ -1,26 +1,22 @@
+// 脚本内容
 const url = $request.url;
-const method = $request.method;
 const headers = $request.headers;
 const body = $request.body;
 
-if (url.includes("verifyReceipt")) {
-    // 解析请求体
-    let modifiedBody = JSON.parse(body);
+// 修改 URL 参数
+const modifiedUrl = url.replace(/vip=0/, 'vip=1');
 
-    // 修改响应体，模拟验证成功
-    modifiedBody.status = 0; // 0 表示成功
-    modifiedBody.latest_receipt_info = [
-        {
-            "product_id": "com.example.product",
-            "expires_date": "2099-12-31 23:59:59 Etc/GMT"
-        }
-    ];
+// 修改 JSON 响应
+const modifiedBody = JSON.stringify({
+  "code": 0,
+  "data": "",
+  "ab": 1,
+  "msg": "VIP unlocked"
+});
 
-    // 返回修改后的响应
-    $done({
-        body: JSON.stringify(modifiedBody)
-    });
-} else {
-    // 不修改其他请求
-    $done({});
-}
+// 发送修改后的请求
+$done({
+  url: modifiedUrl,
+  headers: headers,
+  body: modifiedBody
+});
