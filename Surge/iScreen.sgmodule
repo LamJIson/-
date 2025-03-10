@@ -7,7 +7,7 @@
 
 
 [Script]
-内购 = type=http-response,pattern=^https:\/\/pay\.kuso\.xyz\/pay\/pay-check,requires-body=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/iscreenvip.js
+内购 = type=http-response,pattern=^https:\/\/pay\.kuso\.xyz\/pay\/pay-check,requires-body=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/iscreen.js
 内购 = type=http-response,pattern=^https:\/\/pay\.kuso\.xyz\/apple\/bill-record,requires-body=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/iscreenbill.js
 内购 = type=http-response,pattern=^https:\/\/buy\.itunes\.apple\.com\/verifyReceipt,requires-body=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/iscreen.js
 
