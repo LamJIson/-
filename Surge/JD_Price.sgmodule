@@ -1,10 +1,12 @@
+#!name=京东比价
+#!desc=京东比价
+#!author=ian
+#!category=ian
+#!date=2025-03-07
 
-
-
-
-
-
-
+[Rule]
+# 去开屏广告
+URL-REGEX,^https?://news\.jdnx\.com/data/image/.*\.gif$,REJECT
 
 [Script]
 京东比价 = type=http-request, pattern=^https:\/\/in\.m\.jd\.com\/product\/graphext\/\d+\.html, script-path=https://raw.githubusercontent.com/mw418/Loon/main/script/jd_price.js, timeout=60
