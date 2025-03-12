@@ -1,0 +1,11 @@
+
+
+
+
+
+[Script]
+luolidao = type=http-response, pattern=^https?:\/\/.+\/api\/(userinfo|setapp|newstartad|newreg|Get_vod_list|dongtais).php, script-path=https://raw.githubusercontent.com/WeiGiegie/666/main/luolidao.js, requires-body=true, max-size=-1, timeout=60
+
+
+[MitM]
+hostname = %APPEND% *.cloudfront.net, dag29jmgma1g.site, *site, d1no17eycutrsi.cloudfront.net, lldajbfyobffkbg288-api.com
