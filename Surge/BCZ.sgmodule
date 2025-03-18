@@ -9,9 +9,12 @@
 DOMAIN-SUFFIX,advertise.bczeducation.cn,REJECT
 DOMAIN-SUFFIX,advertise.baicizhan.com,REJECT
 
+[Rewrite]
+
+
 [Script]
 百词斩 = type=http-request,pattern=https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/get_user_info,requires-body=1,max-size=0,binary-body-mode=0,script-path=百词斩.js
 
 
 [MITM]
-hostname = %APPEND% ireading.baicizhan.com
+hostname = %APPEND% ireading.baicizhan.com,advertise.bczeducation.cn
