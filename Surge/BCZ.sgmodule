@@ -1,0 +1,17 @@
+#!name=百词斩去广告
+#!desc=开屏广告&部份阅读权限
+#!author=ian
+#!category=ian
+#!tag=去广告
+#!date=2025-03-18
+
+[Rules]
+DOMAIN-SUFFIX,advertise.bczeducation.cn,REJECT
+DOMAIN-SUFFIX,advertise.baicizhan.com,REJECT
+
+[Script]
+百词斩 = type=http-request,pattern=https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/get_user_info,requires-body=1,max-size=0,binary-body-mode=0,script-path=百词斩.js
+
+
+[MITM]
+hostname = %APPEND% ireading.baicizhan.com
