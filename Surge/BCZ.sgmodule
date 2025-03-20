@@ -12,7 +12,7 @@ DOMAIN-SUFFIX,advertise.baicizhan.com,REJECT
 
 
 [Script]
-百词斩 = type=http-request,pattern=https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/get_user_info,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bcz.js
+百词斩 = type=http-response,pattern=https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/get_user_info,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bcz.js
 
 
 [MITM]
