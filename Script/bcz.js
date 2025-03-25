@@ -1,8 +1,13 @@
-let obj = JSON.parse($response.body);
+let body = $response.body;
+let obj = JSON.parse(body);
 
-// 修改响应数据以调整用户信息
-obj.data.vip_days = 365; // 假设设置为一年的 VIP 天数
-obj.data.is_vip = 1; // 假设设置为 VIP 用户
-obj.data.vip_expire = "2099-12-31 23:59:59"; // 设置 VIP 到期时间为遥远的未来
+// Modify the response to indicate VIP status and reading permissions
+obj.data.is_vip = 1;
+obj.data.vip_expire = "2099-12-31 23:59:59"; // Set the expiration date to the end of 2099
+obj.data.newer_discount_expire = "2099-12-31 23:59:59"; // Set the newer discount expiration date to the end of 2099
+obj.data.is_try_vip = 1; // Set the try VIP status to 1
+obj.data.try_vip_expire = "2099-12-31 23:59:59"; // Set the try VIP expiration date to the end of 2099
+obj.data.vip_days = 365; // Set the VIP days to 365
+obj.data.word_level = "VIP Reading Level"; // Modify as needed
 
 $done({body: JSON.stringify(obj)});
