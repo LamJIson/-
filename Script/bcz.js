@@ -8,8 +8,6 @@ obj.data.newer_discount_expire = "2099-12-31 23:59:59"; // Set the newer discoun
 obj.data.is_try_vip = 1; // Set the try VIP status to 1
 obj.data.try_vip_expire = "2066-12-31 23:59:59"; // Set the try VIP expiration date to the end of 2099
 obj.data.vip_days = 365; // Set the VIP days to 365
-obj.data.bczId = 987654321; // Change to the desired bczId
-obj.data.userId = 123456789; // Change to the desired userId
 
 $done({body: JSON.stringify(obj)});
 
