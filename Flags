@@ -1,0 +1,6 @@
+{
+  "name":"国旗", "description":"自用", 
+  "icons":[
+    {"name":"emby", "url":"https:\/\/raw.githubusercontent.com\/lige47\/QuanX-icon-rule\/main\/icon\/emby.png"}
+ ]
+}
