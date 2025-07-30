@@ -1,6 +1,8 @@
 {
-  "name":"国旗", "description":"自用", 
+  "name":"自用图标", "description":"自用", 
   "icons":[
-    {"name":"emby", "url":"https:\/\/raw.githubusercontent.com\/LamJIson\/-\/main\/icons\/MY.PNG"}
+    {"name":"emby", "url":"https:\/\/raw.githubusercontent.com\/LamJIson\/-\/main\/icons\/MY.PNG"},
+    {"name":"emby", "url":"https:\/\/raw.githubusercontent.com\/LamJIson\/-\/main\/icons\/Stash.PNG"}
+
  ]
 }
