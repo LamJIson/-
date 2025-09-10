@@ -11,12 +11,12 @@ URL-REGEX,^http:\/\/notify\.bczeducation\.cn\/rpc\/notify\/get_remind_msgs\/d+$,
 URL-REGEX,^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/get_ad_item$,REJECT
 URL-REGEX,^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/upload_ad_event$,REJECT
 # 拦截特定广告接口（精确 URL 正则）
-URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/rpc\/advertise\/get_main_view_bottom_advs_v3\/.*$, REJECT
-URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/rpc\/advertise\/get_main_view_top_banner_advs\/.*$, REJECT
-URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/rpc\/advertise\/get_live_streaming_info\/.*$, REJECT
-URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/rpc\/advertise\/get_loading_ad_info\/.*$, REJECT
-URL-REGEX, ^https?:\/\/advertise\.bczeducation\.cn\/rpc\/advertise\/get_mall_tab_icon_info\/.*$, REJECT
-
+# 返回 200 + 空响应（某些 Surge 版本支持 REJECT-200）
+URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/rpc\/advertise\/get_main_view_bottom_advs_v3\/.*$, REJECT-200
+URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/rpc\/advertise\/get_main_view_top_banner_advs\/.*$, REJECT-200
+URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/rpc\/advertise\/get_live_streaming_info\/.*$, REJECT-200
+URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/rpc\/advertise\/get_loading_ad_info\/.*$, REJECT-200
+URL-REGEX, ^https?:\/\/advertise\.bczeducation\.cn\/rpc\/advertise\/get_mall_tab_icon_info\/.*$, REJECT-200
 [Script]
 书本 = type=http-response,pattern=^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/get_book_info,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczsb.js
 VIP领取 = type=http-response,pattern=^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/submit_try_vip,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczlq.js
