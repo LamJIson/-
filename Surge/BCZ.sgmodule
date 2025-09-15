@@ -3,7 +3,7 @@
 #!author=ian
 #!category=ian
 #!tag=去广告
-#!date=2025-03-18
+#!date=2025-09-15
 
 [Rules]
 URL-REGEX,^https://ireading.baicizhan.com/api/ireading/new_reading/get_book_read_info\?book_id=\d+$,REJECT
@@ -12,16 +12,26 @@ URL-REGEX,^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/get_a
 URL-REGEX,^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/upload_ad_event$,REJECT
 # 拦截特定广告接口（精确 URL 正则）
 # 返回 200 + 空响应（某些 Surge 版本支持 REJECT-200）
+URL-REGEX, ^https?:\/\/advertise\.baicizhan\.cn\/rpc\/advertise\/get_main_view_bottom_advs_v3\/.*$, REJECT
 URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/rpc\/advertise\/get_main_view_bottom_advs_v3\/.*$, REJECT
 URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/rpc\/advertise\/get_main_view_top_banner_advs\/.*$, REJECT
+URL-REGEX, ^https?:\/\/advertise\.baicizhan\.cn\/rpc\/advertise\/get_main_view_top_banner_advs\/.*$, REJECT
 URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/rpc\/advertise\/get_live_streaming_info\/.*$, REJECT
+URL-REGEX, ^https?:\/\/advertise\.baicizhan\.cn\/rpc\/advertise\/get_live_streaming_info\/.*$, REJECT
 URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/rpc\/advertise\/get_loading_ad_info\/.*$, REJECT
+URL-REGEX, ^https?:\/\/advertise\.baicizhan\.cn\/rpc\/advertise\/get_loading_ad_info\/.*$, REJECT
 URL-REGEX, ^https?:\/\/advertise\.bczeducation\.cn\/rpc\/advertise\/get_mall_tab_icon_info\/.*$, REJECT
+URL-REGEX, ^https?:\/\/advertise\.bczeducation\.com\/rpc\/advertise\/get_mall_tab_icon_info\/.*$, REJECT
 URL-REGEX, ^https?:\/\/advertise\.bczeducation\.cn\/rpc\/advertise\/get_startup_ad_v2\/.*$, REJECT
+URL-REGEX, ^https?:\/\/advertise\.bczeducation\.com\/rpc\/advertise\/get_startup_ad_v2\/.*$, REJECT
 URL-REGEX, ^https?:\/\/advertise\.bczeducation\.cn\/rpc\/advertise\/report_startup_ad_event\/.*$, REJECT
+URL-REGEX, ^https?:\/\/advertise\.bczeducation\.com\/rpc\/advertise\/report_startup_ad_event\/.*$, REJECT
 URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/api\/advertise\/get_flow_diversion_page_info\?.*$, REJECT
 URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/api\/advertise\/get_loading_ad_info\?.*$, REJECT
 URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/api\/advertise\/get_loading_ad_items\?.*$, REJECT
+URL-REGEX, ^https?:\/\/advertise\.baicizhan\.cn\/api\/advertise\/get_flow_diversion_page_info\?.*$, REJECT
+URL-REGEX, ^https?:\/\/advertise\.baicizhan\.cn\/api\/advertise\/get_loading_ad_info\?.*$, REJECT
+URL-REGEX, ^https?:\/\/advertise\.baicizhan\.cn\/api\/advertise\/get_loading_ad_items\?.*$, REJECT
 [Script]
 书本 = type=http-response,pattern=^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/get_book_info,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczsb.js
 VIP领取 = type=http-response,pattern=^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/submit_try_vip,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczlq.js
