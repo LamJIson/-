@@ -20,6 +20,7 @@ URL-REGEX, ^https?:\/\/advertise\.bczeducation\.cn\/rpc\/advertise\/get_mall_tab
 URL-REGEX, ^https?:\/\/advertise\.bczeducation\.cn\/rpc\/advertise\/get_startup_ad_v2\/.*$, REJECT
 URL-REGEX, ^https?:\/\/advertise\.bczeducation\.cn\/rpc\/advertise\/report_startup_ad_event\/.*$, REJECT
 URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/api\/advertise\/get_flow_diversion_page_info\?.*$, REJECT
+URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/api\/advertise\/get_loading_ad_info\?.*$, REJECT
 [Script]
 书本 = type=http-response,pattern=^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/get_book_info,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczsb.js
 VIP领取 = type=http-response,pattern=^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/submit_try_vip,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczlq.js
