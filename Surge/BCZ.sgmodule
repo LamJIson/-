@@ -11,13 +11,14 @@ URL-REGEX,^http:\/\/notify\.bczeducation\.cn\/rpc\/notify\/get_remind_msgs\/d+$,
 URL-REGEX,^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/get_ad_item$,REJECT
 URL-REGEX,^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/upload_ad_event$,REJECT
 # --- 白名单直连 ---
-DOMAIN, advertise.baicizhan.com, DIRECT
-URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/api\/advertise\/vocabulary\/getHomeAd$, DIRECT
-URL-REGEX, ^https?:\/\/advertise\.baicizhan\.com\/my_vocabulary\/.*$, DIRECT
+URL-REGEX,^https?:\/\/advertise\.baicizhan\.com\/api\/advertise\/vocabulary\/getHomeAd$,DIRECT
+URL-REGEX,^https?:\/\/advertise\.baicizhan\.com\/my_vocabulary\/.*$,DIRECT
+DOMAIN,advertise.baicizhan.com,REJECT
+
 
 # --- 广告拦截 ---
-URL-REGEX, ^https?:\/\/advertise\.(baicizhan|bczeducation)\.(cn|com)\/rpc\/advertise\/.*$, REJECT
-URL-REGEX, ^https?:\/\/advertise\.(baicizhan|bczeducation)\.(cn|com)\/api\/advertise\/.*$, REJECT
+URL-REGEX,^https?:\/\/advertise\.(baicizhan|bczeducation)\.(cn|com)\/rpc\/advertise\/.*$,REJECT
+URL-REGEX,^https?:\/\/advertise\.(baicizhan|bczeducation)\.(cn|com)\/api\/advertise\/.*$,REJECT
 [Script]
 书本 = type=http-response,pattern=^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/get_book_info,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczsb.js
 VIP领取 = type=http-response,pattern=^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/submit_try_vip,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczlq.js
