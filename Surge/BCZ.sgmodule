@@ -12,7 +12,7 @@ URL-REGEX,^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/get_a
 URL-REGEX,^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/upload_ad_event$,REJECT
 # --- 白名单直连 ---
 URL-REGEX,^https?:\/\/advertise\.baicizhan\.com\/api\/advertise\/vocabulary\/getHomeAd$,REJECT
-URL-REGEX,^https?:\/\/advertise\.baicizhan\.com\/my_vocabulary\/.*$,REJECT
+URL-REGEX,^https?:\/\/advertise\.baicizhan\.com\/my_vocabulary\/.*$,DIRECT
 
 # --- 广告拦截 ---
 URL-REGEX,^https?:\/\/advertise\.(baicizhan|bczeducation)\.(cn|com)\/rpc\/advertise\/.*$,REJECT
