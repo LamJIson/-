@@ -11,7 +11,7 @@ URL-REGEX,^http:\/\/notify\.bczeducation\.cn\/rpc\/notify\/get_remind_msgs\/d+$,
 URL-REGEX,^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/get_ad_item$,REJECT
 URL-REGEX,^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/upload_ad_event$,REJECT
 # --- 白名单直连 ---
-URL-REGEX,^https?:\/\/advertise\.baicizhan\.com\/api\/advertise\/vocabulary\/getHomeAd$,REJECT
+URL-REGEX,^https?:\/\/advertise\.baicizhan\.com\/api\/advertise\/vocabulary\/getHomeAd$,DIRECT
 URL-REGEX,^https?:\/\/advertise\.baicizhan\.com\/my_vocabulary\/.*$,DIRECT
 DOMAIN,advertise.bczeducation.cn,REJECT
 
