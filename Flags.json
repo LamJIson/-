@@ -1,9 +1,9 @@
 {
   "name":"自用图标", "description":"自用", 
   "icons":[
-    {"name":"emby", "url":"https:\/\/raw.githubusercontent.com\/LamJIson\/-\/main\/icons\/MY.PNG"},
-    {"name":"emby", "url":"https:\/\/raw.githubusercontent.com\/LamJIson\/-\/main\/icons\/Surge.PNG"},
-    {"name":"emby", "url":"https:\/\/raw.githubusercontent.com\/LamJIson\/-\/main\/icons\/Stash.PNG"}
-
+    {"name":"MY", "url":"https:\/\/raw.githubusercontent.com\/LamJIson\/-\/main\/icons\/MY.PNG"},
+    {"name":"Surge", "url":"https:\/\/raw.githubusercontent.com\/LamJIson\/-\/main\/icons\/Surge.PNG"},
+    {"name":"Stash", "url":"https:\/\/raw.githubusercontent.com\/LamJIson\/-\/main\/icons\/Stash.PNG"},
+    {"name":"IN", "url":"https:\/\/raw.githubusercontent.com\/LamJIson\/-\/main\/icons\/Stash.PNG"}
  ]
 }
