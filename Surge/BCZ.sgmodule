@@ -19,7 +19,10 @@ DOMAIN,advertise.bczeducation.cn,REJECT
 URL-REGEX,^https?:\/\/advertise\.(baicizhan|bczeducation)\.(cn|com)\/rpc\/advertise\/.*$,REJECT
 URL-REGEX,^https?:\/\/advertise\.(baicizhan|bczeducation)\.(cn|com)\/api\/advertise\/.*$,REJECT
 [Script]
-书本 = type=http-response,pattern=^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/get_book_info,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczsb.js
+书本阅读权限API重写 = type=http-response,pattern=^https?://du\.baicizhan\.com/api/ireading/new_reading/get_user_read_book\?bookId=\d+$,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczsb.js
+解锁所有书本显示 = type=http-response,pattern=^https?://du\.baicizhan\.com/api/ireading/new_reading/get_books$,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczsb.js
+解锁VIP文章 = type=http-response,pattern=^https?://du\.baicizhan\.com/api/ireading/new_reading/get_article_content$,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczsb.js
+章节内容 = type=http-response,pattern=^https?://du\.baicizhan\.com/api/ireading/new_reading/get_chapter_content$,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczsb.js
 VIP领取 = type=http-response,pattern=^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/submit_try_vip,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczlq.js
 TryVip = type=http-response,pattern=^https:\/\/ireading\.baicizhan\.com\/api\/ireading\/new_reading\/get_try_vip_info,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/try.js
 VIP = type=http-response,pattern=^https?://du\.baicizhan\.com/api/ireading/new_reading/get_user_info$,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bcz.js
