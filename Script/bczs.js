@@ -29,9 +29,9 @@ if (url.includes("/api/ireading/new_reading/get_book_article")) {
                 data.book.buy_type = [2];
                 data.book.buy_status = 1;
                 data.book.has_read_service = 1;
-                data.book.free_trial_count = 999;
+                data.book.free_trial_count = 99;
                 data.book.can_free_trial = 1;
-                data.book.is_in_bookshelf = 1;
+                data.book.is_in_bookshelf = 0;
                 data.book.reading_mode = 1;
             }
             
@@ -70,7 +70,7 @@ else if (url.includes("/api/ireading/new_reading/get_article_data")) {
             
             // 确保内容可读
             data.can_read = 1;
-            data.is_in_bookshelf = 1;
+            data.is_in_bookshelf = 0;
             data.reading_mode = 1;
             
             // 设置下一章可用
@@ -80,7 +80,7 @@ else if (url.includes("/api/ireading/new_reading/get_article_data")) {
             if (data.book) {
                 data.book.buy_type = [2];
                 data.book.buy_status = 1;
-                data.book.is_in_bookshelf = 1;
+                data.book.is_in_bookshelf = 0;
                 data.book.reading_mode = 1;
             }
             
