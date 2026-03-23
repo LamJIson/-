@@ -1,5 +1,5 @@
-// 百词斩阅读 - 解锁会员书籍（最终完整版）
-// 支持所有章节相关接口
+// 百词斩阅读 - 解锁会员书籍（最终版）
+// 关键：将 get_book_article 响应中的 can_read 改为 1
 
 let url = $request.url;
 
@@ -67,33 +67,7 @@ else if (url.includes("/api/ireading/new_reading/get_book_info")) {
     }
 }
 
-// ========== 3. 处理章节内容接口（get_article_data） ==========
-else if (url.includes("/api/ireading/new_reading/get_article_data")) {
-    try {
-        let body = $response.body;
-        let obj = JSON.parse(body);
-        
-        if (obj.code === 1 && obj.data) {
-            let data = obj.data;
-            data.can_read = 1;
-            
-            if (data.book) {
-                data.book.buy_type = [2];
-                data.book.buy_status = 1;
-            }
-            
-            let newBody = JSON.stringify(obj);
-            $done({ body: newBody });
-        } else {
-            $done({});
-        }
-    } catch (e) {
-        console.log("百词斩解锁: get_article_data错误 - " + e.message);
-        $done({});
-    }
-}
-
-// ========== 4. 处理章节内容接口（get_book_article - 核心！） ==========
+// ========== 3. 处理章节内容接口（核心！） ==========
 else if (url.includes("/api/ireading/new_reading/get_book_article")) {
     try {
         let body = $response.body;
@@ -102,22 +76,19 @@ else if (url.includes("/api/ireading/new_reading/get_book_article")) {
         if (obj.code === 1 && obj.data) {
             let data = obj.data;
             
-            // 核心解锁：将 can_read 从 0 改为 1
+            // 核心：将 can_read 从 0 改为 1
             data.can_read = 1;
             
-            // 解锁 book 对象
+            // 修改 book 对象中的权限字段
             if (data.book) {
                 data.book.buy_type = [2];
                 data.book.buy_status = 1;
                 data.book.has_read_service = 1;
                 data.book.free_trial_count = 999;
+                data.book.can_free_trial = 1;
             }
             
-            // 如果 article_info 为 null，可能需要保留原样
-            // 或者检查是否有其他权限字段
-            if (data.article_info === null) {
-                // 保持 null，让 App 加载内容
-            }
+            // 注意：article_info 可能为 null，不需要修改
             
             let newBody = JSON.stringify(obj);
             $done({ body: newBody });
@@ -130,7 +101,7 @@ else if (url.includes("/api/ireading/new_reading/get_book_article")) {
     }
 }
 
-// ========== 5. 其他接口直接放行 ==========
+// ========== 4. 其他接口直接放行 ==========
 else {
     $done({});
 }
