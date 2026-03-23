@@ -60,13 +60,13 @@ function modifyUserReadBook(data, url) {
     
     if (data.data === null) {
         data.data = {
-            isDone: 0,
+            isDone: 1,
             bookId: bookId ? parseInt(bookId) : null,
             doneAt: null,
             lastReadTime: new Date().toISOString().slice(0, 19).replace('T', ' '),
             startReadAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
             lastReadArticleId: 1,
-            readChapterCount: 0,
+            readChapterCount: 1,
             canRead: true,
             vipUnlocked: true
         };
