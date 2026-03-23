@@ -1,83 +1,77 @@
-// baicizhan_books_ultimate.js
-// 完整的百词斩书本权限解锁脚本
+// baicizhan_all_vip.js
+// 处理所有VIP相关的API
 
-console.log("百词斩书本权限终极解锁脚本");
+console.log("百词斩VIP全面解锁脚本");
 
-// 配置需要解锁的书本ID列表（可选）
-const UNLOCK_ALL_BOOKS = true;  // 解锁所有书本
-const CUSTOM_BOOK_IDS = [];     // 指定解锁的书本ID，如 [302, 303, 304]
+// VIP配置
+const VIP_CONFIG = {
+    valid: true,
+    vipDays: 365,
+    expireDate: "2026-12-31 23:59:59",
+    isVip: true,
+    vipLevel: "钻石会员",
+    autoRenew: true,
+    remainingDays: 365,
+    is_try_vip: 1,
+    vip_days: 365
+};
 
-function getBookIdFromUrl(url) {
-    const match = url.match(/bookId=(\d+)/);
-    return match ? parseInt(match[1]) : null;
+function modifyUserInfo(data) {
+    if (data.data) {
+        data.data.is_vip = 1;
+        data.data.is_try_vip = 1;
+        data.data.vip_days = 365;
+        data.data.vip_expire = VIP_CONFIG.expireDate;
+        data.data.try_vip_expire = VIP_CONFIG.expireDate;
+        data.data.word_level = "六级";
+        data.data.buy_term_count = 999;
+    }
+    return data;
 }
 
-function shouldUnlockBook(bookId) {
-    if (UNLOCK_ALL_BOOKS) return true;
-    if (CUSTOM_BOOK_IDS.includes(bookId)) return true;
-    return false;
+function modifyBookPackageVipStatus(data) {
+    if (data.data === null) {
+        data.data = {};
+    }
+    data.data.valid = VIP_CONFIG.valid;
+    data.data.vipDays = VIP_CONFIG.vipDays;
+    data.data.expireDate = VIP_CONFIG.expireDate;
+    data.data.isVip = VIP_CONFIG.isVip;
+    data.data.vipLevel = VIP_CONFIG.vipLevel;
+    data.data.autoRenew = VIP_CONFIG.autoRenew;
+    data.data.remainingDays = VIP_CONFIG.remainingDays;
+    return data;
 }
 
 function modifyUserReadBook(data, url) {
-    const bookId = getBookIdFromUrl(url);
-    
-    if (!bookId) return data;
-    
-    console.log(`处理书本ID ${bookId} 的阅读权限`);
-    
-    if (!shouldUnlockBook(bookId)) {
-        console.log(`书本ID ${bookId} 不在解锁列表中`);
-        return data;
-    }
+    const bookIdMatch = url.match(/bookId=(\d+)/);
+    const bookId = bookIdMatch ? bookIdMatch[1] : null;
     
     if (data.data === null) {
-        // 创建新记录
         data.data = {
             isDone: 0,
-            bookId: bookId,
+            bookId: bookId ? parseInt(bookId) : null,
             doneAt: null,
             lastReadTime: new Date().toISOString().slice(0, 19).replace('T', ' '),
             startReadAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
             lastReadArticleId: 1,
             readChapterCount: 0,
-            // 自定义字段
             canRead: true,
-            vipUnlocked: true,
-            permissionGranted: true
+            vipUnlocked: true
         };
     } else {
-        // 修改现有记录
-        data.data.isDone = data.data.isDone || 0;
         data.data.canRead = true;
         data.data.vipUnlocked = true;
-        data.data.permissionGranted = true;
-        
-        // 如果没有开始阅读时间，设置一个
-        if (!data.data.startReadAt) {
-            data.data.startReadAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        }
-        
-        // 确保有最后阅读时间
-        if (!data.data.lastReadTime) {
-            data.data.lastReadTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        }
-        
-        // 确保有最后阅读的文章ID
-        if (!data.data.lastReadArticleId) {
-            data.data.lastReadArticleId = 1;
-        }
     }
-    
     return data;
 }
 
 function modifyBookList(data) {
-    // 修改书本列表，标记VIP书本为可读
     if (data.data && data.data.books) {
         data.data.books = data.data.books.map(book => {
-            book.is_vip = false;        // 将VIP书本标记为非VIP
-            book.is_locked = false;      // 解锁所有书本
-            book.can_preview = true;     // 允许预览
+            book.is_vip = false;
+            book.is_locked = false;
+            book.can_preview = true;
             return book;
         });
     }
@@ -85,11 +79,10 @@ function modifyBookList(data) {
 }
 
 function modifyArticleContent(data) {
-    // 修改文章内容权限
     if (data.data) {
-        data.data.can_read = true;       // 允许阅读
-        data.data.is_vip_content = false; // 标记为非VIP内容
-        data.data.unlocked = true;        // 已解锁
+        data.data.can_read = true;
+        data.data.is_vip_content = false;
+        data.data.unlocked = true;
     }
     return data;
 }
@@ -98,8 +91,14 @@ function modifyResponse(body, url) {
     try {
         let data = JSON.parse(body);
         
-        // 根据不同的API进行不同的修改
-        if (url.includes('/get_user_read_book')) {
+        console.log(`处理API: ${url}`);
+        
+        // 根据不同的API进行修改
+        if (url.includes('/get_user_info')) {
+            data = modifyUserInfo(data);
+        } else if (url.includes('/book_package_vip_status')) {
+            data = modifyBookPackageVipStatus(data);
+        } else if (url.includes('/get_user_read_book')) {
             data = modifyUserReadBook(data, url);
         } else if (url.includes('/get_books')) {
             data = modifyBookList(data);
@@ -129,11 +128,10 @@ function onResponse(context) {
         return;
     }
     
-    console.log(`拦截请求: ${url}`);
     const modifiedBody = modifyResponse(body, url);
     
     if (modifiedBody !== body) {
-        console.log("响应已修改，权限已解锁");
+        console.log("响应已修改，VIP权限已解锁");
     }
     
     $done({body: modifiedBody});
