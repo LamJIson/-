@@ -24,6 +24,7 @@ VIP = type=http-response,pattern=^https?://du\.baicizhan\.com/api/ireading/new_r
 解锁所有书本显示 = type=http-response,pattern=^https?://du\.baicizhan\.com/api/ireading/new_reading/get_books$,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczsb.js
 解锁VIP文章 = type=http-response,pattern=^https?://du\.baicizhan\.com/api/ireading/new_reading/membership/foreign_journal_vip_status$,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczsb.js
 章节内容 = type=http-response,pattern=^https?://du\.baicizhan\.com/api/ireading/new_reading/membership/book_package_vip_status$ ,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczsb.js
+会员状态 = type=http-response,pattern=^https://marketing-api\.baicizhan\.com/api/v1/membership/infos ,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczlq.js
 
 [MITM]
 hostname = %APPEND% *.baicizhan.com,*.bczcdn.com,*.baicizhan.cn
