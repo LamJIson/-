@@ -1,4 +1,4 @@
-// 百词斩阅读 - 最终版（确保内容加载）
+// 百词斩阅读 - 最终修复版
 
 let url = $request.url;
 
@@ -35,8 +35,10 @@ if (url.includes("/api/ireading/new_reading/get_book_article")) {
                 data.book.reading_mode = 1;
             }
             
-            // 重要：保持 article_info 为 null，让 App 去请求 get_article_data
-            // 不修改 article_info
+            // 关键修复：如果 article_info 为 null，设置为空对象，让 App 去请求 get_article_data
+            if (data.article_info === null) {
+                data.article_info = {};
+            }
             
             $done({ body: JSON.stringify(obj) });
         } else {
@@ -48,7 +50,7 @@ if (url.includes("/api/ireading/new_reading/get_book_article")) {
     }
 }
 
-// ========== 2. 处理 get_article_data 接口（实际内容） ==========
+// ========== 2. 处理 get_article_data 接口 ==========
 else if (url.includes("/api/ireading/new_reading/get_article_data")) {
     try {
         let body = $response.body;
@@ -62,6 +64,7 @@ else if (url.includes("/api/ireading/new_reading/get_article_data")) {
             data.is_in_bookshelf = 1;
             data.reading_mode = 1;
             
+            // 确保 article_info 有内容（原响应已有）
             // 设置下一章可用
             data.has_next_article = true;
             data.next_article_is_online = true;
@@ -72,8 +75,6 @@ else if (url.includes("/api/ireading/new_reading/get_article_data")) {
                 data.book.is_in_bookshelf = 1;
                 data.book.reading_mode = 1;
             }
-            
-            // article_info 已经有完整内容，保持不变
             
             $done({ body: JSON.stringify(obj) });
         } else {
