@@ -7,20 +7,20 @@ console.log("百词斩VIP全面解锁脚本");
 const VIP_CONFIG = {
     valid: true,
     vipDays: 365,
-    expireDate: "2026-12-31 23:59:59",
+    expireDate: "2099-12-31 23:59:59",
     isVip: true,
     vipLevel: "钻石会员",
     autoRenew: true,
-    remainingDays: 365,
+    remainingDays: 9999,
     is_try_vip: 1,
-    vip_days: 365
+    vip_days: 9999
 };
 
 function modifyUserInfo(data) {
     if (data.data) {
         data.data.is_vip = 1;
         data.data.is_try_vip = 1;
-        data.data.vip_days = 365;
+        data.data.vip_days = 9999;
         data.data.vip_expire = VIP_CONFIG.expireDate;
         data.data.try_vip_expire = VIP_CONFIG.expireDate;
         data.data.word_level = "六级";
