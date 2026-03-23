@@ -1,5 +1,5 @@
-// 百词斩阅读 - 解锁会员书籍（完整版）
-// 支持 get_book_package_info, get_book_info, get_article_data
+// 百词斩阅读 - 解锁会员书籍（最终完整版）
+// 支持所有章节相关接口
 
 let url = $request.url;
 
@@ -11,19 +11,14 @@ if (url.includes("/api/ireading/new_reading/get_book_package_info")) {
         
         if (obj.code === 1 && obj.data) {
             let data = obj.data;
-            
-            // 标记套装已购买
             data.buy_status = 1;
             data.is_in_bookshelf = 1;
             data.has_read_service = 1;
             
-            // 解锁套装内的每一本书
             if (data.books && Array.isArray(data.books)) {
                 for (let book of data.books) {
                     book.buy_status = 1;
                     book.has_read_service = 1;
-                    book.is_restricted = 0;
-                    // 关键：将 buy_type 从 [1] 改为 [2]
                     book.buy_type = [2];
                 }
             }
@@ -47,23 +42,17 @@ else if (url.includes("/api/ireading/new_reading/get_book_info")) {
         
         if (obj.code === 1 && obj.data) {
             let data = obj.data;
-            
-            // 标记已购买
             data.buy_status = 1;
             data.is_in_bookshelf = 1;
             data.has_read_service = 1;
             data.free_trial_count = 999;
             data.can_free_trial = 1;
-            
-            // 关键：将 buy_type 从 [1] 改为 [2]
             data.buy_type = [2];
             
-            // 解锁章节列表
             if (data.chapter_simple_info && Array.isArray(data.chapter_simple_info)) {
                 for (let chapter of data.chapter_simple_info) {
                     chapter.is_locked = false;
                     chapter.is_free = true;
-                    chapter.need_pay = false;
                 }
             }
             
@@ -78,7 +67,7 @@ else if (url.includes("/api/ireading/new_reading/get_book_info")) {
     }
 }
 
-// ========== 3. 处理章节内容接口（核心！） ==========
+// ========== 3. 处理章节内容接口（get_article_data） ==========
 else if (url.includes("/api/ireading/new_reading/get_article_data")) {
     try {
         let body = $response.body;
@@ -86,23 +75,11 @@ else if (url.includes("/api/ireading/new_reading/get_article_data")) {
         
         if (obj.code === 1 && obj.data) {
             let data = obj.data;
-            
-            // 核心解锁：添加 can_read 字段（会员响应中有此字段）
             data.can_read = 1;
             
-            // 同时解锁可能存在的其他权限字段
-            if (data.is_locked !== undefined) data.is_locked = false;
-            if (data.need_pay !== undefined) data.need_pay = false;
-            if (data.is_free !== undefined) data.is_free = true;
-            
-            // 如果有 book 嵌套对象，也解锁
             if (data.book) {
-                data.book.buy_status = 1;
-                data.book.has_read_service = 1;
-                data.book.free_trial_count = 999;
-                data.book.can_free_trial = 1;
-                // 关键：将 book 中的 buy_type 也改为 [2]
                 data.book.buy_type = [2];
+                data.book.buy_status = 1;
             }
             
             let newBody = JSON.stringify(obj);
@@ -111,12 +88,49 @@ else if (url.includes("/api/ireading/new_reading/get_article_data")) {
             $done({});
         }
     } catch (e) {
-        console.log("百词斩解锁: 章节内容接口错误 - " + e.message);
+        console.log("百词斩解锁: get_article_data错误 - " + e.message);
         $done({});
     }
 }
 
-// ========== 4. 其他接口直接放行 ==========
+// ========== 4. 处理章节内容接口（get_book_article - 核心！） ==========
+else if (url.includes("/api/ireading/new_reading/get_book_article")) {
+    try {
+        let body = $response.body;
+        let obj = JSON.parse(body);
+        
+        if (obj.code === 1 && obj.data) {
+            let data = obj.data;
+            
+            // 核心解锁：将 can_read 从 0 改为 1
+            data.can_read = 1;
+            
+            // 解锁 book 对象
+            if (data.book) {
+                data.book.buy_type = [2];
+                data.book.buy_status = 1;
+                data.book.has_read_service = 1;
+                data.book.free_trial_count = 999;
+            }
+            
+            // 如果 article_info 为 null，可能需要保留原样
+            // 或者检查是否有其他权限字段
+            if (data.article_info === null) {
+                // 保持 null，让 App 加载内容
+            }
+            
+            let newBody = JSON.stringify(obj);
+            $done({ body: newBody });
+        } else {
+            $done({});
+        }
+    } catch (e) {
+        console.log("百词斩解锁: get_book_article错误 - " + e.message);
+        $done({});
+    }
+}
+
+// ========== 5. 其他接口直接放行 ==========
 else {
     $done({});
 }
