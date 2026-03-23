@@ -1,8 +1,8 @@
-// 百词斩阅读 - 最终版（直接提供内容，不依赖 get_article_data）
+// 百词斩阅读 - 最终修复版（修复 article_info 结构）
 
 let url = $request.url;
 
-// ========== 1. 处理 get_book_article 接口（核心） ==========
+// ========== 1. 处理 get_book_article 接口 ==========
 if (url.includes("/api/ireading/new_reading/get_book_article")) {
     try {
         let body = $response.body;
@@ -11,12 +11,12 @@ if (url.includes("/api/ireading/new_reading/get_book_article")) {
         if (obj.code === 1 && obj.data) {
             let data = obj.data;
             
-            // 权限解锁
+            // 核心修改
             data.can_read = 1;
             data.is_in_bookshelf = 1;
             data.reading_mode = 1;
             
-            // 下一章可用
+            // 设置下一章可用
             let currentChapter = data.chapter || 1;
             let totalChapters = data.book ? data.book.chapter_count : 0;
             if (totalChapters > 0 && currentChapter < totalChapters) {
@@ -35,31 +35,16 @@ if (url.includes("/api/ireading/new_reading/get_book_article")) {
                 data.book.reading_mode = 1;
             }
             
-            // 关键：构造一个有效的内容结构，让 App 直接显示
+            // 关键修复：如果 article_info 为 null，创建一个最小结构，避免 App 报错
             if (data.article_info === null) {
-                // 从章节列表或本地构造一个简单内容
                 data.article_info = {
                     articleDetails: {
                         hasAudio: 0,
-                        hasExplain: 1,
-                        hasSentenceBySentenceTranslation: 1,
                         title: data.title || "",
-                        title_cn: data.title_cn || "",
-                        wordCount: data.words_count || 0,
-                        translationOrNot: true
+                        title_cn: data.title_cn || ""
                     },
                     content: {
-                        paragraphs: [
-                            {
-                                sentences: [
-                                    {
-                                        text: "This content is unlocked.",
-                                        translate: "此内容已解锁。",
-                                        words: []
-                                    }
-                                ]
-                            }
-                        ]
+                        paragraphs: []
                     }
                 };
             }
@@ -82,9 +67,13 @@ else if (url.includes("/api/ireading/new_reading/get_article_data")) {
         
         if (obj.code === 1 && obj.data) {
             let data = obj.data;
+            
+            // 确保内容可读
             data.can_read = 1;
             data.is_in_bookshelf = 1;
             data.reading_mode = 1;
+            
+            // 设置下一章可用
             data.has_next_article = true;
             data.next_article_is_online = true;
             
@@ -105,28 +94,7 @@ else if (url.includes("/api/ireading/new_reading/get_article_data")) {
     }
 }
 
-// ========== 3. 处理阅读进度接口 ==========
-else if (url.includes("/api/ireading/new_reading/get_user_read_book")) {
-    try {
-        let body = $response.body;
-        let obj = JSON.parse(body);
-        
-        if (obj.code === 1 && obj.data) {
-            let data = obj.data;
-            data.canRead = true;
-            data.vipUnlocked = true;
-            // 保持 isDone 为 0，不要改 1
-            $done({ body: JSON.stringify(obj) });
-        } else {
-            $done({});
-        }
-    } catch (e) {
-        console.log("百词斩: get_user_read_book错误 - " + e.message);
-        $done({});
-    }
-}
-
-// ========== 4. 其他接口 ==========
+// ========== 3. 其他接口 ==========
 else {
     $done({});
 }
