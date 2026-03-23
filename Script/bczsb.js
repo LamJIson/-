@@ -1,7 +1,7 @@
-// baicizhan_all_vip.js  
-// 处理所有VIP相关的API
+// baicizhan_all_vip.js
+// 完整的百词斩VIP解锁脚本（包含书本和外刊）
 
-console.log("百词斩VIP全面解锁脚本");
+console.log("百词斩VIP全面解锁脚本（含外刊）");
 
 // VIP配置
 const VIP_CONFIG = {
@@ -9,18 +9,15 @@ const VIP_CONFIG = {
     vipDays: 365,
     expireDate: "2099-12-31 23:59:59",
     isVip: true,
-    vipLevel: "钻石会员",
     autoRenew: true,
-    remainingDays: 9999,
-    is_try_vip: 1,
-    vip_days: 9999
+    remainingDays: 365
 };
 
 function modifyUserInfo(data) {
     if (data.data) {
         data.data.is_vip = 1;
         data.data.is_try_vip = 1;
-        data.data.vip_days = 9999;
+        data.data.vip_days = 365;
         data.data.vip_expire = VIP_CONFIG.expireDate;
         data.data.try_vip_expire = VIP_CONFIG.expireDate;
         data.data.word_level = "六级";
@@ -37,7 +34,21 @@ function modifyBookPackageVipStatus(data) {
     data.data.vipDays = VIP_CONFIG.vipDays;
     data.data.expireDate = VIP_CONFIG.expireDate;
     data.data.isVip = VIP_CONFIG.isVip;
-    data.data.vipLevel = VIP_CONFIG.vipLevel;
+    data.data.vipLevel = "书本套餐会员";
+    data.data.autoRenew = VIP_CONFIG.autoRenew;
+    data.data.remainingDays = VIP_CONFIG.remainingDays;
+    return data;
+}
+
+function modifyForeignJournalVipStatus(data) {
+    if (data.data === null) {
+        data.data = {};
+    }
+    data.data.valid = VIP_CONFIG.valid;
+    data.data.vipDays = VIP_CONFIG.vipDays;
+    data.data.expireDate = VIP_CONFIG.expireDate;
+    data.data.isVip = VIP_CONFIG.isVip;
+    data.data.vipLevel = "外刊会员";
     data.data.autoRenew = VIP_CONFIG.autoRenew;
     data.data.remainingDays = VIP_CONFIG.remainingDays;
     return data;
@@ -98,6 +109,8 @@ function modifyResponse(body, url) {
             data = modifyUserInfo(data);
         } else if (url.includes('/book_package_vip_status')) {
             data = modifyBookPackageVipStatus(data);
+        } else if (url.includes('/foreign_journal_vip_status')) {
+            data = modifyForeignJournalVipStatus(data);
         } else if (url.includes('/get_user_read_book')) {
             data = modifyUserReadBook(data, url);
         } else if (url.includes('/get_books')) {
