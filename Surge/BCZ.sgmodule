@@ -26,7 +26,7 @@ VIP = type=http-response,pattern=^https?://du\.baicizhan\.com/api/ireading/new_r
 章节内容 = type=http-response,pattern=^https?://du\.baicizhan\.com/api/ireading/new_reading/membership/book_package_vip_status$ ,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczsb.js
 会员状态 = type=http-response,pattern=^https://marketing-api\.baicizhan\.com/api/v1/membership/infos ,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczlq.js
 会员书本 = type=http-response,pattern=^https?://du\.baicizhan\.com/api/ireading/new_reading/get_book_info ,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczrd.js
-书本解锁 = type=http-response,pattern=^https?://du\.baicizhan\.com/api/ireading/new_reading/(get_book_package_info|get_book_info) ,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczrd.js
+书本解锁 = type=http-response,pattern=^https?://du\.baicizhan\.com/api/ireading/new_reading/(get_book_package_info|get_book_info|get_article_data) ,requires-body=1,max-size=0,binary-body-mode=0,script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/bczrd.js
 
 [MITM]
 hostname = %APPEND% *.baicizhan.com,*.bczcdn.com,*.baicizhan.cn
