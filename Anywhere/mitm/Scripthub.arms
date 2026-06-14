@@ -1,0 +1,22 @@
+# Script Hub: 重写 & 规则集转换 - Anywhere MITM RuleSet
+# author = @小白脸 @xream @keywos @ckyb
+# homepage = https://script.hub
+# argument = Notify:开启通知
+
+name = Script Hub: 重写 & 规则集转换
+hostname = script.hub, *.script.hub
+
+# ---------- Script Hub 前端 ----------
+0, 100, ^https?:\/\/script\.hub\/($|edit\/|reload), BASE64_script-hub.js_HERE
+
+# ---------- Script Hub 重写转换 ----------
+# 原参数：argument=Notify={{{Notify}}}
+# 默认按 Notify=开启通知 处理，如需关闭通知，需要在脚本源码里固定参数或改写变量。
+0, 100, ^https?:\/\/script\.hub\/file\/_start_\/.+type=(?:qx-rewrite|surge-module|loon-plugin|all-module), BASE64_Rewrite-Parser.js_HERE
+
+# ---------- Script Hub 规则集转换 ----------
+# 原参数：argument=Notify={{{Notify}}}
+0, 100, ^https?:\/\/script\.hub\/file\/_start_\/.+type=rule-set, BASE64_rule-parser.js_HERE
+
+# ---------- Script Hub 脚本转换 ----------
+0, 100, ^https?:\/\/script\.hub\/convert\/, BASE64_script-converter.js_HERE
