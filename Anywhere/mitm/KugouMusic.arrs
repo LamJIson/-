@@ -1,0 +1,14 @@
+# 酷狗音乐广告域名 Reject - Anywhere Routing RuleSet
+# author = 可莉🅥
+
+name = KuGou Music Reject
+
+2, ads.service.kugou.com
+2, adstats.tencentmusic.com
+2, adsmind.gdtimg.com
+2, adserviceretry.kugou.com
+2, adserviceretry.kglink.cn
+2, ad.tencentmusic.com
+2, adservice.kugou.com
+2, splashimgretrybssdl.cloud.kugou.com
+.
