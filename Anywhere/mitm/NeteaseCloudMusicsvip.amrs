@@ -1,5 +1,7 @@
 # 网易云（完全免费不要到处分享）
-name = 网易云
+# 原作者 暗夜
+
+name = 网易云SVIP
 hostname = interface*.music.163.com, iadmat.nosdn.127.net, iadmatapk.nosdn.127.net, iadmusicmat.music.126.net, iadmusicmatvideo.music.126.net, ipv4.music.163.com, ipv6.music.163.com
 
 # ========== DOMAIN 拦截（转为请求拦截，返回空响应）==========
