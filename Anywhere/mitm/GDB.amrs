@@ -1,0 +1,5 @@
+# 广发银行去广告 - Anywhere MITM RuleSet
+
+name = 广发银行去广告
+
+0, 100, ^https?:\/\/static\.95508\.com\/icppweb\/images\/modelMaterial\/accurate\/202\d{5}\/.*\.(png|jpg), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJpbWFnZS9naWYiXV0sYm9keTpBbnl3aGVyZS5jb2RlYy5iYXNlNjQuZGVjb2RlKCJSMGxHT0RsaEFRQUJBSUFBQVAvLy93QUFBQ0g1QkFFQUFBQUFMQUFBQUFBQkFBRUFBQUlDUkFFQU93PT0iKX0pfQ==
