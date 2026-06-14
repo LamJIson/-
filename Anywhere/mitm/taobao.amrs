@@ -1,4 +1,5 @@
 # 淘宝去广告 - Anywhere MITM RuleSet
+# 原作者 奶思
 
 name = 淘宝去广告
 hostname = acs.m.taobao.com, guide-acs.m.taobao.com, poplayer.template.alibaba.com
