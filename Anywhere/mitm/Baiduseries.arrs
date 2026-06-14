@@ -1,0 +1,13 @@
+# 百度系 App 广告域名 Reject - Anywhere Routing RuleSet
+# author = zqzess
+
+name = Baidu App Reject
+
+# 百度输入法
+# 原规则：DOMAIN-KEYWORD,jomodns,REJECT
+# 如果 Anywhere 支持关键词匹配，可按客户端语法改成关键词规则。
+# 简化写法如下：
+2, jomodns
+
+2, res.mi.baidu.com
+2, r6.mo.baidu.com
