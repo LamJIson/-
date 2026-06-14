@@ -1,0 +1,38 @@
+# 百度系 App 广告屏蔽 - Anywhere MITM RuleSet
+# author = zqzess
+# homepage = https://github.com/zqzess/rule_for_quantumultX
+
+name = 百度系App广告屏蔽
+hostname = sofire.baidu.com, ndstatic.cdn.bcebos.com, pan.baidu.com, staticsns.cdn.bcebos.com, issuecdn.baidupcs.com, dss0.bdstatic.com, *.tieba.baidu.com, mime.baidu.com, rp.hpplay.cn
+
+# ---------- 百度地图开屏广告：图片 ----------
+0, 100, ^https:\/\/dss0\.bdstatic\.com\/.+\/tam-ogel\/.+\.jpg, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJpbWFnZS9naWYiXV0sYm9keTpBbnl3aGVyZS5jb2RlYy5iYXNlNjQuZGVjb2RlKCJSMGxHT0RsaEFRQUJBSUFBQVAvLy93QUFBQ0g1QkFFQUFBQUFMQUFBQUFBQkFBRUFBQUlDUkFFQU93PT0iKX0pfQ==
+
+# ---------- 百度网盘广告屏蔽 ----------
+0, 100, ^https:\/\/pan\.baidu\.com\/pmall\/order\/privilege\/info, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/pan\.baidu\.com\/rest\/.+\/pcs\/adx, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/pan\.baidu\.com\/api\/useractivity\/activity, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^http:\/\/pan\.baidu\.com\/act\/.+\/bchannel\/list, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/pan\.baidu\.com\/component\/view\/1510\?from, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/pan\.baidu\.com\/rest\/2\.0\/pcs\/adv\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/pan\.baidu\.com\/component\/view\/(1510|1130)\?vip, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+
+# ---------- 百度网盘静态活动 / 推广资源 ----------
+0, 100, ^https:\/\/sofire\.baidu\.com\/ios\/.+, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJ0ZXh0L3BsYWluOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6IiJ9KX0=
+0, 100, ^https:\/\/ndstatic\.cdn\.bcebos\.com\/activity\/welfare\/js\/.+\.js, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJ0ZXh0L3BsYWluOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6IiJ9KX0=
+0, 100, ^https:\/\/ndstatic\.cdn\.bcebos\.com\/activity\/welfare\/index\.html, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJ0ZXh0L3BsYWluOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6IiJ9KX0=
+0, 100, ^https:\/\/staticsns\.cdn\.bcebos\.com\/amis\/.+\/banner\.png, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJpbWFnZS9naWYiXV0sYm9keTpBbnl3aGVyZS5jb2RlYy5iYXNlNjQuZGVjb2RlKCJSMGxHT0RsaEFRQUJBSUFBQVAvLy93QUFBQ0g1QkFFQUFBQUFMQUFBQUFBQkFBRUFBQUlDUkFFQU93PT0iKX0pfQ==
+0, 100, ^http:\/\/rp\.hpplay\.cn\/logouts, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJ0ZXh0L3BsYWluOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6IiJ9KX0=
+0, 100, ^https:\/\/issuecdn\.baidupcs\.com\/issue\/netdisk\/ts_ad\/, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJ0ZXh0L3BsYWluOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6IiJ9KX0=
+
+# ---------- 百度输入法 ----------
+0, 100, ^https:\/\/mime\.baidu\.com\/v5\/activity\/advertisementnonrealtime, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/mime\.baidu\.com\/v5\/start_screen_ads\/list, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/mime\.baidu\.com\/v5\/hotpatch\/check\?hotpatch, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+
+# ---------- 百度贴吧 ----------
+0, 100, ^https?:\/\/c\.tieba\.baidu\.com\/c\/s\/splashSchedule, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https?:\/\/c\.tieba\.baidu\.com\/c\/f\/forum\/getAdInfo, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https?:\/\/c\.tieba\.baidu\.com\/\w+\/\w+\/(?:sync|newRnSync|mlog), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https?:\/\/(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\/\w+\/\w+\/(?:sync|newRnSync|mlog), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https?:\/\/(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\/c\/s\/splashSchedule, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
