@@ -1,0 +1,33 @@
+# 淘宝域名 Reject - Anywhere Routing RuleSet
+
+name = Taobao Reject
+2, apoll.m.taobao.com
+2, h-adashx.ut.taobao.com
+2, w.m.taobao.com
+2, tunion-api.m.taobao.com
+2, re.m.taobao.com
+2, agoodm.m.taobao.com
+2, ai.taobao.com
+2, api.waptest.taobao.com
+2, dsp.simba.taobao.com
+2, fav.simba.taobao.com
+2, m.simba.taobao.com
+2, re.taobao.com
+2, redirect.simba.taobao.com
+2, simba.m.taobao.com
+2, srd.simba.taobao.com
+2, temai.taobao.com
+2, textlink.simba.taobao.com
+2, unitacs.m.taobao.com
+2, acs4baichuan.m.taobao.com
+2, adashbc.ut.taobao.com
+2, adash-c.ut.taobao.com
+2, adashxgc.ut.taobao.com
+2, adashx4yt.m.taobao.com
+2, tns.simba.taobao.com
+2, click.mz.simba.taobao.com
+2, click.simba.taobao.com
+2, click.tz.simba.taobao.com
+2, stat.simba.taobao.com
+2, m-adash.m.taobao.com
+2, adashbc.m.taobao.com
