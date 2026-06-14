@@ -1,0 +1,22 @@
+# 淘宝去广告 - Anywhere MITM RuleSet
+
+name = 淘宝去广告
+hostname = acs.m.taobao.com, guide-acs.m.taobao.com, poplayer.template.alibaba.com
+
+0, 100, ^https?:\/\/acs\.m\.taobao\.com\/gw\/mtop\.alibaba\.advertisementservice\.getadv, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIgfHwgIWN0eC51cmwpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siY29udGVudC10eXBlIiwgImFwcGxpY2F0aW9uL2pzb247IGNoYXJzZXQ9dXRmLTgiXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https?:\/\/acs\.m\.taobao\.com\/gw\/mtop\.alimama\.etao\.config\.query\/.+?etao_advertise, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIgfHwgIWN0eC51cmwpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siY29udGVudC10eXBlIiwgImFwcGxpY2F0aW9uL2pzb247IGNoYXJzZXQ9dXRmLTgiXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https?:\/\/acs\.m\.taobao\.com\/gw\/mtop\.alimusic\.common\.mobileservice\.startinit, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIgfHwgIWN0eC51cmwpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siY29udGVudC10eXBlIiwgImFwcGxpY2F0aW9uL2pzb247IGNoYXJzZXQ9dXRmLTgiXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https?:\/\/acs\.m\.taobao\.com\/gw\/mtop\.etao\.noah\.query\/.+tao_splash, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIgfHwgIWN0eC51cmwpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siY29udGVudC10eXBlIiwgImFwcGxpY2F0aW9uL2pzb247IGNoYXJzZXQ9dXRmLTgiXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https?:\/\/acs\.m\.taobao\.com\/gw\/mtop\.film\.mtopadvertiseapi\.queryadvertise, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIgfHwgIWN0eC51cmwpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siY29udGVudC10eXBlIiwgImFwcGxpY2F0aW9uL2pzb247IGNoYXJzZXQ9dXRmLTgiXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https?:\/\/acs\.m\.taobao\.com\/gw\/mtop\.o2o\.ad\.gateway\.get, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIgfHwgIWN0eC51cmwpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siY29udGVudC10eXBlIiwgImFwcGxpY2F0aW9uL2pzb247IGNoYXJzZXQ9dXRmLTgiXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https?:\/\/acs\.m\.taobao\.com\/gw\/mtop\.taobao\.idle\.home\.welcome, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIgfHwgIWN0eC51cmwpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siY29udGVudC10eXBlIiwgImFwcGxpY2F0aW9uL2pzb247IGNoYXJzZXQ9dXRmLTgiXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https?:\/\/acs\.m\.taobao\.com\/gw\/mtop\.trip\.activity\.querytmsresources, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIgfHwgIWN0eC51cmwpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siY29udGVudC10eXBlIiwgImFwcGxpY2F0aW9uL2pzb247IGNoYXJzZXQ9dXRmLTgiXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https?:\/\/guide-acs\.m\.taobao\.com\/gw\/mtop\.taobao\.(volvo\.secondfloor\.getconfig|wireless\.home\.newface\.awesome\.get), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIgfHwgIWN0eC51cmwpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siY29udGVudC10eXBlIiwgImFwcGxpY2F0aW9uL2pzb247IGNoYXJzZXQ9dXRmLTgiXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+
+0, 2, ^https?:\/\/guide-acs\.m\.taobao\.com\/gw\/mtop\.taobao\.(cloudvideo\.video\.query|wireless\.home\.splash\.awesome\.get), accept-encoding
+0, 1, ^https?:\/\/guide-acs\.m\.taobao\.com\/gw\/mtop\.taobao\.(cloudvideo\.video\.query|wireless\.home\.splash\.awesome\.get), accept-encoding, identity
+1, 100, ^https?:\/\/guide-acs\.m\.taobao\.com\/gw\/mtop\.taobao\.(cloudvideo\.video\.query|wireless\.home\.splash\.awesome\.get), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVzcG9uc2UiKSByZXR1cm47CiAgY3R4LmJvZHkgPSBBbnl3aGVyZS5jb2RlYy51dGY4LmVuY29kZSgie30iKTsKICBBbnl3aGVyZS5kb25lKCk7Cn0=
+
+0, 2, ^https?:\/\/poplayer\.template\.alibaba\.com\/\w+\.json, accept-encoding
+0, 1, ^https?:\/\/poplayer\.template\.alibaba\.com\/\w+\.json, accept-encoding, identity
+1, 100, ^https?:\/\/poplayer\.template\.alibaba\.com\/\w+\.json, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVzcG9uc2UiKSByZXR1cm47CiAgY3R4LmJvZHkgPSBBbnl3aGVyZS5jb2RlYy51dGY4LmVuY29kZSgie30iKTsKICBBbnl3aGVyZS5kb25lKCk7Cn0=
