@@ -1,0 +1,12 @@
+# Goodbility会员解锁
+name = Goodbility会员解锁
+hostname = isi.csan.*, notability.com
+
+# 请求阶段：删除请求头（原 http-request）
+0, 100, ^https:\/\/isi\.csan\.[a-z.]+\/.+\/(receipts|subscribers), script-path=https://raw.githubusercontent.com/ddgksf2013/Scripts/master/deleteHeader.js
+
+# 响应阶段：会员解锁（原 http-response，两个接口共用同一脚本）
+1, 5, ^https:\/\/isi\.csan\.[a-z.]+\/.+\/(receipts$|subscribers\/[^/]+$), script-path=https://ddgksf2013.top/scripts/goodbility.vip.js, requires-body=1
+
+# 响应阶段：Notability 全局配置
+1, 5, ^https?:\/\/notability\.com\/global, script-path=https://ddgksf2013.top/scripts/goodbility.vip.js, requires-body=1
