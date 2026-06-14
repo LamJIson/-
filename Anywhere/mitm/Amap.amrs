@@ -1,43 +1,56 @@
-# 高德地图净化[墨鱼版] - Anywhere MITM RuleSet
-# author = @ddgksf2013
-# TgChannel = https://t.me/ddgksf2021
-# UpdateTime = 2025-12-06
-# Version = V1.0.28
+# 高德地图去广告 - Anywhere MITM RuleSet
+# author = AI优化, RuCu6, ddgksf2013, 可莉🅥
+# update = 2026.04.03 18:23
 
-name = 高德地图净化[墨鱼版] @ddgksf2013
-hostname = m5.amap.com, m5-zb.amap.com, center.amap.com, amap-aos-info-nogw.amap.com, ai.amap.com, amdc.m.taobao.com
+name = 高德地图去广告
+hostname = *.amap.com, m5.amap.com, m5-zb.amap.com, center.amap.com, ai.amap.com, oss.amap.com, sns.amap.com
 
-# ---------- 原 host-suffix direct ----------
-# host-suffix, optimus-ads.amap.com, direct
+# ===============================
+# Body Rewrite - JQ 转 Anywhere
+# ===============================
 
-# ---------- 高德地图_开屏请求 ----------
-0, 100, ^https?:\/\/.*\.amap\.com\/ws\/aos\/alimama\/splash_screen, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+# 解压响应体
+0, 2, ^https:\/\/(?:m5|m5-zb)\.amap\.com\/ws\/(?:shield\/.*|sharedtrip\/taxi\/order_detail_car_tips\?), accept-encoding
+0, 1, ^https:\/\/(?:m5|m5-zb)\.amap\.com\/ws\/(?:shield\/.*|sharedtrip\/taxi\/order_detail_car_tips\?), accept-encoding, identity
 
-# ---------- 高德地图_首页底部信息流 ----------
-0, 100, ^https?:\/\/.*\.amap\.com\/v\d\/ai_rec\/, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+# 删除 commonMaterial / tipsOperationLocation / resourcePlacement / history_tags / popupInfo
+1, 100, ^https:\/\/(?:m5|m5-zb)\.amap\.com\/ws\/(?:shield\/.*|sharedtrip\/taxi\/order_detail_car_tips\?), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpewogIGlmKGN0eC5waGFzZSE9PSJyZXNwb25zZSIpcmV0dXJuOwogIGZ1bmN0aW9uIGQoYil7dHJ5e3JldHVybiBBbnl3aGVyZS5jb2RlYy51dGY4LmRlY29kZShifHxuZXcgVWludDhBcnJheSgpKX1jYXRjaChlKXtyZXR1cm4iIn19CiAgZnVuY3Rpb24gZShzKXtyZXR1cm4gQW55d2hlcmUuY29kZWMudXRmOC5lbmNvZGUoU3RyaW5nKHM9PW51bGw/IiI6cykpfQogIGZ1bmN0aW9uIGRlbFBhdGgobyxwKXt0cnl7dmFyIHg9bztmb3IodmFyIGk9MDtpPHAubGVuZ3RoLTE7aSsrKXtpZih4PT1udWxsKXJldHVybjt4PXhbcFtpXV19aWYoeCYmT2JqZWN0LnByb3RvdHlwZS5oYXNPd25Qcm9wZXJ0eS5jYWxsKHgscFtwLmxlbmd0aC0xXSkpZGVsZXRlIHhbcFtwLmxlbmd0aC0xXV19Y2F0Y2goXyl7fX0KICB2YXIgdT1jdHgudXJsfHwiIix0PWQoY3R4LmJvZHkpO2lmKCF0KXJldHVybjt2YXIgbzt0cnl7bz1KU09OLnBhcnNlKHQpfWNhdGNoKF8pe3JldHVybn0KICB0cnl7CiAgICBpZigvXmh0dHBzOlwvXC9tNVwuYW1hcFwuY29tXC93c1wvc2hpZWxkXC8uKi8udGVzdCh1KSl7CiAgICAgIGRlbFBhdGgobyxbImRhdGEiLCJjb21tb25NYXRlcmlhbCJdKTtkZWxQYXRoKG8sWyJkYXRhIiwidGlwc09wZXJhdGlvbkxvY2F0aW9uIl0pO2RlbFBhdGgobyxbImRhdGEiLCJyZXNvdXJjZVBsYWNlbWVudCJdKTtkZWxQYXRoKG8sWyJoaXN0b3J5X3RhZ3MiXSk7CiAgICB9CiAgICBpZigvXmh0dHBzOlwvXC9tNS16YlwuYW1hcFwuY29tXC93c1wvc2hhcmVkdHJpcFwvdGF4aVwvb3JkZXJfZGV0YWlsX2Nhcl90aXBzXD8vLnRlc3QodSkpewogICAgICBkZWxQYXRoKG8sWyJkYXRhIiwiY2FyVGlwcyIsImRhdGEiLCJwb3B1cEluZm8iXSk7CiAgICB9CiAgICBpZigvXmh0dHBzOlwvXC9tNVwuYW1hcFwuY29tXC93c1wvc2hpZWxkXC9zZWFyY2hfYnVzaW5lc3NcL3Byb2Nlc3NcL21hcmtldGluZ09wZXJhdGlvblN0cnVjdHVyZWRcPy8udGVzdCh1KSl7CiAgICAgIGRlbFBhdGgobyxbImRhdGEiLCJjb21tb25NYXRlcmlhbCJdKTtkZWxQYXRoKG8sWyJkYXRhIiwidGlwc09wZXJhdGlvbkxvY2F0aW9uIl0pO2RlbFBhdGgobyxbImRhdGEiLCJyZXNvdXJjZVBsYWNlbWVudCJdKTsKICAgIH0KICAgIGlmKC9eaHR0cHM6XC9cL201XC5hbWFwXC5jb21cL3dzXC9zaGllbGRcL3NlYXJjaF9wb2lcL2hvbWVwYWdlXD8vLnRlc3QodSkpewogICAgICBkZWxQYXRoKG8sWyJoaXN0b3J5X3RhZ3MiXSk7CiAgICB9CiAgfWNhdGNoKF8pe30KICBjdHguYm9keT1lKEpTT04uc3RyaW5naWZ5KG8pKTtBbnl3aGVyZS5kb25lKCk7Cn0=
 
-# ---------- 高德地图_amdc处理 ----------
-1, 100, ^http:\/\/amdc\.m\.taobao\.com, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVzcG9uc2UiKSByZXR1cm47CiAgZnVuY3Rpb24gZ2V0SGVhZGVyKHNyYywgbmFtZSkgewogICAgbmFtZSA9IFN0cmluZyhuYW1lKS50b0xvd2VyQ2FzZSgpOwogICAgaWYgKCFzcmMpIHJldHVybiAiIjsKICAgIGlmIChBcnJheS5pc0FycmF5KHNyYykpIHsKICAgICAgZm9yICh2YXIgaSA9IDA7IGkgPCBzcmMubGVuZ3RoOyBpKyspIHsKICAgICAgICB2YXIgaCA9IHNyY1tpXTsKICAgICAgICBpZiAoaCAmJiBoLmxlbmd0aCA+PSAyICYmIFN0cmluZyhoWzBdKS50b0xvd2VyQ2FzZSgpID09PSBuYW1lKSByZXR1cm4gU3RyaW5nKGhbMV0pOwogICAgICB9CiAgICAgIHJldHVybiAiIjsKICAgIH0KICAgIGZvciAodmFyIGsgaW4gc3JjKSB7CiAgICAgIGlmIChTdHJpbmcoaykudG9Mb3dlckNhc2UoKSA9PT0gbmFtZSkgcmV0dXJuIFN0cmluZyhzcmNba10pOwogICAgfQogICAgcmV0dXJuICIiOwogIH0KICB2YXIgdWEgPSBnZXRIZWFkZXIoY3R4LnJlcXVlc3RIZWFkZXJzLCAidXNlci1hZ2VudCIpIHx8IGdldEhlYWRlcihjdHgucmVxSGVhZGVycywgInVzZXItYWdlbnQiKSB8fCBnZXRIZWFkZXIoY3R4LnJlcXVlc3QgJiYgY3R4LnJlcXVlc3QuaGVhZGVycywgInVzZXItYWdlbnQiKSB8fCBnZXRIZWFkZXIoY3R4LmhlYWRlcnMsICJ1c2VyLWFnZW50IikgfHwgIiI7CiAgaWYgKC8oQU1hcHxDYWluaWFvfCVFOSU5NyVCMiVFOSVCMSVCQ3wlRTklQTMlOUUlRTclOEMlQUElRTYlOTclODUlRTglQTElOEN8JUU1JTk2JUI1JUU4JUExJTk3fCVFNSVBNCVBOSVFNyU4QyVBQnxBbGliYWJhfE1vdmllQXBwfEhlbWE0aVBob25lfE1vb258RE1Qb3J0YWwpLy50ZXN0KHVhKSkgewogICAgY3R4LmJvZHkgPSBBbnl3aGVyZS5jb2RlYy51dGY4LmVuY29kZSgiZGRna3NmMjAxMyIpOwogIH0KICBBbnl3aGVyZS5kb25lKCk7Cn0=
+# ===============================
+# Map Local - 返回 {}
+# ===============================
 
-# ---------- 高德地图_路线规划下方广告 ----------
-0, 100, ^https?:\/\/.*\.amap\.com\/ws\/faas\/amap-navigation\/card-service-route-plan\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+# 全局泛接口拦截
+0, 100, ^https:\/\/m5\.amap\.com\/ws\/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/oss\.amap\.com\/ws\/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/sns\.amap\.com\/ws\/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
 
-# ---------- 高德地图_Tip请求 ----------
-0, 100, ^https?:\/\/.*\.amap\.com\/ws\/boss\/order_web\/\w{8}_information, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+# 打车与本地生活接口
+0, 100, ^https:\/\/m5-zb\.amap\.com\/ws\/ride\/home\/page\/get_commuting_card\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/m5\.amap\.com\/ws\/shield\/search_business\/process\/orderList\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
 
-# ---------- 高德地图_通用广告请求 ----------
-0, 100, ^https?:\/\/.*\.amap\.com\/ws\/asa\/ads_attribution, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJ0ZXh0L3BsYWluOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6IiJ9KX0=
+# 搜索与个性化推荐接口
+0, 100, ^https:\/\/m5\.amap\.com\/ws\/shield\/search\/new_hotword\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/m5\.amap\.com\/ws\/shield\/search_poi\/tips_adv\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/ai\.amap\.com\/v1\/ai_rec\/, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/m5\.amap\.com\/ws\/shield\/scene\/recommend\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
 
-# ---------- 高德地图_搜索框scene ----------
-0, 100, ^https?:\/\/.*\.amap\.com\/ws\/shield\/scene\/recommend, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+# 导航卡片与首页附加资产接口
+0, 100, ^https:\/\/m5\.amap\.com\/ws\/faas\/amap-navigation\/card-service-(?:car-end|route-plan), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/m5\.amap\.com\/ws\/aos\/main\/page\/product\/list\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/m5\.amap\.com\/ws\/faas\/amap-navigation\/(?:main-page-assets|main-page-location|ridewalk-end-fc|usr-profile-fc\/homeV2), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
 
-# ---------- 高德地图_首页左上角gif ----------
-0, 100, ^https?:\/\/.*\.amap\.com\/uploadimg\/\w+\.gif, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJpbWFnZS9naWYiXV0sYm9keTpBbnl3aGVyZS5jb2RlYy5iYXNlNjQuZGVjb2RlKCJSMGxHT0RsaEFRQUJBSUFBQVAvLy93QUFBQ0g1QkFFQUFBQUFMQUFBQUFBQkFBRUFBQUlDUkFFQU93PT0iKX0pfQ==
+# 附加功能接口：天气、消息中心
+0, 100, ^https:\/\/m5\.amap\.com\/ws\/valueadded\/weather\/v2\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/sns\.amap\.com\/ws\/msgbox\/pull_mp\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
 
-# ---------- 高德地图_左下天气 ----------
-0, 100, ^https?:\/\/.*\.amap\.com\/ws\/valueadded\/weather, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+# ===============================
+# 外部脚本处理 - Amap_remove_ads.js 通用净化版
+# ===============================
+# 原外部脚本：
+# https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js
+# 当前使用通用广告字段净化版；如果你提供原 JS 源码，我可以继续转成原脚本版。
 
-# ---------- amap.js 响应体净化类 ----------
-0, 2, ^https?:\/\/.*\.amap\.com\/(?:ws\/message\/notice\/list|ws\/shield\/frogserver\/aocs\/updatable|ws\/shield\/search\/nearbyrec_smart|ws\/promotion-web\/resource|ws\/faas\/amap-navigation\/main-page|ws\/valueadded\/alimama\/splash_screen|ws\/msgbox\/pull|ws\/shield\/dsp\/profile\/index\/nodefaas|ws\/shield\/search\/new_hotword), accept-encoding
-0, 1, ^https?:\/\/.*\.amap\.com\/(?:ws\/message\/notice\/list|ws\/shield\/frogserver\/aocs\/updatable|ws\/shield\/search\/nearbyrec_smart|ws\/promotion-web\/resource|ws\/faas\/amap-navigation\/main-page|ws\/valueadded\/alimama\/splash_screen|ws\/msgbox\/pull|ws\/shield\/dsp\/profile\/index\/nodefaas|ws\/shield\/search\/new_hotword), accept-encoding, identity
-1, 100, ^https?:\/\/.*\.amap\.com\/(?:ws\/message\/notice\/list|ws\/shield\/frogserver\/aocs\/updatable|ws\/shield\/search\/nearbyrec_smart|ws\/promotion-web\/resource|ws\/faas\/amap-navigation\/main-page|ws\/valueadded\/alimama\/splash_screen|ws\/msgbox\/pull|ws\/shield\/dsp\/profile\/index\/nodefaas|ws\/shield\/search\/new_hotword), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXNwb25zZSIpcmV0dXJuO2Z1bmN0aW9uIGQoYil7dHJ5e3JldHVybiBBbnl3aGVyZS5jb2RlYy51dGY4LmRlY29kZShifHxuZXcgVWludDhBcnJheSgpKX1jYXRjaChlKXtyZXR1cm4iIn19ZnVuY3Rpb24gZShzKXtyZXR1cm4gQW55d2hlcmUuY29kZWMudXRmOC5lbmNvZGUoU3RyaW5nKHM9PW51bGw/IiI6cykpfXZhciB1PWN0eC51cmx8fCIiLHQ9ZChjdHguYm9keSk7aWYoIXQpcmV0dXJuO3ZhciBvO3RyeXtvPUpTT04ucGFyc2UodCl9Y2F0Y2goXyl7cmV0dXJufWZ1bmN0aW9uIGJhZEtleShrKXtyZXR1cm4gLyhhZHxhZHN8YWR2ZXJ0fGFsaW1hbWF8YmFubmVyfGJhZGdlfGJ1YmJsZXxjYXJkfGNtc3xkc3B8ZmxvYXR8Z2lmfGd1aWRlfGljb258bWFya2V0aW5nfG1zZ2JveHxub3RpY2V8cG9wfHBvcHVwfHByb21vdGlvbnxyZWNvbW1lbmR8cmVzb3VyY2V8c3BsYXNofHRpcHM/fHRvYXN0KS9pLnRlc3Qoayl9ZnVuY3Rpb24gYmFkT2JqKHgpe3RyeXt2YXIgcz1KU09OLnN0cmluZ2lmeSh4KTtyZXR1cm4gLyhhZHxhZHN8YWR2ZXJ0fGFsaW1hbWF8YmFubmVyfGRzcHxmbG9hdHxtYXJrZXRpbmd8cG9wfHBvcHVwfHByb21vdGlvbnxzcGxhc2h8dG9hc3QpL2kudGVzdChzKSYmLyhqdW1wfGxpbmt8dXJsfHNjaGVtYXxtYXRlcmlhbHxpbWFnZXxpbWd8dGl0bGV8Y29udGVudCkvaS50ZXN0KHMpfWNhdGNoKGUpe3JldHVybiBmYWxzZX19ZnVuY3Rpb24gY2xlYW4oeCl7aWYoQXJyYXkuaXNBcnJheSh4KSl7dmFyIGE9W107Zm9yKHZhciBpPTA7aTx4Lmxlbmd0aDtpKyspe3ZhciB2PXhbaV07aWYodiYmdHlwZW9mIHY9PT0ib2JqZWN0IiYmYmFkT2JqKHYpKWNvbnRpbnVlO2EucHVzaChjbGVhbih2KSl9cmV0dXJuIGF9aWYoeCYmdHlwZW9mIHg9PT0ib2JqZWN0Iil7Zm9yKHZhciBrIGluIHgpe2lmKGJhZEtleShrKSl7ZGVsZXRlIHhba107Y29udGludWV9eFtrXT1jbGVhbih4W2tdKX19cmV0dXJuIHh9dHJ5e2lmKC9zcGxhc2hfc2NyZWVufG1zZ2JveFwvcHVsbHxtZXNzYWdlXC9ub3RpY2VcL2xpc3R8bmV3X2hvdHdvcmR8c2NlbmVcL3JlY29tbWVuZC8udGVzdCh1KSl7bz17fX1lbHNle289Y2xlYW4obyl9fWNhdGNoKF8pe31jdHguYm9keT1lKEpTT04uc3RyaW5naWZ5KG8pKTtBbnl3aGVyZS5kb25lKCl9
+0, 2, ^https:\/\/m5(?:-zb)?\.amap\.com\/ws\/.*, accept-encoding
+0, 1, ^https:\/\/m5(?:-zb)?\.amap\.com\/ws\/.*, accept-encoding, identity
+1, 100, ^https:\/\/m5(?:-zb)?\.amap\.com\/ws\/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpewogIGlmKGN0eC5waGFzZSE9PSJyZXNwb25zZSIpcmV0dXJuOwogIGZ1bmN0aW9uIGQoYil7dHJ5e3JldHVybiBBbnl3aGVyZS5jb2RlYy51dGY4LmRlY29kZShifHxuZXcgVWludDhBcnJheSgpKX1jYXRjaChlKXtyZXR1cm4iIn19CiAgZnVuY3Rpb24gZShzKXtyZXR1cm4gQW55d2hlcmUuY29kZWMudXRmOC5lbmNvZGUoU3RyaW5nKHM9PW51bGw/IiI6cykpfQogIHZhciB0PWQoY3R4LmJvZHkpO2lmKCF0KXJldHVybjt2YXIgbzt0cnl7bz1KU09OLnBhcnNlKHQpfWNhdGNoKF8pe3JldHVybn0KICBmdW5jdGlvbiBiYWRLZXkoayl7cmV0dXJuIC8oYWR8YWRzfGFkdmVydHxiYW5uZXJ8YnViYmxlfGNhcmR8Y29tbW9uTWF0ZXJpYWx8ZHNwfGZsb2F0fGd1aWRlfG1hcmtldGluZ3xvcGVyYXRpb258cG9wdXB8cHJvbW90aW9ufHJlY29tbWVuZHxyZXNvdXJjZVBsYWNlbWVudHxzcGxhc2h8dGlwc09wZXJhdGlvbkxvY2F0aW9uKS9pLnRlc3Qoayl9CiAgZnVuY3Rpb24gYmFkT2JqKHgpe3RyeXt2YXIgcz1KU09OLnN0cmluZ2lmeSh4KTtyZXR1cm4gLyhhZHxhZHN8YWR2ZXJ0fGJhbm5lcnxkc3B8bWFya2V0aW5nfHBvcHVwfHByb21vdGlvbnxzcGxhc2gpL2kudGVzdChzKSYmLyh1cmx8anVtcHxzY2hlbWF8aW1hZ2V8aW1nfHRpdGxlfGNvbnRlbnR8bWF0ZXJpYWwpL2kudGVzdChzKX1jYXRjaChlKXtyZXR1cm4gZmFsc2V9fQogIGZ1bmN0aW9uIGNsZWFuKHgpe2lmKEFycmF5LmlzQXJyYXkoeCkpe3ZhciBhPVtdO2Zvcih2YXIgaT0wO2k8eC5sZW5ndGg7aSsrKXt2YXIgdj14W2ldO2lmKHYmJnR5cGVvZiB2PT09Im9iamVjdCImJmJhZE9iaih2KSljb250aW51ZTthLnB1c2goY2xlYW4odikpfXJldHVybiBhfWlmKHgmJnR5cGVvZiB4PT09Im9iamVjdCIpe2Zvcih2YXIgayBpbiB4KXtpZihiYWRLZXkoaykpe2RlbGV0ZSB4W2tdO2NvbnRpbnVlfXhba109Y2xlYW4oeFtrXSl9fXJldHVybiB4fQogIHRyeXtvPWNsZWFuKG8pfWNhdGNoKF8pe30KICBjdHguYm9keT1lKEpTT04uc3RyaW5naWZ5KG8pKTtBbnl3aGVyZS5kb25lKCk7Cn0=
