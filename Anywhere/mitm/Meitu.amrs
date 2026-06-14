@@ -1,0 +1,25 @@
+# 美图秀秀去广告 - Anywhere MITM RuleSet
+# author = 奶思
+# homepage = https://github.com/fmz200/wool_scripts
+# tg-channel = https://t.me/inaisi
+
+name = 美图秀秀去广告 @奶思
+hostname = corp.meitu.com, gg.meitu.com, message.meitu.com, tuiguang.meitu.com, xiuxiu.android.dl.meitu.com, adui.tg.meitu.com, rabbit.tg.meitu.com, meitubeauty.meitudata.com, xiuxiu.mobile.meitudata.com, dc.meitustat.com, mdc.meitustat.com, rabbit.meitustat.com, mea.meitudata.com
+
+# ---------- DOMAIN-SUFFIX Reject 转 base64 ----------
+0, 100, ^https?:\/\/(?:[^\/]+\.)?corp\.meitu\.com\/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https?:\/\/(?:[^\/]+\.)?gg\.meitu\.com\/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https?:\/\/(?:[^\/]+\.)?message\.meitu\.com\/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https?:\/\/(?:[^\/]+\.)?tuiguang\.meitu\.com\/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https?:\/\/(?:[^\/]+\.)?xiuxiu\.android\.dl\.meitu\.com\/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https?:\/\/(?:[^\/]+\.)?adui\.tg\.meitu\.com\/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https?:\/\/(?:[^\/]+\.)?rabbit\.tg\.meitu\.com\/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https?:\/\/(?:[^\/]+\.)?meitubeauty\.meitudata\.com\/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https?:\/\/(?:[^\/]+\.)?xiuxiu\.mobile\.meitudata\.com\/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https?:\/\/(?:[^\/]+\.)?dc\.meitustat\.com\/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https?:\/\/(?:[^\/]+\.)?mdc\.meitustat\.com\/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https?:\/\/(?:[^\/]+\.)?rabbit\.meitustat\.com\/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+
+# ---------- Rewrite ----------
+0, 100, ^https?:\/\/mea\.meitudata\.com\/kaiping, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https?:\/\/adui\.tg\.meitu\.com, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
