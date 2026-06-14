@@ -1,0 +1,35 @@
+# 酷狗音乐去广告 - Anywhere MITM RuleSet
+# author = 可莉🅥
+# homepage = https://hub.kelee.one
+# date = 2025-05-13 15:17:08
+
+name = 酷狗音乐去广告
+hostname = gateway.kugou.com, fx.service.kugou.com, hwstore.kugou.com, ep.kugou.com, gatewayretry.kugou.com, gzacshow.kugou.com, m1fxgroup.kugou.com
+
+# ===============================
+# Body Rewrite - JQ 转 Anywhere
+# ===============================
+
+0, 2, ^https:\/\/gateway(?:retry)?\.kugou\.com\/ocean\/v\d\/tab\/list_v\d, accept-encoding
+0, 1, ^https:\/\/gateway(?:retry)?\.kugou\.com\/ocean\/v\d\/tab\/list_v\d, accept-encoding, identity
+1, 100, ^https:\/\/gateway(?:retry)?\.kugou\.com\/ocean\/v\d\/tab\/list_v\d, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpewogIGlmKGN0eC5waGFzZSE9PSJyZXNwb25zZSIpcmV0dXJuOwogIGZ1bmN0aW9uIGQoYil7dHJ5e3JldHVybiBBbnl3aGVyZS5jb2RlYy51dGY4LmRlY29kZShifHxuZXcgVWludDhBcnJheSgpKX1jYXRjaChlKXtyZXR1cm4iIn19CiAgZnVuY3Rpb24gZShzKXtyZXR1cm4gQW55d2hlcmUuY29kZWMudXRmOC5lbmNvZGUoU3RyaW5nKHM9PW51bGw/IiI6cykpfQogIHZhciB0PWQoY3R4LmJvZHkpO2lmKCF0KXJldHVybjt2YXIgbzt0cnl7bz1KU09OLnBhcnNlKHQpfWNhdGNoKF8pe3JldHVybn0KICB2YXIgbmFtZXM9WyJBSeW4ruWUsSIsIumVv+ebuOaAnTIiLCJL5q2MIiwi5bCP6K+0Iiwi5ri45oiPIl07CiAgZnVuY3Rpb24gY2xlYW4oeCl7CiAgICBpZihBcnJheS5pc0FycmF5KHgpKXJldHVybiB4Lm1hcChjbGVhbik7CiAgICBpZih4JiZ0eXBlb2YgeD09PSJvYmplY3QiKXsKICAgICAgZm9yKHZhciBrIGluIHgpewogICAgICAgIHZhciB2PXhba107CiAgICAgICAgaWYodiYmdHlwZW9mIHY9PT0ib2JqZWN0IiYmbmFtZXMuaW5kZXhPZih2Lm5hbWUpPi0xKXtkZWxldGUgeFtrXTtjb250aW51ZX0KICAgICAgICB4W2tdPWNsZWFuKHYpOwogICAgICB9CiAgICB9CiAgICByZXR1cm4geDsKICB9CiAgdHJ5e289Y2xlYW4obyl9Y2F0Y2goXyl7fQogIGN0eC5ib2R5PWUoSlNPTi5zdHJpbmdpZnkobykpO0FueXdoZXJlLmRvbmUoKTsKfQ==
+
+# ===============================
+# Map Local - 返回 {}
+# ===============================
+
+0, 100, ^https:\/\/fx\.service\.kugou\.com\/mfx-kugoulive\/ad\/, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/gateway(?:retry)?\.kugou\.com\/adp\/ad\/, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/gateway(?:retry)?\.kugou\.com\/ads\.gateway\/, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/gateway(?:retry)?\.kugou\.com\/v\d\/feeds\/follow_feed_fallback, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/gateway(?:retry)?\.kugou\.com\/mstc\/musicsymbol\/v\d\/system\/profile, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/gateway(?:retry)?\.kugou\.com\/searchnofocus\/v\d\/search_no_focus_word, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/gateway(?:retry)?\.kugou\.com\/adp\/bubble\/v\d\/song_play, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/gateway(?:retry)?\.kugou\.com\/singerdiscuss\/v\d\/entrance\/comment, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/gateway(?:retry)?\.kugou\.com\/r\/v\d\/general\/putin\/midad, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/gateway(?:retry)?\.kugou\.com\/ocean\/v\d\/sound\/banner, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/gzacshow\.kugou\.com\/mfanxing-home\/cdn\/room\/index\/list_v2, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/gzacshow\.kugou\.com\/mfx-rt-show\/cdn\/mo\/show\/headline, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/m1fxgroup\.kugou\.com\/fxsing\/yqc\/alongInfo\/getUserAlongInfo, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/hwstore\.kugou\.com\/v\d\/get_store_data, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+0, 100, ^https:\/\/ep\.kugou\.com\/v\d\/album_shop\/get_entrance_info, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
