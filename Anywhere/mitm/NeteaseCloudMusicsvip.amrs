@@ -4,14 +4,6 @@
 name = 网易云SVIP
 hostname = interface*.music.163.com, iadmat.nosdn.127.net, iadmatapk.nosdn.127.net, iadmusicmat.music.126.net, iadmusicmatvideo.music.126.net, ipv4.music.163.com, ipv6.music.163.com
 
-# ========== DOMAIN 拦截（转为请求拦截，返回空响应）==========
-0, 100, ^https?://iadmat\.nosdn\.127\.net/.*$, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHtzdGF0dXM6MjAwLGhlYWRlcnM6W1siY29udGVudC10eXBlIiwiYXBwbGljYXRpb24vanNvbiJdXSxib2R5OiJ7fSJ9KTsKfQ==
-0, 100, ^https?://iadmatapk\.nosdn\.127\.net/.*$, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHtzdGF0dXM6MjAwLGhlYWRlcnM6W1siY29udGVudC10eXBlIiwiYXBwbGljYXRpb24vanNvbiJdXSxib2R5OiJ7fSJ9KTsKfQ==
-0, 100, ^https?://iadmusicmat\.music\.126\.net/.*$, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHtzdGF0dXM6MjAwLGhlYWRlcnM6W1siY29udGVudC10eXBlIiwiYXBwbGljYXRpb24vanNvbiJdXSxib2R5OiJ7fSJ9KTsKfQ==
-0, 100, ^https?://iadmusicmatvideo\.music\.126\.net/.*$, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHtzdGF0dXM6MjAwLGhlYWRlcnM6W1siY29udGVudC10eXBlIiwiYXBwbGljYXRpb24vanNvbiJdXSxib2R5OiJ7fSJ9KTsKfQ==
-0, 100, ^https?://ipv4\.music\.163\.com/.*$, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHtzdGF0dXM6MjAwLGhlYWRlcnM6W1siY29udGVudC10eXBlIiwiYXBwbGljYXRpb24vanNvbiJdXSxib2R5OiJ7fSJ9KTsKfQ==
-0, 100, ^https?://ipv6\.music\.163\.com/.*$, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHtzdGF0dXM6MjAwLGhlYWRlcnM6W1siY29udGVudC10eXBlIiwiYXBwbGljYXRpb24vanNvbiJdXSxib2R5OiJ7fSJ9KTsKfQ==
-
 # ========== URL Rewrite 广告拦截（reject，返回空响应）==========
 0, 100, ^https?://interface.*\.music\.163\.com/eapi/ad/get$, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHt9KTsKfQ==
 0, 100, ^https?://interface.*\.music\.163\.com/eapi/ad/config/get$, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIpIHJldHVybjsKICBBbnl3aGVyZS5yZXNwb25kKHt9KTsKfQ==
