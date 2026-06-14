@@ -1,0 +1,43 @@
+# 高德地图净化[墨鱼版] - Anywhere MITM RuleSet
+# author = @ddgksf2013
+# TgChannel = https://t.me/ddgksf2021
+# UpdateTime = 2025-12-06
+# Version = V1.0.28
+
+name = 高德地图净化[墨鱼版] @ddgksf2013
+hostname = m5.amap.com, m5-zb.amap.com, center.amap.com, amap-aos-info-nogw.amap.com, ai.amap.com, amdc.m.taobao.com
+
+# ---------- 原 host-suffix direct ----------
+# host-suffix, optimus-ads.amap.com, direct
+
+# ---------- 高德地图_开屏请求 ----------
+0, 100, ^https?:\/\/.*\.amap\.com\/ws\/aos\/alimama\/splash_screen, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+
+# ---------- 高德地图_首页底部信息流 ----------
+0, 100, ^https?:\/\/.*\.amap\.com\/v\d\/ai_rec\/, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+
+# ---------- 高德地图_amdc处理 ----------
+1, 100, ^http:\/\/amdc\.m\.taobao\.com, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVzcG9uc2UiKSByZXR1cm47CiAgZnVuY3Rpb24gZ2V0SGVhZGVyKHNyYywgbmFtZSkgewogICAgbmFtZSA9IFN0cmluZyhuYW1lKS50b0xvd2VyQ2FzZSgpOwogICAgaWYgKCFzcmMpIHJldHVybiAiIjsKICAgIGlmIChBcnJheS5pc0FycmF5KHNyYykpIHsKICAgICAgZm9yICh2YXIgaSA9IDA7IGkgPCBzcmMubGVuZ3RoOyBpKyspIHsKICAgICAgICB2YXIgaCA9IHNyY1tpXTsKICAgICAgICBpZiAoaCAmJiBoLmxlbmd0aCA+PSAyICYmIFN0cmluZyhoWzBdKS50b0xvd2VyQ2FzZSgpID09PSBuYW1lKSByZXR1cm4gU3RyaW5nKGhbMV0pOwogICAgICB9CiAgICAgIHJldHVybiAiIjsKICAgIH0KICAgIGZvciAodmFyIGsgaW4gc3JjKSB7CiAgICAgIGlmIChTdHJpbmcoaykudG9Mb3dlckNhc2UoKSA9PT0gbmFtZSkgcmV0dXJuIFN0cmluZyhzcmNba10pOwogICAgfQogICAgcmV0dXJuICIiOwogIH0KICB2YXIgdWEgPSBnZXRIZWFkZXIoY3R4LnJlcXVlc3RIZWFkZXJzLCAidXNlci1hZ2VudCIpIHx8IGdldEhlYWRlcihjdHgucmVxSGVhZGVycywgInVzZXItYWdlbnQiKSB8fCBnZXRIZWFkZXIoY3R4LnJlcXVlc3QgJiYgY3R4LnJlcXVlc3QuaGVhZGVycywgInVzZXItYWdlbnQiKSB8fCBnZXRIZWFkZXIoY3R4LmhlYWRlcnMsICJ1c2VyLWFnZW50IikgfHwgIiI7CiAgaWYgKC8oQU1hcHxDYWluaWFvfCVFOSU5NyVCMiVFOSVCMSVCQ3wlRTklQTMlOUUlRTclOEMlQUElRTYlOTclODUlRTglQTElOEN8JUU1JTk2JUI1JUU4JUExJTk3fCVFNSVBNCVBOSVFNyU4QyVBQnxBbGliYWJhfE1vdmllQXBwfEhlbWE0aVBob25lfE1vb258RE1Qb3J0YWwpLy50ZXN0KHVhKSkgewogICAgY3R4LmJvZHkgPSBBbnl3aGVyZS5jb2RlYy51dGY4LmVuY29kZSgiZGRna3NmMjAxMyIpOwogIH0KICBBbnl3aGVyZS5kb25lKCk7Cn0=
+
+# ---------- 高德地图_路线规划下方广告 ----------
+0, 100, ^https?:\/\/.*\.amap\.com\/ws\/faas\/amap-navigation\/card-service-route-plan\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+
+# ---------- 高德地图_Tip请求 ----------
+0, 100, ^https?:\/\/.*\.amap\.com\/ws\/boss\/order_web\/\w{8}_information, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+
+# ---------- 高德地图_通用广告请求 ----------
+0, 100, ^https?:\/\/.*\.amap\.com\/ws\/asa\/ads_attribution, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJ0ZXh0L3BsYWluOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6IiJ9KX0=
+
+# ---------- 高德地图_搜索框scene ----------
+0, 100, ^https?:\/\/.*\.amap\.com\/ws\/shield\/scene\/recommend, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+
+# ---------- 高德地图_首页左上角gif ----------
+0, 100, ^https?:\/\/.*\.amap\.com\/uploadimg\/\w+\.gif, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJpbWFnZS9naWYiXV0sYm9keTpBbnl3aGVyZS5jb2RlYy5iYXNlNjQuZGVjb2RlKCJSMGxHT0RsaEFRQUJBSUFBQVAvLy93QUFBQ0g1QkFFQUFBQUFMQUFBQUFBQkFBRUFBQUlDUkFFQU93PT0iKX0pfQ==
+
+# ---------- 高德地图_左下天气 ----------
+0, 100, ^https?:\/\/.*\.amap\.com\/ws\/valueadded\/weather, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+
+# ---------- amap.js 响应体净化类 ----------
+0, 2, ^https?:\/\/.*\.amap\.com\/(?:ws\/message\/notice\/list|ws\/shield\/frogserver\/aocs\/updatable|ws\/shield\/search\/nearbyrec_smart|ws\/promotion-web\/resource|ws\/faas\/amap-navigation\/main-page|ws\/valueadded\/alimama\/splash_screen|ws\/msgbox\/pull|ws\/shield\/dsp\/profile\/index\/nodefaas|ws\/shield\/search\/new_hotword), accept-encoding
+0, 1, ^https?:\/\/.*\.amap\.com\/(?:ws\/message\/notice\/list|ws\/shield\/frogserver\/aocs\/updatable|ws\/shield\/search\/nearbyrec_smart|ws\/promotion-web\/resource|ws\/faas\/amap-navigation\/main-page|ws\/valueadded\/alimama\/splash_screen|ws\/msgbox\/pull|ws\/shield\/dsp\/profile\/index\/nodefaas|ws\/shield\/search\/new_hotword), accept-encoding, identity
+1, 100, ^https?:\/\/.*\.amap\.com\/(?:ws\/message\/notice\/list|ws\/shield\/frogserver\/aocs\/updatable|ws\/shield\/search\/nearbyrec_smart|ws\/promotion-web\/resource|ws\/faas\/amap-navigation\/main-page|ws\/valueadded\/alimama\/splash_screen|ws\/msgbox\/pull|ws\/shield\/dsp\/profile\/index\/nodefaas|ws\/shield\/search\/new_hotword), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXNwb25zZSIpcmV0dXJuO2Z1bmN0aW9uIGQoYil7dHJ5e3JldHVybiBBbnl3aGVyZS5jb2RlYy51dGY4LmRlY29kZShifHxuZXcgVWludDhBcnJheSgpKX1jYXRjaChlKXtyZXR1cm4iIn19ZnVuY3Rpb24gZShzKXtyZXR1cm4gQW55d2hlcmUuY29kZWMudXRmOC5lbmNvZGUoU3RyaW5nKHM9PW51bGw/IiI6cykpfXZhciB1PWN0eC51cmx8fCIiLHQ9ZChjdHguYm9keSk7aWYoIXQpcmV0dXJuO3ZhciBvO3RyeXtvPUpTT04ucGFyc2UodCl9Y2F0Y2goXyl7cmV0dXJufWZ1bmN0aW9uIGJhZEtleShrKXtyZXR1cm4gLyhhZHxhZHN8YWR2ZXJ0fGFsaW1hbWF8YmFubmVyfGJhZGdlfGJ1YmJsZXxjYXJkfGNtc3xkc3B8ZmxvYXR8Z2lmfGd1aWRlfGljb258bWFya2V0aW5nfG1zZ2JveHxub3RpY2V8cG9wfHBvcHVwfHByb21vdGlvbnxyZWNvbW1lbmR8cmVzb3VyY2V8c3BsYXNofHRpcHM/fHRvYXN0KS9pLnRlc3Qoayl9ZnVuY3Rpb24gYmFkT2JqKHgpe3RyeXt2YXIgcz1KU09OLnN0cmluZ2lmeSh4KTtyZXR1cm4gLyhhZHxhZHN8YWR2ZXJ0fGFsaW1hbWF8YmFubmVyfGRzcHxmbG9hdHxtYXJrZXRpbmd8cG9wfHBvcHVwfHByb21vdGlvbnxzcGxhc2h8dG9hc3QpL2kudGVzdChzKSYmLyhqdW1wfGxpbmt8dXJsfHNjaGVtYXxtYXRlcmlhbHxpbWFnZXxpbWd8dGl0bGV8Y29udGVudCkvaS50ZXN0KHMpfWNhdGNoKGUpe3JldHVybiBmYWxzZX19ZnVuY3Rpb24gY2xlYW4oeCl7aWYoQXJyYXkuaXNBcnJheSh4KSl7dmFyIGE9W107Zm9yKHZhciBpPTA7aTx4Lmxlbmd0aDtpKyspe3ZhciB2PXhbaV07aWYodiYmdHlwZW9mIHY9PT0ib2JqZWN0IiYmYmFkT2JqKHYpKWNvbnRpbnVlO2EucHVzaChjbGVhbih2KSl9cmV0dXJuIGF9aWYoeCYmdHlwZW9mIHg9PT0ib2JqZWN0Iil7Zm9yKHZhciBrIGluIHgpe2lmKGJhZEtleShrKSl7ZGVsZXRlIHhba107Y29udGludWV9eFtrXT1jbGVhbih4W2tdKX19cmV0dXJuIHh9dHJ5e2lmKC9zcGxhc2hfc2NyZWVufG1zZ2JveFwvcHVsbHxtZXNzYWdlXC9ub3RpY2VcL2xpc3R8bmV3X2hvdHdvcmR8c2NlbmVcL3JlY29tbWVuZC8udGVzdCh1KSl7bz17fX1lbHNle289Y2xlYW4obyl9fWNhdGNoKF8pe31jdHguYm9keT1lKEpTT04uc3RyaW5naWZ5KG8pKTtBbnl3aGVyZS5kb25lKCl9
