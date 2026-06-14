@@ -1,0 +1,23 @@
+# 京东去广告 @RuCu6 & Maasea - Anywhere MITM RuleSet
+# author = RuCu6, Maasea
+# RuCu6 = https://github.com/RuCu6
+# Maasea = https://github.com/Maasea
+
+name = 京东去广告 @RuCu6 & Maasea
+hostname = api.m.jd.com
+
+# ---------- Debug 诊断接口 ----------
+0, 100, ^http:\/\/\w{32}\.jddebug\.com\/diagnose\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+
+# ---------- basicConfig：关闭 socket/httpdns ----------
+0, 2, ^https:\/\/api\.m\.jd\.com\/client\.action\?functionId=basicConfig, accept-encoding
+0, 1, ^https:\/\/api\.m\.jd\.com\/client\.action\?functionId=basicConfig, accept-encoding, identity
+1, 100, ^https:\/\/api\.m\.jd\.com\/client\.action\?functionId=basicConfig, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXNwb25zZSIpcmV0dXJuO2Z1bmN0aW9uIGQoYil7dHJ5e3JldHVybiBBbnl3aGVyZS5jb2RlYy51dGY4LmRlY29kZShifHxuZXcgVWludDhBcnJheSgpKX1jYXRjaChlKXtyZXR1cm4iIn19ZnVuY3Rpb24gZShzKXtyZXR1cm4gQW55d2hlcmUuY29kZWMudXRmOC5lbmNvZGUoU3RyaW5nKHM9PW51bGw/IiI6cykpfXZhciB0PWQoY3R4LmJvZHkpO2lmKCF0KXJldHVybjt2YXIgbzt0cnl7bz1KU09OLnBhcnNlKHQpfWNhdGNoKF8pe3JldHVybn10cnl7aWYoby5kYXRhJiZvLmRhdGEuSkRNZXNzYWdlJiZvLmRhdGEuSkRNZXNzYWdlLnNvY2tldG1vbml0b3Ipe2lmKE9iamVjdC5wcm90b3R5cGUuaGFzT3duUHJvcGVydHkuY2FsbChvLmRhdGEuSkRNZXNzYWdlLnNvY2tldG1vbml0b3IsImlzU29ja2V0RXN0YWJsaXNoZWRBaGVhZCIpKW8uZGF0YS5KRE1lc3NhZ2Uuc29ja2V0bW9uaXRvci5pc1NvY2tldEVzdGFibGlzaGVkQWhlYWQ9MDtpZihPYmplY3QucHJvdG90eXBlLmhhc093blByb3BlcnR5LmNhbGwoby5kYXRhLkpETWVzc2FnZS5zb2NrZXRtb25pdG9yLCJpc1NvY2tldFJlcG9ydCIpKW8uZGF0YS5KRE1lc3NhZ2Uuc29ja2V0bW9uaXRvci5pc1NvY2tldFJlcG9ydD0wfWlmKG8uZGF0YSYmby5kYXRhLkpESHR0cFRvb2xLaXQmJm8uZGF0YS5KREh0dHBUb29sS2l0Lmh0dHBkbnMmJk9iamVjdC5wcm90b3R5cGUuaGFzT3duUHJvcGVydHkuY2FsbChvLmRhdGEuSkRIdHRwVG9vbEtpdC5odHRwZG5zLCJodHRwZG5zIikpby5kYXRhLkpESHR0cFRvb2xLaXQuaHR0cGRucy5odHRwZG5zPTB9Y2F0Y2goXyl7fWN0eC5ib2R5PWUoSlNPTi5zdHJpbmdpZnkobykpO0FueXdoZXJlLmRvbmUoKX0=
+
+# ---------- Map Local：搜索词 / 拉取服务 / 推荐 ----------
+0, 100, ^https:\/\/api\.m\.jd\.com\/client\.action\?functionId=(searchBoxWord|stationPullService|uniformRecommend[06]), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
+
+# ---------- 移除京东广告：开屏 / 我的页 / 订单页推广 ----------
+0, 2, ^https:\/\/api\.m\.jd\.com\/client\.action\?functionId=(deliverLayer|getTabHomeInfo|myOrderInfo|orderTrackBusiness|personinfoBusiness|start|welcomeHome), accept-encoding
+0, 1, ^https:\/\/api\.m\.jd\.com\/client\.action\?functionId=(deliverLayer|getTabHomeInfo|myOrderInfo|orderTrackBusiness|personinfoBusiness|start|welcomeHome), accept-encoding, identity
+1, 100, ^https:\/\/api\.m\.jd\.com\/client\.action\?functionId=(deliverLayer|getTabHomeInfo|myOrderInfo|orderTrackBusiness|personinfoBusiness|start|welcomeHome), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXNwb25zZSIpcmV0dXJuO2Z1bmN0aW9uIGQoYil7dHJ5e3JldHVybiBBbnl3aGVyZS5jb2RlYy51dGY4LmRlY29kZShifHxuZXcgVWludDhBcnJheSgpKX1jYXRjaChlKXtyZXR1cm4iIn19ZnVuY3Rpb24gZShzKXtyZXR1cm4gQW55d2hlcmUuY29kZWMudXRmOC5lbmNvZGUoU3RyaW5nKHM9PW51bGw/IiI6cykpfXZhciB1PWN0eC51cmx8fCIiO2lmKC9mdW5jdGlvbklkPShzdGFydHx3ZWxjb21lSG9tZXxkZWxpdmVyTGF5ZXIpKD86JnwkKS8udGVzdCh1KSl7Y3R4LmJvZHk9ZSgie30iKTtBbnl3aGVyZS5kb25lKCk7cmV0dXJufXZhciB0PWQoY3R4LmJvZHkpO2lmKCF0KXJldHVybjt2YXIgbzt0cnl7bz1KU09OLnBhcnNlKHQpfWNhdGNoKF8pe3JldHVybn1mdW5jdGlvbiBiYWRLZXkoayl7cmV0dXJuIC8oYWR2ZXJ0fGFkdmVydGlzZXxhZHZlcnRpc2VtZW50fGFkSW5mb3xhZExpc3R8YWRzfGJhbm5lcnxwb3B1cHxwb3BVcHxwb3BMYXllcnxwcm9tb3Rpb258cHJvbW90ZXxzcGxhc2h8ZmxvYXR8Zmxvb3JBZHx0b2FzdHxtYXJrZXRpbmcpL2kudGVzdChrKX1mdW5jdGlvbiBiYWRPYmooeCl7dHJ5e3ZhciBzPUpTT04uc3RyaW5naWZ5KHgpO3JldHVybiAvKCJhZCJccyo6fCJhZHMiXHMqOnxhZHZlcnR8YWR2ZXJ0aXNlfGFkdmVydGlzZW1lbnR8YmFubmVyfHBvcHVwfHBvcExheWVyfHByb21vdGlvbnxzcGxhc2h8amluZ2Zlbnxzb3VyY2VWYWx1ZXxleHBvKS9pLnRlc3QocykmJi8oYWRpZHxhZElkfGFkdmVydHxhZHZlcnRpc2V8cHJvbW90aW9ufGJhbm5lcnxzcGxhc2h8cG9wdXB8cG9wTGF5ZXJ8anVtcFVybHxtYXRlcmlhbCkvaS50ZXN0KHMpfWNhdGNoKGUpe3JldHVybiBmYWxzZX19ZnVuY3Rpb24gY2xlYW4oeCl7aWYoQXJyYXkuaXNBcnJheSh4KSl7dmFyIGE9W107Zm9yKHZhciBpPTA7aTx4Lmxlbmd0aDtpKyspe3ZhciB2PXhbaV07aWYodiYmdHlwZW9mIHY9PT0ib2JqZWN0IiYmYmFkT2JqKHYpKWNvbnRpbnVlO2EucHVzaChjbGVhbih2KSl9cmV0dXJuIGF9aWYoeCYmdHlwZW9mIHg9PT0ib2JqZWN0Iil7Zm9yKHZhciBrIGluIHgpe2lmKGJhZEtleShrKSl7ZGVsZXRlIHhba107Y29udGludWV9eFtrXT1jbGVhbih4W2tdKX19cmV0dXJuIHh9dHJ5e289Y2xlYW4obyl9Y2F0Y2goXyl7fWN0eC5ib2R5PWUoSlNPTi5zdHJpbmdpZnkobykpO0FueXdoZXJlLmRvbmUoKX0=
