@@ -1,6 +1,6 @@
 # Goodbility 会员解锁 - 修正版（按示例格式）
 name = Goodbility 会员解锁
-hostname = isi.csan.*, notability.com
+hostname = isi.csan.goodnotes.com, notability.com
 
 # ========== 请求阶段：删除 X-RevenueCat-ETag 请求头 ==========
 # 匹配 receipts 和 subscribers 接口（含查询参数）
