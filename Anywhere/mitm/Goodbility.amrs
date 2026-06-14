@@ -2,11 +2,11 @@
 name = Goodbility会员解锁
 hostname = isi.csan.*, notability.com
 
-# 请求阶段：删除请求头（用于 receipts/subscribers 接口）
-0, 100, ^https:\/\/isi\.csan\.[a-z.]+\/.+\/(receipts|subscribers), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVxdWVzdCIpIHJldHVybjsKICBpZiAoY3R4LnJlcXVlc3QuaGVhZGVycykgewogICAgZGVsZXRlIGN0eC5yZXF1ZXN0LmhlYWRlcnMuQXV0aG9yaXphdGlvbjsKICAgIGRlbGV0ZSBjdHgucmVxdWVzdC5oZWFkZXJzLlgtaW9zLVVzZXItQWdlbnQ7CiAgICBkZWxldGUgY3R4LnJlcXVlc3QuaGVhZGVycy5YLUFwcGxlLU1hYy1NYWdpYzsKICAgIGRlbGV0ZSBjdHgucmVxdWVzdC5oZWFkZXJzLlgtQXBwbGUtVXNlci1BZ2VudDsKICB9Cn0=
+# 请求阶段：删除请求头（原 http-request）
+0, 100, ^https:\/\/isi\.csan\.[a-z.]+\/.+\/(receipts|subscribers), script-path=https://raw.githubusercontent.com/ddgksf2013/Scripts/master/deleteHeader.js
 
-# 响应阶段：解锁会员（用于 receipts 和 subscribers 接口）
-1, 5, ^https:\/\/isi\.csan\.[a-z.]+\/.+\/(receipts$|subscribers\/[^/]+$), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVzcG9uc2UiKSByZXR1cm47CiAgbGV0IGJvZHkgPSBBbnl3aGVyZS5jb2RlYy51dGY4LmRlY29kZShjdHgucnNwQm9keSk7CiAgaWYgKCFib2R5KSByZXR1cm47CiAgdHJ5IHsKICAgIGxldCBqc29uID0gSlNPTi5wYXJzZShib2R5KTsKICAgIGlmIChqc29uLmRhdGEpIHsKICAgICAganNvbi5kYXRhLmlzX3ZpcCA9IHRydWU7CiAgICAgIGpzb24uZGF0YS52aXBfbGV2ZWwgPSAxOwogICAgICBqc29uLmRhdGEuZXhwaXJlX3RpbWUgPSA0MTAyMzIzMjAwOwogICAgICBpZiAoanNvbi5kYXRhLnN1YnNjcmliZXIpIHsKICAgICAgICBqc29uLmRhdGEuc3Vic2NyaWJlci5pc192aXAgPSB0cnVlOwogICAgICAgIGpzb24uZGF0YS5zdWJzY3JpYmVyLmV4cGlyZXNfYXQgPSAiMjA5OS0xMi0zMVQyMzo1OTo1OVoiOwogICAgICB9CiAgICB9CiAgICBBbnl3aGVyZS5yZXNwb25kKHsKICAgICAgc3RhdHVzOiAyMDAsCiAgICAgIGhlYWRlcnM6IFtbIkNvbnRlbnQtVHlwZSIsICJhcHBsaWNhdGlvbi9qc29uIl1dLAogICAgICBib2R5OiBKU09OLnN0cmluZ2lmeShqc29uKQogICAgfSk7CiAgfSBjYXRjaChlKSB7fQp9
+# 响应阶段：会员解锁（原 http-response，两个接口共用同一脚本）
+1, 5, ^https:\/\/isi\.csan\.[a-z.]+\/.+\/(receipts$|subscribers\/[^/]+$), script-path=https://ddgksf2013.top/scripts/goodbility.vip.js, requires-body=1
 
-# 响应阶段：解锁 Notability 全局配置
-1, 5, ^https?:\/\/notability\.com\/global, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVzcG9uc2UiKSByZXR1cm47CiAgbGV0IGJvZHkgPSBBbnl3aGVyZS5jb2RlYy51dGY4LmRlY29kZShjdHgucnNwQm9keSk7CiAgaWYgKCFib2R5KSByZXR1cm47CiAgdHJ5IHsKICAgIGxldCBqc29uID0gSlNPTi5wYXJzZShib2R5KTsKICAgIGlmIChqc29uLmRhdGEpIHsKICAgICAganNvbi5kYXRhLmhhc19zdWJzY3JpcHRpb24gPSB0cnVlOwogICAgICBqc29uLmRhdGEuaXNfcHJlbWl1bSA9IHRydWU7CiAgICAgIGpzb24uZGF0YS5pc192aXAgPSB0cnVlOwogICAgICBqc29uLmRhdGEuZXhwaXJhdGlvbl9kYXRlID0gIjIwOTktMTItMzFUejM6NTk6NTlaIjsKICAgIH0KICAgIEFueXdoZXJlLnJlc3BvbmQoewogICAgICBzdGF0dXM6IDIwMCwKICAgICAgaGVhZGVyczogW1siQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iXV0sCiAgICAgIGJvZHk6IEpTT04uc3RyaW5naWZ5KGpzb24pCiAgICB9KTsKICB9IGNhdGNoKGUpIHt9Cn0
+# 响应阶段：Notability 全局配置
+1, 5, ^https?:\/\/notability\.com\/global, script-path=https://ddgksf2013.top/scripts/goodbility.vip.js, requires-body=1
