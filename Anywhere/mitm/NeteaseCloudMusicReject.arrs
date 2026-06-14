@@ -1,0 +1,12 @@
+# 网易云广告域名 Reject - Anywhere Routing RuleSet
+# author = 暗夜
+# author_homepage = https://t.me/IPAs_share
+
+name = NetEase Music Reject
+
+2, iadmat.nosdn.127.net
+2, iadmatapk.nosdn.127.net
+2, iadmusicmat.music.126.net
+2, iadmusicmatvideo.music.126.net
+2, ipv4.music.163.com
+2, ipv6.music.163.com
