@@ -1,21 +1,18 @@
-#!name=12306去广告
-#!desc=过滤12306应用内广告及开屏广告
-#!author=RuCu6[https://github.com/RuCu6]
-#!icon=https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/12306.png
-#!category=BetaModule
-#!openUrl=https://apps.apple.com/app/id564818797
-#!tag=去广告
-#!loon_version=3.2.4(787)
-#!homepage=https://hub.kelee.one
-#!date=2025-05-13 15:17:08
+# 12306去广告 @RuCu6 - Anywhere MITM RuleSet
+# author = RuCu6
+# author_homepage = https://github.com/RuCu6
+# homepage = https://hub.kelee.one
+# date = 2025-05-13 15:17:08
 
-[Rule]
-DOMAIN,ad.12306.cn,DIRECT,extended-matching
+name = 12306去广告 @RuCu6
+hostname = ad.12306.cn, mobile.12306.cn
 
-[Script]
-移除12306开屏广告 = type=http-request, pattern=^https:\/\/ad\.12306\.cn\/ad\/ser\/getAdList$, script-path=https://kelee.one/Resource/JavaScript/12306/12306_remove_splashscreen_ads.js, requires-body=true
+# ---------- 原 DOMAIN,DIRECT ----------
+# 原规则：DOMAIN,ad.12306.cn,DIRECT,extended-matching
+# Anywhere MITM 里通常不需要写 DIRECT；如客户端支持 Routing，可自行单独加入直连。
 
-移除12306应用内广告 = type=http-request, pattern=^https:\/\/mobile\.12306\.cn\/otsmobile\/app\/mgs\/mgw\.htm$, script-path=https://kelee.one/Resource/JavaScript/12306/12306_remove_ads.js
+# ---------- 移除12306开屏广告 ----------
+0, 100, ^https:\/\/ad\.12306\.cn\/ad\/ser\/getAdList$, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpe2lmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuO0FueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pfQ==
 
-[MITM]
-hostname = %APPEND% ad.12306.cn, mobile.12306.cn
+# ---------- 移除12306应用内广告 ----------
+0, 100, ^https:\/\/mobile\.12306\.cn\/otsmobile\/app\/mgs\/mgw\.htm$, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpewogIGlmKGN0eC5waGFzZSE9PSJyZXF1ZXN0Inx8IWN0eC51cmwpcmV0dXJuOwogIGZ1bmN0aW9uIGJ5dGVzVG9UZXh0KGIpe3RyeXtyZXR1cm4gQW55d2hlcmUuY29kZWMudXRmOC5kZWNvZGUoYnx8bmV3IFVpbnQ4QXJyYXkoKSl9Y2F0Y2goZSl7cmV0dXJuIiJ9fQogIHZhciBib2R5PWJ5dGVzVG9UZXh0KGN0eC5ib2R5KTsKICB2YXIgdGFyZ2V0PShjdHgudXJsKyIKIitib2R5KTsKICBpZigvKGFkfGFkdmVydHxhZHZlcnRpc2V8YmFubmVyfHNwbGFzaHxwb3B1cHxwb3B8cHJvbW90aW9ufG1hcmtldGluZ3xrYWlbcF0/aW5nfHdlbGNvbWUpL2kudGVzdCh0YXJnZXQpKXsKICAgIEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJjb250ZW50LXR5cGUiLCJhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PXV0Zi04Il1dLGJvZHk6Int9In0pOwogIH0KfQ==
