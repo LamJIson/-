@@ -1,68 +1,150 @@
-# 🍿️ DualSubs: 🎵 Spotify - Anywhere MITM RuleSet（GitHub 版｜默认简体中文）
-# desc = Spotify 增强及双语歌词：Translate + External
+# 🍿️ DualSubs: 🎵 Spotify - Anywhere MITM RuleSet（Request Script / Response Script 标注版）
+# desc = Spotify 双语歌词：Translate + External
 # version = Spotify 1.9.12 / Universal 1.7.5
 # arguments = Types="Translate,External"&Languages[0]="AUTO"&Languages[1]="ZH-HANS"&Vendor="Google"&LrcVendor="NeteaseMusic"&LogLevel="WARN"
 #
-# 使用方式：
-# 1. 上传本文件到 GitHub 仓库。
-# 2. 在 Anywhere 中添加远程规则 URL，或手动按规则添加。
-# 3. 如果 Anywhere 支持 Argument 字段，填入上面的 arguments；如果不支持，请在 BoxJs 设置 Languages[1] = ZH-HANS。
+# 重要说明：
+# - Request Script  = Phase: Request  + Operation: Rewrite  = 0, 100
+# - Response Script = Phase: Response + Operation: Rewrite  = 1, 100
+# - Anywhere UI 里 Operation 仍显示 Rewrite，不一定直接显示“Request Script / Response Script”。
+# - 本文件已在每条脚本规则前明确标注 Request Script / Response Script。
 #
 # MITM Hostname:
 # api.spotify.com, spclient.wg.spotify.com, *-spclient.spotify.com
 
-name = DualSubs Spotify Lyrics ZH-HANS
+name = DualSubs Spotify Lyrics ZH-HANS Script Marked
 hostname = api.spotify.com, spclient.wg.spotify.com, *-spclient.spotify.com
 
-# ===============================
-# 可选：Tracks response JSON
-# Operation: Response + Rewrite
-# 默认注释；如果需要启用 response.bundle.js，请取消注释。
-# ===============================
+# ==================================================
+# Optional Response Script: Tracks response JSON
+# Phase: Response
+# Operation: Rewrite
+# Mode: Transparent
+# Script URL: response.bundle.js
+# 默认注释；如确实需要启用，再取消下面三行注释。
+# ==================================================
 # 0, 2, ^https?:\/\/api\.spotify\.com\/v1\/tracks\?, accept-encoding
 # 0, 1, ^https?:\/\/api\.spotify\.com\/v1\/tracks\?, accept-encoding, identity
 # 1, 100, ^https?:\/\/api\.spotify\.com\/v1\/tracks\?, https://github.com/DualSubs/Spotify/releases/download/v1.9.12/response.bundle.js
 
-# ===============================
-# Request: Lyrics request JSON
-# Operation: Rewrite / Mode: Transparent
-# ===============================
+# ==================================================
+# Request Script 1: Lyrics request JSON
+# Phase: Request
+# Operation: Rewrite
+# Mode: Transparent
+# Script URL: request.bundle.js
+# ==================================================
 0, 100, ^https?:\/\/(?:[^\/]+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/color-lyrics\/v2\/track\/.+\?(?=.*format=json).*, https://github.com/DualSubs/Spotify/releases/download/v1.9.12/request.bundle.js
 
-# ===============================
-# Request: Lyrics request Proto
-# Operation: Rewrite / Mode: Transparent
-# ===============================
+# ==================================================
+# Request Script 2: Lyrics request Proto
+# Phase: Request
+# Operation: Rewrite
+# Mode: Transparent
+# Script URL: request.bundle.js
+# ==================================================
 0, 100, ^https?:\/\/(?:[^\/]+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/color-lyrics\/v2\/track\/\w+\?(?!.*format=json).*, https://github.com/DualSubs/Spotify/releases/download/v1.9.12/request.bundle.js
 
-# ===============================
-# Response: Translate lyrics JSON
-# Operations: Request Header Delete/Add + Response Rewrite
-# ===============================
+# ==================================================
+# Header Rule: Translate JSON - Request Header Delete
+# Phase: Request
+# Operation: Header Delete
+# Header Name: accept-encoding
+# ==================================================
 0, 2, ^https?:\/\/(?:[^\/]+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/color-lyrics\/v2\/track\/.+\?(?=.*format=json)(?=.*subtype=Translate).*, accept-encoding
+
+# ==================================================
+# Header Rule: Translate JSON - Request Header Add
+# Phase: Request
+# Operation: Header Add
+# Header Name: accept-encoding
+# Header Value: identity
+# ==================================================
 0, 1, ^https?:\/\/(?:[^\/]+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/color-lyrics\/v2\/track\/.+\?(?=.*format=json)(?=.*subtype=Translate).*, accept-encoding, identity
+
+# ==================================================
+# Response Script 1: Translate lyrics JSON
+# Phase: Response
+# Operation: Rewrite
+# Mode: Transparent
+# Script URL: Translate.response.bundle.js
+# ==================================================
 1, 100, ^https?:\/\/(?:[^\/]+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/color-lyrics\/v2\/track\/.+\?(?=.*format=json)(?=.*subtype=Translate).*, https://github.com/DualSubs/Universal/releases/latest/download/Translate.response.bundle.js
 
-# ===============================
-# Response: Translate lyrics Proto
-# Operations: Request Header Delete/Add + Response Rewrite
-# ===============================
+# ==================================================
+# Header Rule: Translate Proto - Request Header Delete
+# Phase: Request
+# Operation: Header Delete
+# Header Name: accept-encoding
+# ==================================================
 0, 2, ^https?:\/\/(?:[^\/]+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/color-lyrics\/v2\/track\/\w+\?(?!.*format=json)(?=.*subtype=Translate).*, accept-encoding
+
+# ==================================================
+# Header Rule: Translate Proto - Request Header Add
+# Phase: Request
+# Operation: Header Add
+# Header Name: accept-encoding
+# Header Value: identity
+# ==================================================
 0, 1, ^https?:\/\/(?:[^\/]+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/color-lyrics\/v2\/track\/\w+\?(?!.*format=json)(?=.*subtype=Translate).*, accept-encoding, identity
+
+# ==================================================
+# Response Script 2: Translate lyrics Proto
+# Phase: Response
+# Operation: Rewrite
+# Mode: Transparent
+# Script URL: Translate.response.bundle.js
+# ==================================================
 1, 100, ^https?:\/\/(?:[^\/]+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/color-lyrics\/v2\/track\/\w+\?(?!.*format=json)(?=.*subtype=Translate).*, https://github.com/DualSubs/Universal/releases/latest/download/Translate.response.bundle.js
 
-# ===============================
-# Response: External lyrics JSON
-# Operations: Request Header Delete/Add + Response Rewrite
-# ===============================
+# ==================================================
+# Header Rule: External JSON - Request Header Delete
+# Phase: Request
+# Operation: Header Delete
+# Header Name: accept-encoding
+# ==================================================
 0, 2, ^https?:\/\/(?:[^\/]+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/color-lyrics\/v2\/track\/.+\?(?=.*format=json)(?=.*subtype=External).*, accept-encoding
+
+# ==================================================
+# Header Rule: External JSON - Request Header Add
+# Phase: Request
+# Operation: Header Add
+# Header Name: accept-encoding
+# Header Value: identity
+# ==================================================
 0, 1, ^https?:\/\/(?:[^\/]+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/color-lyrics\/v2\/track\/.+\?(?=.*format=json)(?=.*subtype=External).*, accept-encoding, identity
+
+# ==================================================
+# Response Script 3: External lyrics JSON
+# Phase: Response
+# Operation: Rewrite
+# Mode: Transparent
+# Script URL: External.Lyrics.response.bundle.js
+# ==================================================
 1, 100, ^https?:\/\/(?:[^\/]+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/color-lyrics\/v2\/track\/.+\?(?=.*format=json)(?=.*subtype=External).*, https://github.com/DualSubs/Universal/releases/latest/download/External.Lyrics.response.bundle.js
 
-# ===============================
-# Response: External lyrics Proto
-# Operations: Request Header Delete/Add + Response Rewrite
-# ===============================
+# ==================================================
+# Header Rule: External Proto - Request Header Delete
+# Phase: Request
+# Operation: Header Delete
+# Header Name: accept-encoding
+# ==================================================
 0, 2, ^https?:\/\/(?:[^\/]+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/color-lyrics\/v2\/track\/\w+\?(?!.*format=json)(?=.*subtype=External).*, accept-encoding
+
+# ==================================================
+# Header Rule: External Proto - Request Header Add
+# Phase: Request
+# Operation: Header Add
+# Header Name: accept-encoding
+# Header Value: identity
+# ==================================================
 0, 1, ^https?:\/\/(?:[^\/]+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/color-lyrics\/v2\/track\/\w+\?(?!.*format=json)(?=.*subtype=External).*, accept-encoding, identity
+
+# ==================================================
+# Response Script 4: External lyrics Proto
+# Phase: Response
+# Operation: Rewrite
+# Mode: Transparent
+# Script URL: External.Lyrics.response.bundle.js
+# ==================================================
 1, 100, ^https?:\/\/(?:[^\/]+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/color-lyrics\/v2\/track\/\w+\?(?!.*format=json)(?=.*subtype=External).*, https://github.com/DualSubs/Universal/releases/latest/download/External.Lyrics.response.bundle.js
