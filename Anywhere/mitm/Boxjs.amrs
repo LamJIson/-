@@ -5,7 +5,7 @@
 #!icon=https://raw.githubusercontent.com/chavyleung/scripts/master/box/icons/BoxJs.png
 #!category=BoxJs
 
-name = BoxJs Anywhere Inline
+name = BoxJs
 hostname = boxjs.com, boxjs.net, *.boxjs.com, *.boxjs.net
 
 # Request Script: BoxJs
