@@ -1,4 +1,19 @@
-function process(ctx) {
+#!name=BoxJs Anywhere Inline
+#!desc=http://boxjs.com
+#!author=ChavyLeung / Anywhere inline wrapper
+#!homepage=https://docs.boxjs.app/
+#!icon=https://raw.githubusercontent.com/chavyleung/scripts/master/box/icons/BoxJs.png
+#!category=BoxJs
+
+name = BoxJs Anywhere Inline
+hostname = boxjs.com, boxjs.net, *.boxjs.com, *.boxjs.net
+
+# Request Script: BoxJs
+# Phase: Request
+# Operation: Rewrite
+# Mode: Transparent
+# Timeout: 120
+0, 100, ^https?:\/\/(?:[^\/]+\.)?boxjs\.(?:com|net)\/?.*, function process(ctx) {
   if (!ctx || ctx.phase !== "request" || !ctx.url) return;
 
   function bytesToText(bytes) { try { return Anywhere.codec.utf8.decode(bytes || new Uint8Array()); } catch (_) { return ""; } }
