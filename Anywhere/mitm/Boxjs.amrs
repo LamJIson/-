@@ -1,12 +1,8 @@
-#!name=BoxJs for Anywhere Base64
+#!name=BoxJs for Anywhere
 #!desc=http://boxjs.com
 #!author=ChavyLeung / Anywhere wrapper by Copilot
 #!homepage=https://docs.boxjs.app/
-#!icon=https://raw.githubusercontent.com/chavyleung/scripts/master/box/icons/BoxJs.png
-#!category=BoxJs
 
-# Anywhere 等价配置：Script 已换成 base64，不依赖远程 JS URL。
-# 原始模块：type=http-request, requires-body=true, timeout=120
 
 name = BoxJs Anywhere Base64
 hostname = boxjs.com, boxjs.net, *.boxjs.com, *.boxjs.net
