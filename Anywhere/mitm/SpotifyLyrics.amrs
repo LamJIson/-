@@ -1,0 +1,66 @@
+# 🍿️ DualSubs: 🎵 Spotify - Anywhere MITM RuleSet
+# desc = Spotify 增强及双语歌词
+# author = VirgilClyne
+# homepage = https://DualSubs.github.io/guide/spotify
+# version = 1.9.12
+
+name = DualSubs Spotify
+hostname = api.spotify.com, spclient.wg.spotify.com, *-spclient.spotify.com
+
+# 默认参数：
+# Types="Translate,External"&Languages[0]="AUTO"&Languages[1]="ZH"&Vendor="Google"&LrcVendor="NeteaseMusic"&LogLevel="WARN"
+
+# ===============================
+# Tracks response JSON
+# 原规则：response.bundle.js
+# ===============================
+0, 2, ^https?:\/\/api\.spotify\.com\/v1\/tracks\?, accept-encoding
+0, 1, ^https?:\/\/api\.spotify\.com\/v1\/tracks\?, accept-encoding, identity
+1, 100, ^https?:\/\/api\.spotify\.com\/v1\/tracks\?, BASE64_RESPONSE_BUNDLE_JS_HERE
+
+# ===============================
+# Lyrics request JSON
+# 原规则：request.bundle.js
+# ===============================
+0, 100, ^https?:\/\/(.+-spclient|spclient\.wg)\.spotify\.com(:443)?\/color-lyrics\/v2\/track\/(.+)\?(.*)format=json, BASE64_REQUEST_BUNDLE_JS_HERE
+
+# ===============================
+# Lyrics request Proto
+# 原规则：request.bundle.js
+# binary-body-mode=1
+# ===============================
+0, 100, ^https?:\/\/(.+-spclient|spclient\.wg)\.spotify\.com(:443)?\/color-lyrics\/v2\/track\/\w+\?(.*), BASE64_REQUEST_BUNDLE_JS_HERE
+
+# ===============================
+# Translate lyrics response JSON
+# 原规则：Translate.response.bundle.js
+# ===============================
+0, 2, ^https?:\/\/(.+-spclient|spclient\.wg)\.spotify\.com(:443)?\/color-lyrics\/v2\/track\/(.+)\?(.*)format=json(.*)subtype=Translate, accept-encoding
+0, 1, ^https?:\/\/(.+-spclient|spclient\.wg)\.spotify\.com(:443)?\/color-lyrics\/v2\/track\/(.+)\?(.*)format=json(.*)subtype=Translate, accept-encoding, identity
+1, 100, ^https?:\/\/(.+-spclient|spclient\.wg)\.spotify\.com(:443)?\/color-lyrics\/v2\/track\/(.+)\?(.*)format=json(.*)subtype=Translate, BASE64_TRANSLATE_RESPONSE_BUNDLE_JS_HERE
+
+# ===============================
+# Translate lyrics response Proto
+# 原规则：Translate.response.bundle.js
+# binary-body-mode=1
+# ===============================
+0, 2, ^https?:\/\/(.+-spclient|spclient\.wg)\.spotify\.com(:443)?\/color-lyrics\/v2\/track\/\w+\?(.*)subtype=Translate, accept-encoding
+0, 1, ^https?:\/\/(.+-spclient|spclient\.wg)\.spotify\.com(:443)?\/color-lyrics\/v2\/track\/\w+\?(.*)subtype=Translate, accept-encoding, identity
+1, 100, ^https?:\/\/(.+-spclient|spclient\.wg)\.spotify\.com(:443)?\/color-lyrics\/v2\/track\/\w+\?(.*)subtype=Translate, BASE64_TRANSLATE_RESPONSE_BUNDLE_JS_HERE
+
+# ===============================
+# External lyrics response JSON
+# 原规则：External.Lyrics.response.bundle.js
+# ===============================
+0, 2, ^https?:\/\/(.+-spclient|spclient\.wg)\.spotify\.com(:443)?\/color-lyrics\/v2\/track\/(.+)\?(.*)format=json(.*)subtype=External, accept-encoding
+0, 1, ^https?:\/\/(.+-spclient|spclient\.wg)\.spotify\.com(:443)?\/color-lyrics\/v2\/track\/(.+)\?(.*)format=json(.*)subtype=External, accept-encoding, identity
+1, 100, ^https?:\/\/(.+-spclient|spclient\.wg)\.spotify\.com(:443)?\/color-lyrics\/v2\/track\/(.+)\?(.*)format=json(.*)subtype=External, BASE64_EXTERNAL_LYRICS_RESPONSE_BUNDLE_JS_HERE
+
+# ===============================
+# External lyrics response Proto
+# 原规则：External.Lyrics.response.bundle.js
+# binary-body-mode=1
+# ===============================
+0, 2, ^https?:\/\/(.+-spclient|spclient\.wg)\.spotify\.com(:443)?\/color-lyrics\/v2\/track\/\w+\?(.*)subtype=External, accept-encoding
+0, 1, ^https?:\/\/(.+-spclient|spclient\.wg)\.spotify\.com(:443)?\/color-lyrics\/v2\/track\/\w+\?(.*)subtype=External, accept-encoding, identity
+1, 100, ^https?:\/\/(.+-spclient|spclient\.wg)\.spotify\.com(:443)?\/color-lyrics\/v2\/track\/\w+\?(.*)subtype=External, BASE64_EXTERNAL_LYRICS_RESPONSE_BUNDLE_JS_HERE
