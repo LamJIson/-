@@ -4,9 +4,9 @@ hostname = m5.amap.com, m5-zb.amap.com, info.amap.com
 # ============================================================
 # 1. 域名拦截（请求阶段）-> 返回空响应
 # ============================================================
-0, 100, ^https?://amap-aos-info-nogw\.amap\.com/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsIGJvZHk6ICIifSk7IH0=
-0, 100, ^https?://free-aos-cdn-image\.amap\.com/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsIGJvZHk6ICIifSk7IH0=
-0, 100, ^https?://[^/]*\.smtcdns\.com/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsIGJvZHk6ICIifSk7IH0=
+1, 0, ^https?://amap-aos-info-nogw\.amap\.com/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsIGJvZHk6ICIifSk7IH0=
+1, 0, ^https?://free-aos-cdn-image\.amap\.com/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsIGJvZHk6ICIifSk7IH0=
+1, 0, ^https?://[^/]*\.smtcdns\.com/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsIGJvZHk6ICIifSk7IH0=
 
 # ============================================================
 # 2. 本地响应重写（Map Local）-> 返回 {}（请求阶段）
