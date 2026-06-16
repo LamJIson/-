@@ -1,6 +1,32 @@
 # 高德地图净化[墨鱼版] - Anywhere 内联脚本版（按原顺序逐条）
 name = 高德地图净化
-hostname = m5.amap.com, m5-zb.amap.com, center.amap.com, amap-aos-info-nogw.amap.com, ai.amap.com, amdc.m.taobao.com
+hostname =  m5-zb.amap.com, center.amap.com, amap-aos-info-nogw.amap.com, ai.amap.com, amdc.m.taobao.com
+
+# 1. 开屏广告（两处）
+0, 100, ^https?://[^/]*\.amap\.com/ws/aos/alimama/splash_screen, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsIGJvZHk6ICIifSk7IH0=
+0, 100, ^https?://[^/]*\.amap\.com/ws/valueadded/alimama/splash_screen, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsIGhlYWRlcnM6IFtbIkNvbnRlbnQtVHlwZSIsICJhcHBsaWNhdGlvbi9qc29uIl1dLCBib2R5OiAie30ifSk7IH0=
+
+# 2. 左下天气广告
+0, 100, ^https?://[^/]*\.amap\.com/ws/valueadded/weather, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsIGhlYWRlcnM6IFtbIkNvbnRlbnQtVHlwZSIsICJhcHBsaWNhdGlvbi9qc29uIl1dLCBib2R5OiAie30ifSk7IH0=
+
+# 3. 首页左上角GIF动图
+0, 100, ^https?://[^/]*\.amap\.com/uploadimg/\w+\.gif, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsIGJvZHk6ICIifSk7IH0=
+
+# 4. 搜索框热词（仅热词，不影响搜索）
+0, 100, ^https?://[^/]*\.amap\.com/ws/shield/search/new_hotword, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsIGhlYWRlcnM6IFtbIkNvbnRlbnQtVHlwZSIsICJhcHBsaWNhdGlvbi9qc29uIl1dLCBib2R5OiAie30ifSk7IH0=
+
+# 5. 搜索框scene推荐
+0, 100, ^https?://[^/]*\.amap\.com/ws/shield/scene/recommend, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsIGhlYWRlcnM6IFtbIkNvbnRlbnQtVHlwZSIsICJhcHBsaWNhdGlvbi9qc29uIl1dLCBib2R5OiAie30ifSk7IH0=
+
+# 6. 通用广告归因
+0, 100, ^https?://[^/]*\.amap\.com/ws/asa/ads_attribution, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsIGJvZHk6ICIifSk7IH0=
+
+# 7. Tip/订单相关（不影响路线）
+0, 100, ^https?://[^/]*\.amap\.com/ws/boss/order_web/\w{8}_information, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsIGJvZHk6ICIifSk7IH0=
+
+# 8. 首页底部信息流（若影响首页信息流可注释）
+0, 100, ^https?://[^/]*\.amap\.com/v\d/ai_rec/, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsIGhlYWRlcnM6IFtbIkNvbnRlbnQtVHlwZSIsICJhcHBsaWNhdGlvbi9qc29uIl1dLCBib2R5OiAie30ifSk7IH0=
+
 
 # ========== 1. 高德地图_开屏请求（reject-200）==========
 0, 100, ^https?://[^/]*\.amap\.com/ws/aos/alimama/splash_screen, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsIGJvZHk6ICIifSk7IH0=
