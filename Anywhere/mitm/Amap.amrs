@@ -25,10 +25,8 @@ hostname = *.amap.com, m5.amap.com, m5-zb.amap.com, center.amap.com, ai.amap.com
 0, 100, ^https://m5\.amap\.com/ws/valueadded/weather/v2\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJDb250ZW50LVR5cGUiLCJhcHBsaWNhdGlvbi9qc29uIl1dLGJvZHk6Int9In0pO30=
 0, 100, ^https://sns\.amap\.com/ws/msgbox/pull_mp\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJDb250ZW50LVR5cGUiLCJhcHBsaWNhdGlvbi9qc29uIl1dLGJvZHk6Int9In0pO30=
 
-# 注意：以下两条宽泛规则已删除，改为上面的精确匹配，避免误拦搜索等核心API
-# 原规则：^https://m5\.amap\.com/ws/.* 和 ^https://m5\.amap\.com/ws/shield/.* 已被移除
 
-# 保留针对打车弹窗的精确拦截
+# 打车弹窗的拦截
 0, 100, ^https://m5-zb\.amap\.com/ws/sharedtrip/taxi/order_detail_car_tips\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJDb250ZW50LVR5cGUiLCJhcHBsaWNhdGlvbi9qc29uIl1dLGJvZHk6Int9In0pO30=
 
 # ========== 响应阶段：外部脚本处理剩余动态广告 ==========
