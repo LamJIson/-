@@ -1,4 +1,5 @@
 # 高德地图去广告（全部使用脚本处理）
+#!author=AI优化,ddgksf2013
 name = 高德地图去广告
 hostname = *.amap.com, m5.amap.com, m5-zb.amap.com, center.amap.com, ai.amap.com
 
