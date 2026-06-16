@@ -9,23 +9,6 @@ hostname    = amap.com, m5.amap.com, m5-zb.amap.com, restapi.amap.com, apilocate
 # ==================== Reject 规则 ====================
 1, 0, ^https?://(amap-aos-info-nogw\.amap\.com|free-aos-cdn-image\.amap\.com|.*\.smtcdns\.com)/, 3
 
-# ==================== Map Local（返回空 JSON）===================
-# 返回空对象 {} 的 base64 是 e30= （{""}的base64）
-1, 0, ^https?://m5-zb\.amap\.com/ws/ride/home/page/get_commuting_card\?, 0, 4, e30=
-1, 0, ^https?://m5\.amap\.com/ws/shield/search_business/process/orderList\?, 0, 4, e30=
-1, 0, ^https?://m5\.amap\.com/ws/shield/search/new_hotword\?, 0, 4, e30=
-1, 0, ^https?://m5\.amap\.com/ws/faas/amap-navigation/card-service-(?:car-end|route-plan), 0, 4, e30=
-1, 0, ^https?://m5\.amap\.com/ws/shield/search_poi/tips_adv\?, 0, 4, e30=
-1, 0, ^https?://oss\.amap\.com/ws/banner/lists/\?, 0, 4, e30=
-1, 0, ^https?://ai\.amap\.com/v1/ai_rec/, 0, 4, e30=
-1, 0, ^https?://m5\.amap\.com/ws/aos/main/page/product/list\?, 0, 4, e30=
-1, 0, ^https?://m5\.amap\.com/ws/faas/amap-navigation/(?:main-page-assets|main-page-location|ridewalk-end-fc|usr-profile-fc/homeV2), 0, 4, e30=
-1, 0, ^https?://m5\.amap\.com/ws/(?:mapapi/hint_text/offline_data|message/notice/list|shield/search/new_hotword), 0, 4, e30=
-1, 0, ^https?://m5\.amap\.com/ws/shield/scene/recommend\?, 0, 4, e30=
-1, 0, ^https?://m5\.amap\.com/ws/valueadded/weather/v2\?, 0, 4, e30=
-1, 0, ^https?://sns\.amap\.com/ws/msgbox/pull_mp\?, 0, 4, e30=
-1, 0, ^https?://m5-zb\.amap\.com/ws/boss/(?:order/car/(?:feedback/get_card_questions|feedback/viptips|king_toolbox_car_bubble|remark/satisfactionConf|rights_information)|tips/onscene_visual_optimization), 0, 4, e30=
-1, 0, ^https?://m5-zb\.amap\.com/ws/boss/(?:pay/web/paySuccess/info/request|transportation/diversion/resource/driving), 0, 4, e30=
 
 # ==================== Body Rewrite（jq 风格的简单删除，可选使用 body-json 或保留 script 处理）===================
 # 这些简单路径删除可以改用 body-json 操作，这里先用 script 统一处理更稳妥
