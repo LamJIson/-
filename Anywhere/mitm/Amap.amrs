@@ -3,13 +3,14 @@
 name = 高德地图去广告
 hostname = *.amap.com, m5.amap.com, m5-zb.amap.com, center.amap.com, ai.amap.com
 
-# ========== 域名拦截（脚本版：直接返回 {}）==========
+# ========== 域名拦截（脚本版：返回 {}）==========
+# 这些域名多为广告素材或统计，不影响核心功能
 0, 100, ^https?://amap-aos-info-nogw\.amap\.com/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJDb250ZW50LVR5cGUiLCJhcHBsaWNhdGlvbi9qc29uIl1dLGJvZHk6Int9In0pO30=
 0, 100, ^https?://free-aos-cdn-image\.amap\.com/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJDb250ZW50LVR5cGUiLCJhcHBsaWNhdGlvbi9qc29uIl1dLGJvZHk6Int9In0pO30=
 0, 100, ^https?://[^/]*\.v\.smtcdns\.com/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJDb250ZW50LVR5cGUiLCJhcHBsaWNhdGlvbi9qc29uIl1dLGJvZHk6Int9In0pO30=
 
-# ========== 请求阶段：直接返回 {}（替代 Map Local 和部分 Body Rewrite）==========
-0, 100, ^https://m5\.amap\.com/ws/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJDb250ZW50LVR5cGUiLCJhcHBsaWNhdGlvbi9qc29uIl1dLGJvZHk6Int9In0pO30=
+# ========== 请求阶段：仅拦截确切的广告接口（返回 {}）==========
+# 这些路径在原配置中明确列出的 Map Local 或 Body Rewrite，均为广告/营销相关
 0, 100, ^https://oss\.amap\.com/ws/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJDb250ZW50LVR5cGUiLCJhcHBsaWNhdGlvbi9qc29uIl1dLGJvZHk6Int9In0pO30=
 0, 100, ^https://sns\.amap\.com/ws/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJDb250ZW50LVR5cGUiLCJhcHBsaWNhdGlvbi9qc29uIl1dLGJvZHk6Int9In0pO30=
 0, 100, ^https://m5-zb\.amap\.com/ws/ride/home/page/get_commuting_card\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJDb250ZW50LVR5cGUiLCJhcHBsaWNhdGlvbi9qc29uIl1dLGJvZHk6Int9In0pO30=
@@ -24,8 +25,10 @@ hostname = *.amap.com, m5.amap.com, m5-zb.amap.com, center.amap.com, ai.amap.com
 0, 100, ^https://m5\.amap\.com/ws/valueadded/weather/v2\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJDb250ZW50LVR5cGUiLCJhcHBsaWNhdGlvbi9qc29uIl1dLGJvZHk6Int9In0pO30=
 0, 100, ^https://sns\.amap\.com/ws/msgbox/pull_mp\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJDb250ZW50LVR5cGUiLCJhcHBsaWNhdGlvbi9qc29uIl1dLGJvZHk6Int9In0pO30=
 
-# 针对特定 Body Rewrite（删除字段）的接口，也直接返回 {}，因为返回空对象即可移除广告
-0, 100, ^https://m5\.amap\.com/ws/shield/.*, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJDb250ZW50LVR5cGUiLCJhcHBsaWNhdGlvbi9qc29uIl1dLGJvZHk6Int9In0pO30=  # 这一条会覆盖很多，但需注意可能影响正常功能，但原配置中已有类似拦截，所以安全
+# 注意：以下两条宽泛规则已删除，改为上面的精确匹配，避免误拦搜索等核心API
+# 原规则：^https://m5\.amap\.com/ws/.* 和 ^https://m5\.amap\.com/ws/shield/.* 已被移除
+
+# 保留针对打车弹窗的精确拦截
 0, 100, ^https://m5-zb\.amap\.com/ws/sharedtrip/taxi/order_detail_car_tips\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsgaWYgKGN0eC5waGFzZSAhPT0gInJlcXVlc3QiKSByZXR1cm47IEFueXdoZXJlLnJlc3BvbmQoe3N0YXR1czoyMDAsaGVhZGVyczpbWyJDb250ZW50LVR5cGUiLCJhcHBsaWNhdGlvbi9qc29uIl1dLGJvZHk6Int9In0pO30=
 
 # ========== 响应阶段：外部脚本处理剩余动态广告 ==========
