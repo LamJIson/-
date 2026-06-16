@@ -1,7 +1,6 @@
 # 高德地图去广告 - Anywhere MITM RuleSet
 name = 高德地图去广告
-hostname = *.amap.com, m5.amap.com, m5-zb.amap.com, center.amap.com, ai.amap.com, restapi.amap.com, apilocate.amap.com, sns.amap.com, oss.amap.com
-
+hostname = m5.amap.com, m5-zb.amap.com, info.amap.com
 # ============================================================
 # 1. 域名拦截（请求阶段）-> 返回空响应
 # ============================================================
