@@ -6,13 +6,7 @@
 name        = 高德地图去广告
 hostname    = amap.com, m5.amap.com, m5-zb.amap.com, restapi.amap.com, apilocate.amap.com, ai.amap.com, sns.amap.com, oss.amap.com
 
-# ==================== Reject 规则 ====================
-1, 0, ^https?://(amap-aos-info-nogw\.amap\.com|free-aos-cdn-image\.amap\.com|.*\.smtcdns\.com)/, 3
 
-
-# ==================== Body Rewrite（jq 风格的简单删除，可选使用 body-json 或保留 script 处理）===================
-# 这些简单路径删除可以改用 body-json 操作，这里先用 script 统一处理更
-# ============================================================
 
 # ========== 2. 响应体精简 (原 [Body Rewrite]) ==========
 # 使用内联响应脚本 (1,5) 删除指定字段，每条规则对应原 JQ 表达式
