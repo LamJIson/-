@@ -1,8 +1,6 @@
 # 高德地图广告域名 Reject - Anywhere Routing RuleSet
 # author = AI优化, RuCu6, ddgksf2013, 可莉🅥
 
-name = Amap Reject
+name = Amap direct
 
-2, amap-aos-info-nogw.amap.com
-2, free-aos-cdn-image.amap.com
-2, v.smtcdns.com
+2, optimus-ads.amap.com
