@@ -1,0 +1,6 @@
+# 高德地图 Reject - Anywhere Routing RuleSet
+
+name = 高德地图
+2, amap-aos-info-nogw.amap.com
+2, free-aos-cdn-image.amap.com
+2, v.smtcdns.com
