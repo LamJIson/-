@@ -1,0 +1,37 @@
+name = 高德地图净化
+
+# 核心域名 (保持连接，但仅对广告接口进行 MITM 解密)
+hostname = m5.amap.com, m5-zb.amap.com, center.amap.com, amap-aos-info-nogw.amap.com, ai.amap.com
+
+## ==================== [Body Rewrite] 转换为原生 JSON 修改 ====================
+# 使用原生 Op 5 (body-json) 的 delete 操作，无需运行 JS 引擎，性能极高
+1, 5, ^https://m5\.amap\.com/ws/shield/search_business/process/marketingOperationStructured\?, delete, $.data.commonMaterial
+1, 5, ^https://m5\.amap\.com/ws/shield/search_business/process/marketingOperationStructured\?, delete, $.data.tipsOperationLocation
+1, 5, ^https://m5\.amap\.com/ws/shield/search_business/process/marketingOperationStructured\?, delete, $.data.resourcePlacement
+1, 5, ^https://m5\.amap\.com/ws/shield/search_poi/homepage\?, delete, $.history_tags
+1, 5, ^https://m5-zb\.amap\.com/ws/sharedtrip/taxi/order_detail_car_tips\?, delete, $.data.carTips.data.popupInfo
+
+## ==================== [Map Local] 转换为原生本地 Mock ====================
+# 使用原生 Op 0 (rewrite) 的子模式 2 (reject 200 text)，直接由本地返回空 JSON "{}"
+0, 0, ^https://m5-zb\.amap\.com/ws/ride/home/page/get_commuting_card\?, 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/shield/search_business/process/orderList\?, 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/shield/search/new_hotword\?, 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/faas/amap-navigation/card-service-(?:car-end|route-plan), 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/shield/search_poi/tips_adv\?, 2, "{}"
+0, 0, ^https://oss\.amap\.com/ws/banner/lists/\?, 2, "{}"
+0, 0, ^https://ai\.amap\.com/v1/ai_rec/, 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/aos/main/page/product/list\?, 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/faas/amap-navigation/(?:main-page-assets|main-page-location|ridewalk-end-fc|usr-profile-fc/homeV2), 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/(?:mapapi/hint_text/offline_data|message/notice/list|shield/search/new_hotword), 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/shield/scene/recommend\?, 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/valueadded/weather/v2\?, 2, "{}"
+0, 0, ^https://sns\.amap\.com/ws/msgbox/pull_mp\?, 2, "{}"
+0, 0, ^https://m5-zb\.amap\.com/ws/boss/(?:order/car/(?:feedback/get_card_questions|feedback/viptips|king_toolbox_car_bubble|remark/satisfactionConf|rights_information)|tips/onscene_visual_optimization), 2, "{}"
+0, 0, ^https://m5-zb\.amap\.com/ws/boss/(?:pay/web/paySuccess/info/request|transportation/diversion/resource/driving), 2, "{}"
+
+## ==================== [Script] 高级脚本重写 ====================
+
+1, 100, ^https:\/\/m5\.amap\.com\/ws\/valueadded\/alimama\/splash_screen\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICAgIGlmICghY3R4LmJvZHkgfHwgY3R4LmJvZHkubGVuZ3RoID09PSAwKSByZXR1cm47CiAgICBjb25zdCB1cmwgPSBjdHgudXJsOwogICAgaWYgKCF1cmwuaW5jbHVkZXMoIi92YWx1ZWFkZGVkL2FsaW1hbWEvc3BsYXNoX3NjcmVlbiIpKSByZXR1cm47CiAgICBsZXQgb2JqID0gSlNPTi5wYXJzZShBbnl3aGVyZS5jb2RlYy51dGY4LmRlY29kZShjdHguYm9keSkpOwogICAgaWYgKG9iaj8uZGF0YT8uYWQ/Lmxlbmd0aCA+IDApIHsKICAgICAgICBmb3IgKGxldCBpdGVtIG9mIG9iai5kYXRhLmFkKSB7CiAgICAgICAgICAgIGl0ZW0uc2V0LnNldHRpbmcuZGlzcGxheV90aW1lID0gMDsKICAgICAgICAgICAgaXRlbS5jcmVhdGl2ZVswXS5zdGFydF90aW1lID0gMzgxODMzMjgwMDsKICAgICAgICAgICAgaXRlbS5jcmVhdGl2ZVswXS5lbmRfdGltZSA9IDM4MTg0MTkxOTk7CiAgICAgICAgfQogICAgfQogICAgY3R4LmJvZHkgPSBBbnl3aGVyZS5jb2RlYy51dGY4LmVuY29kZShKU09OLnN0cmluZ2lmeShvYmopKTsKfQ==
+1, 100, ^https:\/\/m5-zb\.amap\.com\/ws\/promotion-web\/resource(\/home)?\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICAgIGlmICghY3R4LmJvZHkgfHwgY3R4LmJvZHkubGVuZ3RoID09PSAwKSByZXR1cm47CiAgICBjb25zdCB1cmwgPSBjdHgudXJsOwogICAgaWYgKCF1cmwuaW5jbHVkZXMoIi9wcm9tb3Rpb24td2ViL3Jlc291cmNlIikpIHJldHVybjsKICAgIGxldCBvYmogPSBKU09OLnBhcnNlKEFueXdoZXJlLmNvZGVjLnV0ZjguZGVjb2RlKGN0eC5ib2R5KSk7CiAgICBjb25zdCBpdGVtcyA9IFsiYWxwaGEiLCAiYmFubmVyIiwgImJyYXZvIiwgImJ1YmJsZSIsICJjaGFybGllIiwgImljb24iLCAib3RoZXIiLCAicG9wdXAiLCAicHVzaCIsICJ0aXBzIl07CiAgICBpZiAob2JqPy5kYXRhKSB7CiAgICAgICAgZm9yIChsZXQgaSBvZiBpdGVtcykgewogICAgICAgICAgICBkZWxldGUgb2JqLmRhdGFbaV07CiAgICAgICAgfQogICAgfQogICAgY3R4LmJvZHkgPSBBbnl3aGVyZS5jb2RlYy51dGY4LmVuY29kZShKU09OLnN0cmluZ2lmeShvYmopKTsKfQ==
+
+
