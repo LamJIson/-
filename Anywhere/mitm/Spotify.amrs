@@ -1,0 +1,24 @@
+# Spotify 歌词增强
+name        = Spotify Lyrics Enhance
+hostname    = api.spotify.com, spclient.wg.spotify.com
+
+# 1. 跟踪响应（响应阶段）
+1, 100, ^https?:\/\/api\.spotify\.com\/v1\/tracks\?, __SPOTIFY_TRACK_RESP__
+
+# 2. 歌词请求（JSON 格式，请求阶段）
+0, 100, ^https?:\/\/spclient\.wg\.spotify\.com\/color-lyrics\/v2\/track\/.+\?.*format=json, __SPOTIFY_LYRICS_REQ_JSON__
+
+# 3. 歌词请求（Proto 格式，请求阶段）
+0, 100, ^https?:\/\/spclient\.wg\.spotify\.com\/color-lyrics\/v2\/track\/.+\?(?!.*format=json), __SPOTIFY_LYRICS_REQ_PROTO__
+
+# 4. 翻译歌词响应（JSON，响应阶段）
+1, 100, ^https?:\/\/spclient\.wg\.spotify\.com\/color-lyrics\/v2\/track\/.+\?.*format=json.*subtype=Translate, __SPOTIFY_TRANS_RESP_JSON__
+
+# 5. 翻译歌词响应（Proto，响应阶段）
+1, 100, ^https?:\/\/spclient\.wg\.spotify\.com\/color-lyrics\/v2\/track\/.+\?.*subtype=Translate(?!.*format=json), __SPOTIFY_TRANS_RESP_PROTO__
+
+# 6. 外部歌词响应（JSON，响应阶段）
+1, 100, ^https?:\/\/spclient\.wg\.spotify\.com\/color-lyrics\/v2\/track\/.+\?.*format=json.*subtype=External, __SPOTIFY_EXT_RESP_JSON__
+
+# 7. 外部歌词响应（Proto，响应阶段）
+1, 100, ^https?:\/\/spclient\.wg\.spotify\.com\/color-lyrics\/v2\/track\/.+\?.*subtype=External(?!.*format=json), __SPOTIFY_EXT_RESP_PROTO__
