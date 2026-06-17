@@ -1,69 +1,37 @@
-name = 高德地图净化[Anywhere全功能版]
+name = 高德地图净化
 
 # 核心域名 (保持连接，但仅对广告接口进行 MITM 解密)
 hostname = m5.amap.com, m5-zb.amap.com, center.amap.com, amap-aos-info-nogw.amap.com, ai.amap.com, amdc.m.taobao.com
 
-# ==================== 1. 简单拦截规则 (使用 reject) ====================
-^https?:\/\/.*\.amap\.com\/ws\/aos\/alimama\/splash_screen, reject
-^https?:\/\/.*\.amap\.com\/v\d\/ai_rec\/, reject
-^https?:\/\/.*\.amap\.com\/ws\/faas\/amap-navigation\/card-service-route-plan\?, reject
-^https?:\/\/.*\.amap\.com\/ws\/boss\/order_web\/\w{8}_information, reject
-^https?:\/\/.*\.amap\.com\/ws\/asa\/ads_attribution, reject
-^https?:\/\/.*\.amap\.com\/ws\/shield\/scene\/recommend, reject
-^https?:\/\/.*\.amap\.com\/uploadimg\/\w+\.gif, reject
-^https?:\/\/.*\.amap\.com\/ws\/valueadded\/weather, reject
+## ==================== [Body Rewrite] 转换为原生 JSON 修改 ====================
+# 使用原生 Op 5 (body-json) 的 delete 操作，无需运行 JS 引擎，性能极高
+1, 5, ^https://m5\.amap\.com/ws/shield/search_business/process/marketingOperationStructured\?, delete, $.data.commonMaterial
+1, 5, ^https://m5\.amap\.com/ws/shield/search_business/process/marketingOperationStructured\?, delete, $.data.tipsOperationLocation
+1, 5, ^https://m5\.amap\.com/ws/shield/search_business/process/marketingOperationStructured\?, delete, $.data.resourcePlacement
+1, 5, ^https://m5\.amap\.com/ws/shield/search_poi/homepage\?, delete, $.history_tags
+1, 5, ^https://m5-zb\.amap\.com/ws/sharedtrip/taxi/order_detail_car_tips\?, delete, $.data.carTips.data.popupInfo
 
-# ==================== 2. 复杂响应体净化 (使用 inline-script) ====================
-# 这里将所有需要修改 JSON 的请求路由到下面的处理逻辑
-^http:\/\/amdc\.m\.taobao\.com, inline-script
-^https?:\/\/.*\.amap\.com\/ws\/(?:message\/notice\/list|shield\/frogserver\/aocs\/updatable|shield\/search\/nearbyrec_smart|promotion-web\/resource|faas\/amap-navigation\/main-page|valueadded\/alimama\/splash_screen|msgbox\/pull|shield\/dsp\/profile\/index\/nodefaas|shield\/search\/new_hotword), inline-script
+## ==================== [Map Local] 转换为原生本地 Mock ====================
+# 使用原生 Op 0 (rewrite) 的子模式 2 (reject 200 text)，直接由本地返回空 JSON "{}"
+0, 0, ^https://m5-zb\.amap\.com/ws/ride/home/page/get_commuting_card\?, 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/shield/search_business/process/orderList\?, 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/shield/search/new_hotword\?, 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/faas/amap-navigation/card-service-(?:car-end|route-plan), 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/shield/search_poi/tips_adv\?, 2, "{}"
+0, 0, ^https://oss\.amap\.com/ws/banner/lists/\?, 2, "{}"
+0, 0, ^https://ai\.amap\.com/v1/ai_rec/, 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/aos/main/page/product/list\?, 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/faas/amap-navigation/(?:main-page-assets|main-page-location|ridewalk-end-fc|usr-profile-fc/homeV2), 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/(?:mapapi/hint_text/offline_data|message/notice/list|shield/search/new_hotword), 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/shield/scene/recommend\?, 2, "{}"
+0, 0, ^https://m5\.amap\.com/ws/valueadded/weather/v2\?, 2, "{}"
+0, 0, ^https://sns\.amap\.com/ws/msgbox/pull_mp\?, 2, "{}"
+0, 0, ^https://m5-zb\.amap\.com/ws/boss/(?:order/car/(?:feedback/get_card_questions|feedback/viptips|king_toolbox_car_bubble|remark/satisfactionConf|rights_information)|tips/onscene_visual_optimization), 2, "{}"
+0, 0, ^https://m5-zb\.amap\.com/ws/boss/(?:pay/web/paySuccess/info/request|transportation/diversion/resource/driving), 2, "{}"
 
-# ==================== 3. 核心处理脚本 (适配 Anywhere 语法) ====================
-function process(ctx) {
-    const url = ctx.url;
-    
-    // 拦截 AMDC 调度 (等效墨鱼脚本)
-    if (url.includes("amdc.m.taobao.com")) {
-        ctx.body = '{"data":[]}';
-        return;
-    }
-
-    // JSON 净化逻辑
-    if (!ctx.body || typeof ctx.body !== "string") return;
-    try {
-        let obj = JSON.parse(ctx.body);
-        
-        // 映射墨鱼版功能：
-        if (url.includes("splash_screen")) {
-            if (obj.data?.ad) obj.data.ad = [];
-        } 
-        else if (url.includes("promotion-web/resource")) {
-            const keys = ["alpha", "banner", "bravo", "bubble", "charlie", "icon", "other", "popup", "push", "tips"];
-            keys.forEach(k => { if (obj.data) delete obj.data[k]; });
-        } 
-        else if (url.includes("main-page")) {
-            if (obj.data?.cardList) obj.data.cardList = obj.data.cardList.filter(i => 
-                ["ContinueNavigationCard", "FrequentLocation", "LoginCard"].includes(i.dataKey)
-            );
-        } 
-        else if (url.includes("new_hotword")) {
-            if (obj.data) { obj.data.ads = []; obj.data.hotwords = []; }
-        } 
-        else if (url.includes("notice/list")) {
-            if (obj.data?.noticeList) obj.data.noticeList = [];
-        } 
-        else if (url.includes("updatable")) {
-            if (obj.data) obj.data = {};
-        } 
-        else if (url.includes("nearbyrec_smart")) {
-            if (obj.data?.modules) obj.data.modules = [];
-        } 
-        else if (url.includes("nodefaas")) {
-            if (obj.data?.cards) obj.data.cards = [];
-        }
-
-        ctx.body = JSON.stringify(obj);
-    } catch (e) {
-        // 即使出错也放行，避免 App 断网
-    }
+## ==================== [Script] 高级脚本重写 ====================
+# 注意：Anywhere 要求必须将 JavaScript 源码转换为 Base64 字符串嵌入规则行中。
+# 并且 Anywhere 规定“单次响应阶段最多执行一个脚本”。由于你原本的 14 条脚本规则指向的都是同一个 `Amap_remove_ads.js`，
+# 我们不需要把庞大的 Base64 字符串复制 14 遍，只需写一条合并了所有域名的通用匹配规则即可，剩下的路由交由 JS 内部逻辑处理。
+1, 100, ^https://(?:m5|m5-zb|info)\.amap\.com/ws/, <这里替换为把 Amap_remove_ads.js 源码转码后的 Base64 字符串>
 }
