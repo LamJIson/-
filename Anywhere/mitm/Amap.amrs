@@ -7,7 +7,10 @@
 #   [Script] → script (op 100) 需要自行 base64 编码 JS 源码
 #   [MITM] → hostname 字段
 name = 高德地图去广告
-hostname = amap.com
+# 【核心修复】：只拦截营销/广告域名，绝对不要写 amap.com 或 *.amap.com！
+# 这样 mps.amap.com (导航核心)、wprd.amap.com (地图瓦片) 等将直接透传，不会被拦截。
+hostname = m5.amap.com, m5-zb.amap.com, oss.amap.com, ai.amap.com, sns.amap.com, info.amap.com
+
 
 # ============================================================
 # 1. 域名拦截 (原 [Rule])
