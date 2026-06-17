@@ -10,24 +10,6 @@ hostname    = m5.amap.com, m5-zb.amap.com
 1, 5, ^https://m5\.amap\.com/ws/shield/search_poi/homepage\?, delete, $.history_tags
 1, 5, ^https://m5-zb\.amap\.com/ws/sharedtrip/taxi/order_detail_car_tips\?, delete, $.data.carTips.data.popupInfo
 
-## ==================== [Map Local] 转换为原生本地 Mock ====================
-# 使用原生 Op 0 (rewrite) 的子模式 2 (reject 200 text)，直接由本地返回空 JSON "{}"
-0, 0, ^https://m5-zb\.amap\.com/ws/ride/home/page/get_commuting_card\?, 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/shield/search_business/process/orderList\?, 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/shield/search/new_hotword\?, 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/faas/amap-navigation/card-service-(?:car-end|route-plan), 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/shield/search_poi/tips_adv\?, 2, "{}"
-0, 0, ^https://oss\.amap\.com/ws/banner/lists/\?, 2, "{}"
-0, 0, ^https://ai\.amap\.com/v1/ai_rec/, 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/aos/main/page/product/list\?, 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/faas/amap-navigation/(?:main-page-assets|main-page-location|ridewalk-end-fc|usr-profile-fc/homeV2), 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/(?:mapapi/hint_text/offline_data|message/notice/list|shield/search/new_hotword), 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/shield/scene/recommend\?, 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/valueadded/weather/v2\?, 2, "{}"
-0, 0, ^https://sns\.amap\.com/ws/msgbox/pull_mp\?, 2, "{}"
-0, 0, ^https://m5-zb\.amap\.com/ws/boss/(?:order/car/(?:feedback/get_card_questions|feedback/viptips|king_toolbox_car_bubble|remark/satisfactionConf|rights_information)|tips/onscene_visual_optimization), 2, "{}"
-0, 0, ^https://m5-zb\.amap\.com/ws/boss/(?:pay/web/paySuccess/info/request|transportation/diversion/resource/driving), 2, "{}"
-
 ## ==================== [Script] 高级脚本重写 ====================
 # 注意：Anywhere 要求必须将 JavaScript 源码转换为 Base64 字符串嵌入规则行中。
 # 并且 Anywhere 规定“单次响应阶段最多执行一个脚本”。由于你原本的 14 条脚本规则指向的都是同一个 `Amap_remove_ads.js`，
