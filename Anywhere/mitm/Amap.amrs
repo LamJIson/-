@@ -5,32 +5,36 @@
 name = Amap_Adblock_Strict
 hostname = m5.amap.com, m5-zb.amap.com, center.amap.com, amap-aos-info-nogw.amap.com, ai.amap.com
 
-# ==================== [Rule] 域名拦截 ====================
+# ==================== 1. 域名拦截 (Reject) ====================
+# 官方文档：rewrite (op 0) 是 request only。sub-mode 3 是 reject 200 gif。
 0, 0, ^https?://(amap-aos-info-nogw\.amap\.com|free-aos-cdn-image\.amap\.com|.*\.smtcdns\.com)/, 3
 
-# ==================== [Body Rewrite] JQ 删除 ====================
-# 使用 Anywhere 的 body-json (op 7) 语法：phase, op, url, json-path, action
-1, 5, ^https://m5\.amap\.com/ws/shield/search_business/process/marketingOperationStructured\?, <LaTex>id_2</LaTex>.data.tipsOperationLocation, delete
-1, 5, ^https://m5\.amap\.com/ws/shield/search_business/process/marketingOperationStructured\?, <LaTex>id_1</LaTex>.history_tags, delete
-1, 5, ^https://m5-zb\.amap\.com/ws/sharedtrip/taxi/order_detail_car_tips\?, $.data.carTips.data.popupInfo, delete
+# ==================== 2. 响应体 JSON 删除 (body-json) ====================
+# 官方文档：格式为 phase, 5, url, action, path
+1, 5, ^https://m5\.amap\.com/ws/shield/search_business/process/marketingOperationStructured\?, delete, $.data.commonMaterial
+1, 5, ^https://m5\.amap\.com/ws/shield/search_business/process/marketingOperationStructured\?, delete, $.data.tipsOperationLocation
+1, 5, ^https://m5\.amap\.com/ws/shield/search_business/process/marketingOperationStructured\?, delete, $.data.resourcePlacement
+1, 5, ^https://m5\.amap\.com/ws/shield/search_poi/homepage\?, delete, $.history_tags
+1, 5, ^https://m5-zb\.amap\.com/ws/sharedtrip/taxi/order_detail_car_tips\?, delete, $.data.carTips.data.popupInfo
 
-# ==================== [Map Local] 返回空 JSON ====================
-# 使用 Anywhere 的 body-replace (op 6)，返回 {} 的 Base64 (e30=)
-0, 0, ^https://m5-zb\.amap\.com/ws/ride/home/page/get_commuting_card\?, e30=
-0, 0, ^https://m5\.amap\.com/ws/shield/search_business/process/orderList\?, e30=
-0, 0, ^https://m5\.amap\.com/ws/shield/search/new_hotword\?, e30=
-0, 0, ^https://m5\.amap\.com/ws/faas/amap-navigation/card-service-(?:car-end|route-plan), e30=
-0, 0, ^https://m5\.amap\.com/ws/shield/search_poi/tips_adv\?, e30=
-0, 0, ^https://oss\.amap\.com/ws/banner/lists/\?, e30=
-0, 0, ^https://ai\.amap\.com/v1/ai_rec/, e30=
-0, 0, ^https://m5\.amap\.com/ws/aos/main/page/product/list\?, e30=
-0, 0, ^https://m5\.amap\.com/ws/faas/amap-navigation/(?:main-page-assets|main-page-location|ridewalk-end-fc|usr-profile-fc/homeV2), e30=
-0, 0, ^https://m5\.amap\.com/ws/(?:mapapi/hint_text/offline_data|message/notice/list|shield/search/new_hotword), e30=
-0, 0, ^https://m5\.amap\.com/ws/shield/scene/recommend\?, e30=
-0, 0, ^https://m5\.amap\.com/ws/valueadded/weather/v2\?, e30=
-0, 0, ^https://sns\.amap\.com/ws/msgbox/pull_mp\?, e30=
-0, 0, ^https://m5-zb\.amap\.com/ws/boss/(?:order/car/(?:feedback/get_card_questions|feedback/viptips|king_toolbox_car_bubble|remark/satisfactionConf|rights_information)|tips/onscene_visual_optimization), e30=
-0, 0, ^https://m5-zb\.amap\.com/ws/boss/(?:pay/web/paySuccess/info/request|transportation/diversion/resource/driving), e30=
+# ==================== 3. 本地响应重写 (Map Local / Mock) ====================
+# 官方文档：Anywhere.respond 只能在 request-phase (0, 100) 使用。
+# JS 逻辑：Anywhere.respond({ status: 200, headers: [["Content-Type", "application/json"]], body: "{}" });
+0, 100, ^https://m5-zb\.amap\.com/ws/ride/home/page/get_commuting_card\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https://m5\.amap\.com/ws/shield/search_business/process/orderList\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https://m5\.amap\.com/ws/shield/search/new_hotword\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https://m5\.amap\.com/ws/faas/amap-navigation/card-service-(?:car-end|route-plan), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https://m5\.amap\.com/ws/shield/search_poi/tips_adv\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https://oss\.amap\.com/ws/banner/lists/\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https://ai\.amap\.com/v1/ai_rec/, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https://m5\.amap\.com/ws/aos/main/page/product/list\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https://m5\.amap\.com/ws/faas/amap-navigation/(?:main-page-assets|main-page-location|ridewalk-end-fc|usr-profile-fc/homeV2), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https://m5\.amap\.com/ws/(?:mapapi/hint_text/offline_data|message/notice/list|shield/search/new_hotword), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https://m5\.amap\.com/ws/shield/scene/recommend\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https://m5\.amap\.com/ws/valueadded/weather/v2\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https://sns\.amap\.com/ws/msgbox/pull_mp\?, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https://m5-zb\.amap\.com/ws/boss/(?:order/car/(?:feedback/get_card_questions|feedback/viptips|king_toolbox_car_bubble|remark/satisfactionConf|rights_information)|tips/onscene_visual_optimization), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
+0, 100, ^https://m5-zb\.amap\.com/ws/boss/(?:pay/web/paySuccess/info/request|transportation/diversion/resource/driving), ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBBbnl3aGVyZS5yZXNwb25kKHsKICAgIHN0YXR1czogMjAwLAogICAgaGVhZGVyczogW1siQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iXV0sCiAgICBib2R5OiAie30iCiAgfSk7Cn0=
 
 # ==================== [Script] 核心 JS 脚本处理 (严格按照 Loon 顺序) ====================
 # 使用 Anywhere 的 script (op 100) 全缓冲模式
