@@ -4,22 +4,7 @@ name = 高德地图净化
 hostname = m5-zb.amap.com, center.amap.com, amap-aos-info-nogw.amap.com, ai.amap.com, m5.amap.com
 
 ## ==================== [Map Local] 转换为原生本地 Mock ====================
-# 使用原生 Op 0 (rewrite) 的子模式 2 (reject 200 text)，直接由本地返回空 JSON "{}"
-0, 0, ^https://m5-zb\.amap\.com/ws/ride/home/page/get_commuting_card\?, 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/shield/search_business/process/orderList\?, 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/shield/search/new_hotword\?, 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/faas/amap-navigation/card-service-(?:car-end|route-plan), 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/shield/search_poi/tips_adv\?, 2, "{}"
-0, 0, ^https://oss\.amap\.com/ws/banner/lists/\?, 2, "{}"
-0, 0, ^https://ai\.amap\.com/v1/ai_rec/, 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/aos/main/page/product/list\?, 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/faas/amap-navigation/(?:main-page-assets|main-page-location|ridewalk-end-fc|usr-profile-fc/homeV2), 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/(?:mapapi/hint_text/offline_data|message/notice/list|shield/search/new_hotword), 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/shield/scene/recommend\?, 2, "{}"
-0, 0, ^https://m5\.amap\.com/ws/valueadded/weather/v2\?, 2, "{}"
-0, 0, ^https://sns\.amap\.com/ws/msgbox/pull_mp\?, 2, "{}"
-0, 0, ^https://m5-zb\.amap\.com/ws/boss/(?:order/car/(?:feedback/get_card_questions|feedback/viptips|king_toolbox_car_bubble|remark/satisfactionConf|rights_information)|tips/onscene_visual_optimization), 2, "{}"
-0, 0, ^https://m5-zb\.amap\.com/ws/boss/(?:pay/web/paySuccess/info/request|transportation/diversion/resource/driving), 2, "{}"
+
 
 ## ==================== [Body Rewrite] 转换为原生 JSON 修改 ====================
 1, 5, ^https://m5\.amap\.com/ws/shield/search_business/process/marketingOperationStructured\?, delete, $.data.commonMaterial
