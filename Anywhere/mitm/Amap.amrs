@@ -3,7 +3,7 @@
 #!author=RuCu6, kelv1n1n, 可莉🅥
 
 name = Amap_Adblock_Strict
-hostname = amap.com
+hostname = m5-zb.amap.com, m5.amap.com
 
 
 # ==================== 1. 域名拦截 (Reject) ====================
