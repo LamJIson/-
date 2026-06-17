@@ -1,7 +1,7 @@
 # 高德地图去广告 - Anywhere MITM RuleSet
 # 原始作者：RuCu6, kelv1n1n, 可莉🅥
 name = 高德地图去广告
-hostname = m5.amap.com, m5-zb.amap.com, oss.amap.com, ai.amap.com, sns.amap.com, info.amap.com
+hostname = amap.com
 
 
 ## ==================== [Body Rewrite] 转换为原生 JSON 修改 ====================
