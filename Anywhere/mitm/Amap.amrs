@@ -3,34 +3,34 @@
 #!author=RuCu6, kelv1n1n, 可莉🅥
 
 name = Amap_Adblock_Strict
-hostname = *.amap.com
+hostname = m5.amap.com, m5-zb.amap.com, center.amap.com, amap-aos-info-nogw.amap.com, ai.amap.com
 
 # ==================== [Rule] 域名拦截 ====================
-1, 0, ^https?://(amap-aos-info-nogw\.amap\.com|free-aos-cdn-image\.amap\.com|.*\.smtcdns\.com)/, 3
+0, 0, ^https?://(amap-aos-info-nogw\.amap\.com|free-aos-cdn-image\.amap\.com|.*\.smtcdns\.com)/, 3
 
 # ==================== [Body Rewrite] JQ 删除 ====================
 # 使用 Anywhere 的 body-json (op 7) 语法：phase, op, url, json-path, action
-1, 0, ^https://m5\.amap\.com/ws/shield/search_business/process/marketingOperationStructured\?, <LaTex>id_2</LaTex>.data.tipsOperationLocation, delete
-1, 0, ^https://m5\.amap\.com/ws/shield/search_business/process/marketingOperationStructured\?, <LaTex>id_1</LaTex>.history_tags, delete
-1, 0, ^https://m5-zb\.amap\.com/ws/sharedtrip/taxi/order_detail_car_tips\?, $.data.carTips.data.popupInfo, delete
+1, 5, ^https://m5\.amap\.com/ws/shield/search_business/process/marketingOperationStructured\?, <LaTex>id_2</LaTex>.data.tipsOperationLocation, delete
+1, 5, ^https://m5\.amap\.com/ws/shield/search_business/process/marketingOperationStructured\?, <LaTex>id_1</LaTex>.history_tags, delete
+1, 5, ^https://m5-zb\.amap\.com/ws/sharedtrip/taxi/order_detail_car_tips\?, $.data.carTips.data.popupInfo, delete
 
 # ==================== [Map Local] 返回空 JSON ====================
 # 使用 Anywhere 的 body-replace (op 6)，返回 {} 的 Base64 (e30=)
-1, 0, ^https://m5-zb\.amap\.com/ws/ride/home/page/get_commuting_card\?, e30=
-1, 0, ^https://m5\.amap\.com/ws/shield/search_business/process/orderList\?, e30=
-1, 0, ^https://m5\.amap\.com/ws/shield/search/new_hotword\?, e30=
-1, 0, ^https://m5\.amap\.com/ws/faas/amap-navigation/card-service-(?:car-end|route-plan), e30=
-1, 0, ^https://m5\.amap\.com/ws/shield/search_poi/tips_adv\?, e30=
-1, 0, ^https://oss\.amap\.com/ws/banner/lists/\?, e30=
-1, 0, ^https://ai\.amap\.com/v1/ai_rec/, e30=
-1, 0, ^https://m5\.amap\.com/ws/aos/main/page/product/list\?, e30=
-1, 0, ^https://m5\.amap\.com/ws/faas/amap-navigation/(?:main-page-assets|main-page-location|ridewalk-end-fc|usr-profile-fc/homeV2), e30=
-1, 0, ^https://m5\.amap\.com/ws/(?:mapapi/hint_text/offline_data|message/notice/list|shield/search/new_hotword), e30=
-1, 0, ^https://m5\.amap\.com/ws/shield/scene/recommend\?, e30=
-1, 0, ^https://m5\.amap\.com/ws/valueadded/weather/v2\?, e30=
-1, 0, ^https://sns\.amap\.com/ws/msgbox/pull_mp\?, e30=
-1, 0, ^https://m5-zb\.amap\.com/ws/boss/(?:order/car/(?:feedback/get_card_questions|feedback/viptips|king_toolbox_car_bubble|remark/satisfactionConf|rights_information)|tips/onscene_visual_optimization), e30=
-1, 0, ^https://m5-zb\.amap\.com/ws/boss/(?:pay/web/paySuccess/info/request|transportation/diversion/resource/driving), e30=
+0, 0, ^https://m5-zb\.amap\.com/ws/ride/home/page/get_commuting_card\?, e30=
+0, 0, ^https://m5\.amap\.com/ws/shield/search_business/process/orderList\?, e30=
+0, 0, ^https://m5\.amap\.com/ws/shield/search/new_hotword\?, e30=
+0, 0, ^https://m5\.amap\.com/ws/faas/amap-navigation/card-service-(?:car-end|route-plan), e30=
+0, 0, ^https://m5\.amap\.com/ws/shield/search_poi/tips_adv\?, e30=
+0, 0, ^https://oss\.amap\.com/ws/banner/lists/\?, e30=
+0, 0, ^https://ai\.amap\.com/v1/ai_rec/, e30=
+0, 0, ^https://m5\.amap\.com/ws/aos/main/page/product/list\?, e30=
+0, 0, ^https://m5\.amap\.com/ws/faas/amap-navigation/(?:main-page-assets|main-page-location|ridewalk-end-fc|usr-profile-fc/homeV2), e30=
+0, 0, ^https://m5\.amap\.com/ws/(?:mapapi/hint_text/offline_data|message/notice/list|shield/search/new_hotword), e30=
+0, 0, ^https://m5\.amap\.com/ws/shield/scene/recommend\?, e30=
+0, 0, ^https://m5\.amap\.com/ws/valueadded/weather/v2\?, e30=
+0, 0, ^https://sns\.amap\.com/ws/msgbox/pull_mp\?, e30=
+0, 0, ^https://m5-zb\.amap\.com/ws/boss/(?:order/car/(?:feedback/get_card_questions|feedback/viptips|king_toolbox_car_bubble|remark/satisfactionConf|rights_information)|tips/onscene_visual_optimization), e30=
+0, 0, ^https://m5-zb\.amap\.com/ws/boss/(?:pay/web/paySuccess/info/request|transportation/diversion/resource/driving), e30=
 
 # ==================== [Script] 核心 JS 脚本处理 (严格按照 Loon 顺序) ====================
 # 使用 Anywhere 的 script (op 100) 全缓冲模式
