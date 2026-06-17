@@ -1,7 +1,7 @@
 name = 高德地图净化
 
 # 核心域名 (保持连接，但仅对广告接口进行 MITM 解密)
-hostname = m5-zb.amap.com, center.amap.com, amap-aos-info-nogw.amap.com, ai.amap.com, m5.amap.com
+hostname = amap.com
 
 ## ==================== [Map Local] 转换为原生本地 Mock ====================
 # 使用原生 Op 0 (rewrite) 的子模式 2 (reject 200 text)，直接由本地返回空 JSON "{}"
