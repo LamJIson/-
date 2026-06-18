@@ -7,7 +7,7 @@
 # date: 2025-11-10 00:00:00
 
 name = 网易云svip会员（完全免费不要到处分享）
-hostname = interface*.music.163.com
+hostname = interface.music.163.com, interface1.music.163.com, interface2,music.163.com, interface3.music.163.com, interface4.music.163.com, interface6.music.163.com, interface7.music.163.com, interface8.music.163.com, interface9.music.163.com
 content-type = application/json; charset=utf-8
 
 0, 0, ^https?://interface\d?\.music\.163\.com/eapi/(?:delivery/(batch-)?deliver|moment/tab/info/|side-bar/mini-program/music-service/account|yunbei/account/entrance/), 2, {}
