@@ -7,6 +7,7 @@
 # date: 2025-10-25 04:40:57
 
 name = 🍿️ DualSubs: 🎵 Spotify
+hostname = api.spotify.com, spclient.wg.spotify.com, *-spclient.spotify.com
 
 0, 2, ^https?://api\.spotify\.com/v1/tracks(?:\?|$), accept-encoding
 0, 1, ^https?://api\.spotify\.com/v1/tracks(?:\?|$), accept-encoding, identity
