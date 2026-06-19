@@ -1,7 +1,7 @@
 # 高德地图净化[墨鱼版] - Anywhere 版本
 # 来源：@ddgksf2013
 name = 高德地图净化
-hostname = amap.com
+hostname = m5.amap.com, m5-zb.amap.com, center.amap.com, amap-aos-info-nogw.amap.com, ai.amap.com
 
 # ============================================================
 # 1. 开屏请求（直接返回空 200）
