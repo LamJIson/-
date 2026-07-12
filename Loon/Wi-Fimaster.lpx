@@ -1,0 +1,20 @@
+#!name=万能钥匙
+#!author=ian
+
+
+[Rule]
+DOMAIN,app.aishuttler.com,REJECT
+URL-REGEX,"^https:\/\/lf-cdn-tos\.bytescm\.com\/obj\/static\/ad\/play-comp\/playable-component-sdk\/index-[A-Za-z0-9_-]+\.js(?:\?.*)?$",REJECT
+URL-REGEX,"^https:\/\/lf-cdn-tos\.bytescm\.com\/obj\/static\/ad\/play-comp\/playable-component-sdk\/package\.ugen\.json(?:\?.*)?$",REJECT-DICT
+URL-REGEX,"^https:\/\/di\.aishuttler\.com\/adr\/s2s(?:\?.*)?$",REJECT-DICT
+URL-REGEX,"^https?:\/\/track\.jxdouliang\.com\/mantis\?(?=[^#]*\baction=imp(?:&|$)).*$",REJECT
+URL-REGEX,"^https:\/\/u-aix-files\.oss-cn-zhangjiakou\.aliyuncs\.com\/materiel\/[0-9a-fA-F]{32}\.(?:png|jpe?g|webp|gif)(?:\?.*)?",REJECT-IMG
+URL-REGEX,"^https:\/\/cdn\.aiyituo\.com\/yt\/prod\/material\/video\/\d{8}\/[A-Za-z0-9_-]+\.m3u8(?:\?.*)?$",REJECT-VIDEO
+URL-REGEX,"^https:\/\/cdn\.aiyituo\.com\/yt\/prod\/material\/video\/\d{8}\/[A-Za-z0-9_-]+\.(?:mp4|mov|m3u8)(?:\?.*)?$",REJECT-VIDEO
+URL-REGEX,"^https:\/\/cdn\.aiyituo\.com\/yt\/prod\/material\/video\/\d{8}\/[A-Za-z0-9_-]+\.(?:png|jpe?g|webp|gif)(?:\?.*)?$",REJECT-IMG
+
+[Script]
+http-response ^https:\/\/adx-ad-prod\.wkanx\.com\/v1\/api\/(?:sdk_config|fs_config)(?:\?.*)?$ script-path=万能钥匙.js, requires-body=true, timeout=10, tag=万能钥匙
+
+[Mitm]
+hostname = lf-cdn-tos.bytescm.com,di.aishuttler.com,cdn.aiyituo.com,u-aix-files.oss-cn-zhangjiakou.aliyuncs.com,adx-ad-prod.wkanx.com
