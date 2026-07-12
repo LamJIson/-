@@ -1,10 +1,10 @@
 #!name=万能钥匙去广告
+#!desc=仅去除内部广告
 #!author=ian
-
+#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/WiFi.png
 
 [Rule]
 URL-REGEX,"^https:\/\/coin-api\.y5coin\.com\/coin\/task\/shadowTasks(?:\?.*)?$",REJECT
-URL-REGEX,"^https:\/\/coin-api\.y5coin\.com\/coin\/task\/goldenPositionList(?:\?.*)?$",REJECT
 URL-REGEX,"^https:\/\/coin-api\.y5coin\.com\/coin\/common\/taskAdConfig(?:\?.*)?$",REJECT
 DOMAIN,taichi.51y5.net,REJECT
 DOMAIN,cdn-api-auth.zztfly.com,REJECT
