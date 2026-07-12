@@ -1,4 +1,4 @@
-#!name=万能钥匙
+#!name=万能钥匙去广告
 #!author=ian
 
 
@@ -14,7 +14,7 @@ URL-REGEX,"^https:\/\/cdn\.aiyituo\.com\/yt\/prod\/material\/video\/\d{8}\/[A-Za
 URL-REGEX,"^https:\/\/cdn\.aiyituo\.com\/yt\/prod\/material\/video\/\d{8}\/[A-Za-z0-9_-]+\.(?:png|jpe?g|webp|gif)(?:\?.*)?$",REJECT-IMG
 
 [Script]
-http-response ^https:\/\/adx-ad-prod\.wkanx\.com\/v1\/api\/(?:sdk_config|fs_config)(?:\?.*)?$ script-path=万能钥匙.js, requires-body=true, timeout=10, tag=万能钥匙
+http-response ^https:\/\/adx-ad-prod\.wkanx\.com\/v1\/api\/(?:sdk_config|fs_config)(?:\?.*)?$ script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/wifimaster.js, requires-body=true, timeout=10, tag=万能钥匙
 
 [Mitm]
 hostname = lf-cdn-tos.bytescm.com,di.aishuttler.com,cdn.aiyituo.com,u-aix-files.oss-cn-zhangjiakou.aliyuncs.com,adx-ad-prod.wkanx.com
