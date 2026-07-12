@@ -3,6 +3,10 @@
 
 
 [Rule]
+URL-REGEX,"^https:\/\/coin-api\.y5coin\.com\/coin\/task\/shadowTasks(?:\?.*)?$",REJECT
+URL-REGEX,"^https:\/\/coin-api\.y5coin\.com\/coin\/task\/goldenPositionList(?:\?.*)?$",REJECT
+URL-REGEX,"^https:\/\/coin-api\.y5coin\.com\/coin\/common\/taskAdConfig(?:\?.*)?$",REJECT
+URL-REGEX,"^https:\/\/coin-api\.y5coin\.com\/coin\/common\/guideVideo(?:\?.*)?$",REJECT
 DOMAIN,taichi.51y5.net,REJECT
 DOMAIN,cdn-api-auth.zztfly.com,REJECT
 DOMAIN,app.aishuttler.com,REJECT
