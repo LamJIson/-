@@ -6,7 +6,6 @@
 URL-REGEX,"^https:\/\/coin-api\.y5coin\.com\/coin\/task\/shadowTasks(?:\?.*)?$",REJECT
 URL-REGEX,"^https:\/\/coin-api\.y5coin\.com\/coin\/task\/goldenPositionList(?:\?.*)?$",REJECT
 URL-REGEX,"^https:\/\/coin-api\.y5coin\.com\/coin\/common\/taskAdConfig(?:\?.*)?$",REJECT
-URL-REGEX,"^https:\/\/coin-api\.y5coin\.com\/coin\/common\/guideVideo(?:\?.*)?$",REJECT
 DOMAIN,taichi.51y5.net,REJECT
 DOMAIN,cdn-api-auth.zztfly.com,REJECT
 DOMAIN,app.aishuttler.com,REJECT
@@ -23,4 +22,4 @@ URL-REGEX,"^https:\/\/cdn\.aiyituo\.com\/yt\/prod\/material\/video\/\d{8}\/[A-Za
 http-response ^https:\/\/adx-ad-prod\.wkanx\.com\/v1\/api\/(?:sdk_config|fs_config)(?:\?.*)?$ script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/wifimaster.js, requires-body=true, timeout=10, tag=万能钥匙
 
 [Mitm]
-hostname = lf-cdn-tos.bytescm.com,di.aishuttler.com,cdn.aiyituo.com,u-aix-files.oss-cn-zhangjiakou.aliyuncs.com,adx-ad-prod.wkanx.com
+hostname = lf-cdn-tos.bytescm.com,di.aishuttler.com,cdn.aiyituo.com,u-aix-files.oss-cn-zhangjiakou.aliyuncs.com,adx-ad-prod.wkanx.com,coin-api.y5coin.com
