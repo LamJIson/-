@@ -3,6 +3,8 @@
 
 
 [Rule]
+DOMAIN,taichi.51y5.net,REJECT
+DOMAIN,cdn-api-auth.zztfly.com,REJECT
 DOMAIN,app.aishuttler.com,REJECT
 URL-REGEX,"^https:\/\/lf-cdn-tos\.bytescm\.com\/obj\/static\/ad\/play-comp\/playable-component-sdk\/index-[A-Za-z0-9_-]+\.js(?:\?.*)?$",REJECT
 URL-REGEX,"^https:\/\/lf-cdn-tos\.bytescm\.com\/obj\/static\/ad\/play-comp\/playable-component-sdk\/package\.ugen\.json(?:\?.*)?$",REJECT-DICT
