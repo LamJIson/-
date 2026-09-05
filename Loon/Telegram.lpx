@@ -1,0 +1,8 @@
+#!name=Telegram重定向
+#!desc=适用于安装了多个不同Telegram客户端的用
+
+[Argument]
+app=select, "tg", "sg", "turrit", "ime", "ng", "lingo",tag=客户端, desc=指定跳转的客户端
+
+[MITM]
+hostname = t.me
