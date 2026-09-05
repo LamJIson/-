@@ -4,5 +4,9 @@
 [Argument]
 app=select, "tg", "sg", "turrit", "ime", "ng", "lingo",tag=客户端, desc=指定跳转的客户端
 
+[Rewrite]
+request if ${url} ~= /^https:\/\/t\.me\/([A-Za-z][A-Za-z0-9_]{3,30}[A-Za-z0-9])\/?$/ as item then redirect(307, "${app}://resolve?domain=${item.1}")
+request if ${url} ~= /^https:\/\/t\.me\/([A-Za-z][A-Za-z0-9_]{3,30}[A-Za-z0-9])\/?$/ as item then redirect(307, "${app}://resolve?domain=${item.1}")
+
 [MITM]
 hostname = t.me
