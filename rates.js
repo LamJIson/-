@@ -14,8 +14,10 @@ export default async function(ctx) {
       USD: cny.toFixed(2),
       EUR: (cny / data.rates.EUR).toFixed(2),
       SGD: (cny / data.rates.SGD).toFixed(2),
-      TWD: (cny / data.rates.TWD).toFixed(2),
+      MYR: (cny / data.rates.MYR).toFixed(2),
       HKD: (cny / data.rates.HKD).toFixed(2),
+      TWD: (cny / data.rates.TWD).toFixed(2),
+      THB: ((cny / data.rates.THB) * 100).toFixed(2), // 100泰铢兑换人民币
       VND: ((cny / data.rates.VND) * 10000).toFixed(2) // 1万越南盾兑换人民币
     };
   } catch (e) {
@@ -60,10 +62,10 @@ export default async function(ctx) {
   const isMedium = family === "systemMedium";
   const isLarge = family === "systemLarge" || family === "systemExtraLarge";
 
-  // 动态间距和内边距配置
-  const rowSpacing = isLarge ? 24 : (isSmall ? 4 : 8);
-  const titleSpacing = isLarge ? 28 : (isSmall ? 8 : 12);
-  const paddingVal = isLarge ? 24 : 16;
+  // 动态间距和内边距配置 (8列模式下针对小号做了收紧调整)
+  const rowSpacing = isLarge ? 16 : (isSmall ? 2 : 6);
+  const titleSpacing = isLarge ? 20 : (isSmall ? 6 : 10);
+  const paddingVal = isLarge ? 24 : 14;
   const titleText = isSmall ? "汇率 (CNY)" : "汇率看板 (CNY)";
 
   const contentChildren = [];
@@ -73,27 +75,28 @@ export default async function(ctx) {
       { name: "🇺🇸 USD", rate: rates.USD },
       { name: "🇪🇺 EUR", rate: rates.EUR },
       { name: "🇸🇬 SGD", rate: rates.SGD },
+      { name: "🇲🇾 MYR", rate: rates.MYR },
       { name: "🇭🇰 HKD", rate: rates.HKD },
       { name: "🇹🇼 TWD", rate: rates.TWD },
-      { name: "🇻🇳 VND(10k)", rate: rates.VND }
+      { name: "🇹🇭 THB(100)", rate: rates.THB },
+      { name: "🇻🇳 VND(10K)", rate: rates.VND }
     ];
 
     if (isMedium) {
-      // --- 中号尺寸：左右双列排版逻辑 ---
+      // --- 中号尺寸：左右双列排版逻辑 (4 + 4) ---
       const leftColChildren = [];
       const rightColChildren = [];
       
-      // 左列放前3个，右列放后3个
-      const leftList = list.slice(0, 3);
-      const rightList = list.slice(3, 6);
+      const leftList = list.slice(0, 4);
+      const rightList = list.slice(4, 8);
 
       const buildColItem = (item) => ({
         type: "stack",
         direction: "row",
         alignItems: "center",
         children: [
-          { type: "text", text: item.name, font: { size: "subheadline", weight: "medium" }, textColor: "#FFFFFF", flex: 1 },
-          { type: "text", text: item.rate, font: { size: "subheadline", weight: "bold" }, textColor: "#34C759" }
+          { type: "text", text: item.name, font: { size: "footnote", weight: "medium" }, textColor: "#FFFFFF", flex: 1 },
+          { type: "text", text: item.rate, font: { size: "footnote", weight: "bold" }, textColor: "#34C759" }
         ]
       });
 
@@ -114,21 +117,21 @@ export default async function(ctx) {
         alignItems: "start",
         children: [
           { type: "stack", direction: "column", children: leftColChildren, flex: 1 },
-          { type: "spacer", length: 24 }, // 左右两列的列间距
+          { type: "spacer", length: 20 }, // 左右两列的列间距
           { type: "stack", direction: "column", children: rightColChildren, flex: 1 }
         ]
       });
 
     } else {
-      // --- 小号和大号：保持单列排版逻辑 ---
+      // --- 小号和大号：保持单列排版逻辑 (共 8 行) ---
       list.forEach((item, index) => {
         contentChildren.push({
           type: "stack",
           direction: "row",
           alignItems: "center",
           children: [
-            { type: "text", text: item.name, font: { size: isSmall ? "footnote" : "subheadline", weight: "medium" }, textColor: "#FFFFFF", flex: 1 },
-            { type: "text", text: item.rate, font: { size: isSmall ? "footnote" : "subheadline", weight: "bold" }, textColor: "#34C759" }
+            { type: "text", text: item.name, font: { size: isSmall ? "caption1" : "subheadline", weight: "medium" }, textColor: "#FFFFFF", flex: 1 },
+            { type: "text", text: item.rate, font: { size: isSmall ? "caption1" : "subheadline", weight: "bold" }, textColor: "#34C759" }
           ]
         });
         if (index < list.length - 1) contentChildren.push({ type: "spacer", length: rowSpacing });
@@ -157,8 +160,8 @@ export default async function(ctx) {
         alignItems: "center",
         gap: 6,
         children: [
-          { type: "image", src: "sf-symbol:banknote.fill", color: "#FF9500", width: 16, height: 16 },
-          { type: "text", text: titleText, font: { size: "headline", weight: "bold" }, textColor: "#FFFFFF" }
+          { type: "image", src: "sf-symbol:banknote.fill", color: "#FF9500", width: 14, height: 14 },
+          { type: "text", text: titleText, font: { size: isSmall ? "footnote" : "headline", weight: "bold" }, textColor: "#FFFFFF" }
         ]
       },
       { type: "spacer", length: titleSpacing },
