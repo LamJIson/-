@@ -75,7 +75,7 @@ export default async function(ctx) {
       { name: "🇸🇬 SGD", rate: rates.SGD },
       { name: "🇭🇰 HKD", rate: rates.HKD },
       { name: "🇹🇼 TWD", rate: rates.TWD },
-      { name: "🇻🇳 VND(1W)", rate: rates.VND }
+      { name: "🇻🇳 VND(10k)", rate: rates.VND }
     ];
 
     if (isMedium) {
