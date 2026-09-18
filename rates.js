@@ -17,7 +17,7 @@ export default async function(ctx) {
       MYR: (cny / data.rates.MYR).toFixed(2),
       HKD: (cny / data.rates.HKD).toFixed(2),
       TWD: (cny / data.rates.TWD).toFixed(2),
-      THB: ((cny / data.rates.THB).toFixed(2), 
+      THB: (cny / data.rates.THB).toFixed(2), // 1泰铢兑换人民币
       VND: ((cny / data.rates.VND) * 10000).toFixed(2) // 1万越南盾兑换人民币
     };
   } catch (e) {
@@ -79,7 +79,7 @@ export default async function(ctx) {
       { name: "🇭🇰 HKD", rate: rates.HKD },
       { name: "🇹🇼 TWD", rate: rates.TWD },
       { name: "🇹🇭 THB", rate: rates.THB },
-      { name: "🇻🇳 VND(10K)", rate: rates.VND }
+      { name: "🇻🇳 VND(1W)", rate: rates.VND }
     ];
 
     if (isMedium) {
