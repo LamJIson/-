@@ -1,22 +1,20 @@
-
-#!name = YouTube 双语字幕
-#!desc = YouTube 自动翻译双语字幕
-#!author = ChatGPT
-#!tag = YouTube,字幕,翻译
-
-[Argument]
-subtitle_type = select,"Translate","Official",type=string,tag=启用类型,desc=选择使用自动翻译字幕或官方字幕
-auto_cc = switch,true,type=boolean,tag=自动显示字幕,desc=是否自动开启字幕
-show_only_auto_translation = switch,false,type=boolean,tag=只显示翻译字幕,desc=隐藏源语言字幕
+#!name=YouTube 双语字幕
+#!desc=YouTube 自动翻译双语字幕（外语 → 简体中文）
+#!author=ian
+#!category=YouTube
+#!arguments=subtitle_type:Translate,show_only_auto_translation:false
+#!arguments-desc=subtitle_type: 启用类型\n  ├ Translate: 自动翻译字幕\n  └ Official: 官方字幕（不翻译）\n\nshow_only_auto_translation: 只显示翻译字幕\n  ├ false: 双语显示（原文 + 译文）\n  └ true: 仅显示译文
 
 [URL Rewrite]
+# 把 tlang 参数改写成 subtype=Translate，供脚本识别
 ^https:\/\/((?:www|m)\.youtube\.com\/api\/timedtext\?)([^#]+)&tlang=([^&#]+)&([^#]*)(#.*)?$ https://$1$2&$4&subtype=Translate$5 302
 ^https:\/\/((?:www|m)\.youtube\.com\/api\/timedtext\?)([^#]+)&tlang=([^&#]+)(#.*)?$ https://$1$2&subtype=Translate$4 302
 ^https:\/\/((?:www|m)\.youtube\.com\/api\/timedtext\?)tlang=([^&#]+)&([^#]*)(#.*)?$ https://$1$3&subtype=Translate$4 302
 ^https:\/\/((?:www|m)\.youtube\.com\/api\/timedtext\?)tlang=([^&#]+)(#.*)?$ https://$1subtype=Translate$3 302
 
 [Script]
-http-response ^https:\/\/(?:www|m)\.youtube\.com\/api\/timedtext(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/translate.js,requires-body=true,timeout=30,tag=YouTube双语字幕,enable=true,argument="subtitle_type=Translate&show_only_auto_translation=false"
+# 字幕响应处理
+YouTube双语字幕 = type=http-response, pattern=^https:\/\/(?:www|m)\.youtube\.com\/api\/timedtext(?:\?|$), requires-body=1, max-size=0, timeout=30, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/translate.js, argument=subtitle_type={{{subtitle_type}}}&show_only_auto_translation={{{show_only_auto_translation}}}
 
 [MITM]
 hostname = %APPEND% www.youtube.com, m.youtube.com
