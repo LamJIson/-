@@ -17,13 +17,13 @@ nativeDownload = switch,true,tag=原生下载（实验性）,desc=实验性原�
 subtitle_type = select,"Translate","Official",tag=[字幕] 启用类型,desc=Translate=自动翻译 / Official=官方字幕
 auto_cc = switch,true,tag=[字幕] 自动显示,desc=是否总是自动开启字幕
 show_only_auto_translation = switch,false,tag=[翻译器] 只显示译文,desc=true=仅译文，false=双语
-lyrics_translation = switch,true,tag=歌词翻译,desc=是否翻译 YouTube Music 已返回的歌词
-Type = select,"Translate","Official",tag=[字幕] 启用类型,desc=歌词翻译使用 Translate
-AutoCC = switch,true,tag=[字幕] 自动显示
+lyrics_translation = switch,true,tag=歌词翻译,desc=翻译YouTube Music已返回的歌词；不改变歌曲信息
+external_subtitle_url = input,"",tag=外挂字幕URL,desc=External模式使用；格式需与主轨相同
+Type = select,"Translate","Official","External",tag=[字幕] 启用类型,desc=歌词翻译推荐使用 Translate
 Position = select,"Forward","Reverse",tag=字幕顺序,desc=原文在前或译文在前
-Vendor = select,"Google","Microsoft","DeepL",tag=翻译引擎
-ShowOnly = switch,false,tag=只显示自动翻译
-Storage = select,"PersistentStore","Argument",tag=配置优先
+Vendor = select,"Google","Microsoft","DeepL",tag=翻译引擎,desc=商业引擎需自行配置认证
+ShowOnly = switch,false,tag=只显示自动翻译字幕,desc=是否仅显示自动翻译字幕，不显示源语言字幕
+Storage = select,"PersistentStore","Argument",tag=配置优先,desc=优先使用面板/BoxJs 还是插件参数
 LogLevel = select,"WARN","OFF","ERROR","INFO","DEBUG",tag=日志等级
 
 [Rewrite]
@@ -68,10 +68,11 @@ http-request ^https?:\/\/[\w-]+\.googlevideo\.com\/videoplayback script-path=htt
 http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-request.js, requires-body=true, binary-body-mode=true, timeout=15, tag=YT-log-event
 
 # YouTube Music
-http-request ^https?:\/\/music\.youtube\.com\/youtubei\/v1\/browse(\?.+)?$ requires-body=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/request.bundle.js, tag=🍿️ DualSubs.YouTubeMusic.Browse.request.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
-http-request ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/browse(\?.+)?$ requires-body=1, binary-body-mode=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/request.bundle.js, tag=🍿️ DualSubs.YouTube.Browse.request.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
-http-response ^https?:\/\/music\.youtube\.com\/youtubei\/v1\/browse\?(.*)subtype=Translate requires-body=1, script-path=https://github.com/DualSubs/Universal/releases/latest/download/Translate.response.bundle.js, tag=🍿️ DualSubs.YouTubeMusic.Translate.Lyrics.response.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
-http-response ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/browse\?(.*)subtype=Translate requires-body=1, binary-body-mode=1, script-path=https://github.com/DualSubs/Universal/releases/latest/download/Translate.response.bundle.js, tag=🍿️ DualSubs.YouTubeMusic.Translate.Lyrics.response.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+# YouTube Music 歌词翻译（JSON）
+http-response ^https?:\/\/music\.youtube\.com\/youtubei\/v1\/(?:browse|get_panel)(?:\?|$) requires-body=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/youtube-dual-subs.js, tag=🍿️ DualSubs.YouTubeMusic.Translate.Lyrics, argument=[{Type},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel},lyrics_translation={lyrics_translation},external_subtitle_url={external_subtitle_url}]
+
+# YouTube Music 歌词翻译（protobuf）
+http-response ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(?:browse|get_panel)(?:\?|$) requires-body=1, binary-body-mode=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/youtube-dual-subs.js, tag=🍿️ DualSubs.YouTubeMusic.Translate.Lyrics.proto, argument=[{Type},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel},lyrics_translation={lyrics_translation},external_subtitle_url={external_subtitle_url}]
 
 [MITM]
-hostname = %APPEND% *.googlevideo.com, youtubei.googleapis.com, www.youtube.com, m.youtube.com, tv.youtube.com, s.youtube.com, music.youtube.com, dualsubs.github.io
+hostname = %APPEND% *.googlevideo.com, youtubei.googleapis.com, www.youtube.com, m.youtube.com, tv.youtube.com, s.youtube.com, music.youtube.com
