@@ -1,26 +1,37 @@
-// ===== Surge HTTP Response =====
-// 匹配规则：
-// ^https?:\/\/(?:music\.youtube\.com|youtubei\.googleapis\.com)\/youtubei\/v1\/(?:browse|get_panel)(?:\?|$)
+// Loon HTTP Response
+// 匹配规则：^https?:\/\/(?:music\.youtube\.com|youtubei\.googleapis\.com)\/youtubei\/v1\/(?:browse|get_panel)(?:\?|$)
 // requires-body = true
-// max-size = -1
 // timeout = 30
-//
-// argument 示例：
-// lyrics_translation=true&translation_vendor=Google&subtitle_target_language=zh-CN&subtitle_position=Forward&show_only_auto_translation=false&subtitle_diagnostics=true&subtitle_cache_size=20
 
-/******************** 工具 ********************/
 function getArg(name, fallback = "") {
   try {
     if (typeof $argument === "string" && $argument) {
-      const map = Object.fromEntries(
-        $argument.split("&").map(s => {
-          const i = s.indexOf("=");
-          return i < 0
-            ? [decodeURIComponent(s), ""]
-            : [decodeURIComponent(s.slice(0, i)), decodeURIComponent(s.slice(i + 1))];
-        })
-      );
-      if (map[name] !== undefined && map[name] !== "") return String(map[name]);
+      // 支持 argument=[{a},{b}] 和 key=value&key2=value2 两种格式
+      if ($argument.startsWith("[")) {
+        // Loon argument 数组形式，按顺序映射
+        const args = JSON.parse($argument.replace(/(\w+)/g, '"$1"').replace(/""/g, '"'));
+        const map = {
+          lyrics_translation: args[0],
+          subtitle_target_language: args[1],
+          subtitle_source_language: args[2],
+          subtitle_position: args[3],
+          show_only_auto_translation: args[4],
+          subtitle_diagnostics: args[5],
+          subtitle_cache_size: args[6],
+          translation_attempts: args[7]
+        };
+        if (map[name] !== undefined && map[name] !== "") return String(map[name]);
+      } else {
+        const map = Object.fromEntries(
+          $argument.split("&").map(s => {
+            const i = s.indexOf("=");
+            return i < 0
+              ? [decodeURIComponent(s), ""]
+              : [decodeURIComponent(s.slice(0, i)), decodeURIComponent(s.slice(i + 1))];
+          })
+        );
+        if (map[name] !== undefined && map[name] !== "") return String(map[name]);
+      }
     }
   } catch (_) {}
   return fallback;
@@ -36,9 +47,8 @@ function httpRequest(opt) {
   return new Promise((resolve, reject) => {
     const method = (opt.method || "GET").toUpperCase();
     const headers = opt.headers || {};
-    const timeout = Math.max(1, Math.floor((opt.timeout || 8000) / 1000));
     $httpClient[method.toLowerCase()](
-      { url: opt.url, headers, body: opt.body, timeout },
+      { url: opt.url, headers, body: opt.body, timeout: Math.max(1, Math.floor((opt.timeout || 8000) / 1000)) },
       (err, resp, body) => {
         if (err) return reject(err);
         resolve({ status: resp.status, headers: resp.headers || {}, body: body || "" });
@@ -52,22 +62,18 @@ function log(stage, detail) {
   console.log(`[YT-Music] ${stage} ${detail}`);
 }
 
-/******************** DualSubs Core（精简版） ********************/
+/******************** 翻译核心 ********************/
 var total = 0, active = 0, waiting = [];
 async function dualFetch(request) {
   if (++total > 16) throw Error("DualSubs request budget exceeded");
   if (active >= 4) await new Promise(r => waiting.push(r));
   else active++;
   try {
-    let url = request.url, body = request.body;
-    if (/microsofttranslator|api\.translator\.azure/.test(url)) {
-      url = url.replace(/([?&])from=auto(?=&|$)/, "$1").replace("?&", "?");
-    }
     const response = await httpRequest({
-      url,
-      method: request.method || (body === undefined ? "GET" : "POST"),
+      url: request.url,
+      method: request.method || "GET",
       headers: request.headers || {},
-      body,
+      body: request.body,
       timeout: 8000
     });
     if (response.status < 200 || response.status >= 300) throw Error("DualSubs HTTP " + response.status);
@@ -79,12 +85,11 @@ async function dualFetch(request) {
   }
 }
 
-/******************** 翻译核心 ********************/
 async function googleRows(rows, sourceLang, targetLang) {
   sourceLang = (sourceLang || "auto").toLowerCase();
   targetLang = (targetLang || "zh-CN").toLowerCase();
-  if (targetLang === "zh" || targetLang === "zh-hans") targetLang = "zh-CN";
-  if (targetLang === "zh-hant" || targetLang === "zh-tw") targetLang = "zh-TW";
+  if (["zh", "zh-hans"].includes(targetLang)) targetLang = "zh-CN";
+  if (["zh-hant", "zh-tw", "zh-hk"].includes(targetLang)) targetLang = "zh-TW";
 
   const sep = "\r";
   const maxEncoded = 14000;
@@ -154,10 +159,9 @@ async function googleRows(rows, sourceLang, targetLang) {
 /******************** 主逻辑 ********************/
 async function processMusic() {
   const enable = String(getArg("lyrics_translation", "true")).toLowerCase();
-  if (enable !== "true" && enable !== "1" && enable !== "on") return $done({});
+  if (!["true", "1", "on"].includes(enable)) return $done({});
 
-  const status = Number($response.status);
-  if (status >= 300 || !$response.body) return $done({});
+  if (Number($response.status) >= 300 || !$response.body) return $done({});
 
   const url = $request.url || "";
   if (!/^https?:\/\/(?:music\.youtube\.com|youtubei\.googleapis\.com)\/youtubei\/v1\/(?:browse|get_panel)(?:\?|$)/.test(url)) {
@@ -167,7 +171,6 @@ async function processMusic() {
   const body = $response.body;
   const contentType = ($response.headers?.["Content-Type"] || $response.headers?.["content-type"] || "").toLowerCase();
 
-  // 只处理 JSON
   if (!/json/i.test(contentType) && !(typeof body === "string" && body.trim().startsWith("{"))) {
     log("music-result", "state=skip-non-json");
     return $done({});
@@ -240,7 +243,6 @@ async function processMusic() {
   $done({ body: JSON.stringify(object) });
 }
 
-/******************** 入口 ********************/
 processMusic().catch(e => {
   console.log("YT Music error:", e);
   $done({});
