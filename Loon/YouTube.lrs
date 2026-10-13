@@ -60,4 +60,4 @@ http-request ^https?:\/\/[\w-]+\.googlevideo\.com\/videoplayback script-path=htt
 http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-request.js, requires-body=true, binary-body-mode=true, timeout=15, tag=YT-log-event
 
 [MITM]
-hostname = %APPEND% *.googlevideo.com, youtubei.googleapis.com, www.youtube.com, m.youtube.com, tv.youtube.com, s.youtube.com
+hostname = %APPEND% *.googlevideo.com, youtubei.googleapis.com, www.youtube.com, m.youtube.com, tv.youtube.com, s.youtube.com, music.youtube.com
