@@ -27,8 +27,7 @@ LogLevel = select,"WARN","OFF","ERROR","INFO","DEBUG","ALL",tag=[调试] 日志�
 # 广告相关直接 404
 ^https:\/\/www\.youtube\.com\/(pagead|pcs)\/ - reject
 ^https:\/\/s\.youtube\.com\/api\/stats\/ads - reject
-# 使用reject-img减少开销
-^https?:\/\/([\w-]+)\.googlevideo\.com\/initplayback(\?.*oad=.+)$ reject-img
+
 
 [Script]
 # ad_break 空响应
