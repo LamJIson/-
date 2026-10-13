@@ -17,8 +17,15 @@ nativeDownload = switch,true,tag=原生下载（实验性）,desc=实验性原�
 subtitle_type = select,"Translate","Official",tag=[字幕] 启用类型,desc=Translate=自动翻译 / Official=官方字幕
 auto_cc = switch,true,tag=[字幕] 自动显示,desc=是否总是自动开启字幕
 show_only_auto_translation = switch,false,tag=[翻译器] 只显示译文,desc=true=仅译文，false=双语
-lyrics_translation = switch, true, tag=歌词翻译, desc=翻译YouTube Music已返回的歌词；不改变歌曲信息。
-external_subtitle_url = input, , tag=外挂字幕URL, desc=External模式使用；格式需与主轨相同。
+
+Type = select,"Official","Translate",tag=[字幕] 启用类型,desc=请选择要使用的字幕，双语字幕将使用您选择类型呈现。
+Types = input,"Translate",tag=[歌词] 启用类型,desc=请选择要添加的歌词选项，如果为多选，则会自动决定提供的歌词类型。
+AutoCC = switch,true,tag=[字幕] 自动显示,desc=是否总是自动开启字幕显示。
+Position = select,"Forward","Reverse",tag=[字幕] 主语言（源语言）字幕位置,desc=主语言（源语言）字幕的显示位置。
+Vendor = select,"Google","Microsoft",tag=[翻译器] 服务商API,desc=请选择翻译器所使用的服务商API，更多翻译选项请使用BoxJs。
+ShowOnly = switch,false,tag=[翻译器] 只显示“自动翻译”字幕,desc=是否仅显示“自动翻译”字幕，不显示源语言字幕。
+Storage = select,"PersistentStore","Argument","database",tag=[储存] 配置类型,desc=默认优先使用设置面板或 BoxJS 保存的配置，其次使用插件配置，最后使用脚本默认配置。
+LogLevel = select,"WARN","OFF","ERROR","INFO","DEBUG","ALL",tag=[调试] 日志等级,desc=选择脚本日志的输出等级，低于所选等级的日志将全部输出。
 
 [Rewrite]
 # 广告相关直接 404
@@ -60,17 +67,16 @@ http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event scrip
 
 # ========== timedtext 请求阶段 (0) ==========
 http-request ^https?://(?:www|m)\.youtube\.com/api/timedtext(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/http-response.js, requires-body=true, timeout=30, tag=YouTube timedtext 请求, argument=[{subtitle_type},{auto_cc},{show_only_auto_translation},{subtitle_diagnostics},{subtitle_cache_size},{subtitle_source_language},{subtitle_target_language},{subtitle_position},{subtitle_tolerance_ms},{subtitle_offset_ms},{translation_vendor},{translation_attempts},{googlecloud_version},{googlecloud_mode},{googlecloud_auth},{googlecloud_project},{microsoft_version},{microsoft_mode},{microsoft_auth},{microsoft_region},{deepl_version},{deepl_auth},{lyrics_translation},{external_subtitle_url}]
-# 2) 双语字幕（响应）——完整可用
+# ========== YouTube 翻译 (1) ==========
+双语字幕（响应）——完整可用
 http-response ^https://(?:www|m)\.youtube\.com/api/timedtext(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/youtube-dual-subs.js, requires-body=true, timeout=30, tag=YT-DualSubs, argument=subtitle_type={subtitle_type}&show_only_auto_translation={show_only_auto_translation}
 
+# ========== Music 歌词翻译 (2) ==========
 
-# ========== Music 歌词翻译 (1) ==========
-http-response ^https?://music\.youtube\.com/youtubei/v1/(?:browse|get_panel)(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/http-response3.js, requires-body=true, timeout=30, tag=YouTube Music 歌词翻译, argument=[{subtitle_type},{auto_cc},{show_only_auto_translation},{subtitle_diagnostics},{subtitle_cache_size},{subtitle_source_language},{subtitle_target_language},{subtitle_position},{subtitle_tolerance_ms},{subtitle_offset_ms},{translation_vendor},{translation_attempts},{googlecloud_version},{googlecloud_mode},{googlecloud_auth},{googlecloud_project},{microsoft_version},{microsoft_mode},{microsoft_auth},{microsoft_region},{deepl_version},{deepl_auth},{lyrics_translation},{external_subtitle_url}]
-
-# ========== googleapis browse/get_panel (1) ==========
-http-response ^https://youtubei\.googleapis\.com/youtubei/v1/(?:browse|get_panel)(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/http-response4.js, requires-body=true, timeout=30, tag=YouTube googleapis browse, argument=[{subtitle_type},{auto_cc},{show_only_auto_translation},{subtitle_diagnostics},{subtitle_cache_size},{subtitle_source_language},{subtitle_target_language},{subtitle_position},{subtitle_tolerance_ms},{subtitle_offset_ms},{translation_vendor},{translation_attempts},{googlecloud_version},{googlecloud_mode},{googlecloud_auth},{googlecloud_project},{microsoft_version},{microsoft_mode},{microsoft_auth},{microsoft_region},{deepl_version},{deepl_auth},{lyrics_translation},{external_subtitle_url}]
-# ========== googleapis 带 player/get_watch 前置条件 (1) ==========
-http-response ^https://youtubei\.googleapis\.com/youtubei/v1/(?:browse|get_panel)(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/http-response4.js, requires-body=true, timeout=30, tag=YouTube googleapis player/get_watch, argument=[{subtitle_type},{auto_cc},{show_only_auto_translation},{subtitle_diagnostics},{subtitle_cache_size},{subtitle_source_language},{subtitle_target_language},{subtitle_position},{subtitle_tolerance_ms},{subtitle_offset_ms},{translation_vendor},{translation_attempts},{googlecloud_version},{googlecloud_mode},{googlecloud_auth},{googlecloud_project},{microsoft_version},{microsoft_mode},{microsoft_auth},{microsoft_region},{deepl_version},{deepl_auth},{lyrics_translation},{external_subtitle_url}]
+http-request ^https?:\/\/music\.youtube\.com\/youtubei\/v1\/browse(\?.+)?$ requires-body=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/request.bundle.js, tag=🍿️ DualSubs.YouTubeMusic.Browse.request.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+http-request ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/browse(\?.+)?$ requires-body=1, binary-body-mode=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/request.bundle.js, tag=🍿️ DualSubs.YouTube.Browse.request.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+http-response ^https?:\/\/music\.youtube\.com\/youtubei\/v1\/browse\?(.*)subtype=Translate requires-body=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/Translate.response.bundle.js, tag=🍿️ DualSubs.YouTubeMusic.Translate.Lyrics.response.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+http-response ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/browse\?(.*)subtype=Translate requires-body=1, binary-body-mode=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/Translate.response.bundle.js, tag=🍿️ DualSubs.YouTubeMusic.Translate.Lyrics.response.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
 
 
 [MITM]
