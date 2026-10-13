@@ -14,10 +14,10 @@ blockVerticalLive = switch,true,tag=隐藏竖屏直播推荐,desc=隐藏各界�
 jumpAhead = switch,true,tag=启用 Jump Ahead,desc=启用原生「Jump Ahead」跳转按钮，并去除其推广提示
 blockStore = switch,true,tag=隐藏商店和购物板块,desc=隐藏视频下方和频道主页中的创作者商店、购物板块
 nativeDownload = switch,true,tag=原生下载（实验性）,desc=实验性原生下载；未设置画质时使用 720p，服务器限制可能仍生效
+subtitle_type = select,"Translate","Official",tag=[字幕] 启用类型,desc=Translate=自动翻译 / Official=官方字幕
+auto_cc = switch,true,tag=[字幕] 自动显示,desc=是否总是自动开启字幕
+show_only_auto_translation = switch,false,tag=[翻译器] 只显示译文,desc=true=仅译文，false=双语
 
-subtitle_type = select, "Translate","Official","External", tag=[字幕] 启用类型, desc=请选择要使用的字幕，双语字幕将使用您选择类型呈现。
-auto_cc = switch, true, tag=[字幕] 自动显示, desc=是否总是自动开启字幕显示。
-show_only_auto_translation = switch, false, tag=[翻译器] 只显示自动翻译字幕, desc=是否仅显示自动翻译字幕，不显示源语言字幕。
 subtitle_diagnostics = switch, true, tag=字幕诊断日志, desc=测试期每阶段15秒最多一条，不记录字幕或凭据。
 subtitle_cache_size = input, 20, tag=字幕缓存数量, desc=0关闭；最多100个结果，歌词缓存另限128KiB。
 subtitle_source_language = input, auto, tag=原文语言, desc=auto从字幕请求读取语言；例如en或zh-CN。
@@ -40,17 +40,20 @@ deepl_auth = input, , tag=DeepL Key, desc=填写DeepL认证Key。
 lyrics_translation = switch, true, tag=歌词翻译, desc=翻译YouTube Music已返回的歌词；不改变歌曲信息。
 external_subtitle_url = input, , tag=外挂字幕URL, desc=External模式使用；格式需与主轨相同。
 
-
 [Rewrite]
 # 广告相关直接 404
 ^https:\/\/www\.youtube\.com\/(pagead|pcs)\/ - reject
 ^https:\/\/s\.youtube\.com\/api\/stats\/ads - reject
-^https://((?:www|m)\.youtube\.com/api/timedtext\?)([^#]+)&tlang=([^&#]+)&([^#]*)(#.*)?$ https://$1$2&$4&subtype=Translate$5 header
-^https://((?:www|m)\.youtube\.com/api/timedtext\?)([^#]+)&tlang=([^&#]+)(#.*)?$ https://$1$2&subtype=Translate$4 header
-^https://((?:www|m)\.youtube\.com/api/timedtext\?)tlang=([^&#]+)&([^#]*)(#.*)?$ https://$1$3&subtype=Translate$4 header
-^https://((?:www|m)\.youtube\.com/api/timedtext\?)tlang=([^&#]+)(#.*)?$ https://$1subtype=Translate$3 header
+# timedtext：把 tlang 改写为 subtype=Translate，供字幕脚本识别
+^https://((?:www|m)\.youtube\.com/api/timedtext\?)([^#]+)&tlang=([^&#]+)&([^#]*)(#.*)?$ https://$1$2&$4&subtype=Translate$5 302
+^https://((?:www|m)\.youtube\.com/api/timedtext\?)([^#]+)&tlang=([^&#]+)(#.*)?$ https://$1$2&subtype=Translate$4 302
+^https://((?:www|m)\.youtube\.com/api/timedtext\?)tlang=([^&#]+)&([^#]*)(#.*)?$ https://$1$3&subtype=Translate$4 302
+^https://((?:www|m)\.youtube\.com/api/timedtext\?)tlang=([^&#]+)(#.*)?$ https://$1subtype=Translate$3 302
 
 [Script]
+# 1) 空响应拦截 ad_break（请求阶段）
+http-request ^https://youtubei\.googleapis\.com/youtubei/v1/player/ad_break(?:\?.*)?$ script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/youtube-ad-break.js, requires-body=false, timeout=10, tag=YT-ad_break
+
 # ad_break 空响应
 http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/player\/ad_break(?:\?.*)?$ script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-request.js, requires-body=false, timeout=15, tag=YT-ad-break
 
@@ -75,12 +78,9 @@ http-request ^https?:\/\/[\w-]+\.googlevideo\.com\/videoplayback script-path=htt
 # log_event
 http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-request.js, requires-body=true, binary-body-mode=true, timeout=15, tag=YT-log-event
 
+# 2) 双语字幕（响应）——完整可用
+http-response ^https://(?:www|m)\.youtube\.com/api/timedtext(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/youtube-dual-subs.js, requires-body=true, timeout=30, tag=YT-DualSubs, argument=subtitle_type={subtitle_type}&show_only_auto_translation={show_only_auto_translation}
 
-# ========== timedtext 请求阶段 (0) ==========
-http-request ^https?://(?:www|m)\.youtube\.com/api/timedtext(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/http-response.js, requires-body=true, timeout=30, tag=YouTube timedtext 请求, argument=[{subtitle_type},{auto_cc},{show_only_auto_translation},{subtitle_diagnostics},{subtitle_cache_size},{subtitle_source_language},{subtitle_target_language},{subtitle_position},{subtitle_tolerance_ms},{subtitle_offset_ms},{translation_vendor},{translation_attempts},{googlecloud_version},{googlecloud_mode},{googlecloud_auth},{googlecloud_project},{microsoft_version},{microsoft_mode},{microsoft_auth},{microsoft_region},{deepl_version},{deepl_auth},{lyrics_translation},{external_subtitle_url}]
-
-# ========== timedtext 响应阶段 (1) ==========
-http-response ^https?://(?:www|m)\.youtube\.com/api/timedtext(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/youtube-dual-subs.js, requires-body=true, timeout=30, tag=YouTube timedtext 响应, argument=[{subtitle_type},{auto_cc},{show_only_auto_translation},{subtitle_diagnostics},{subtitle_cache_size},{subtitle_source_language},{subtitle_target_language},{subtitle_position},{subtitle_tolerance_ms},{subtitle_offset_ms},{translation_vendor},{translation_attempts},{googlecloud_version},{googlecloud_mode},{googlecloud_auth},{googlecloud_project},{microsoft_version},{microsoft_mode},{microsoft_auth},{microsoft_region},{deepl_version},{deepl_auth},{lyrics_translation},{external_subtitle_url}]
 
 # ========== Music 歌词翻译 (1) ==========
 http-response ^https?://music\.youtube\.com/youtubei/v1/(?:browse|get_panel)(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/http-response3.js, requires-body=true, timeout=30, tag=YouTube Music 歌词翻译, argument=[{subtitle_type},{auto_cc},{show_only_auto_translation},{subtitle_diagnostics},{subtitle_cache_size},{subtitle_source_language},{subtitle_target_language},{subtitle_position},{subtitle_tolerance_ms},{subtitle_offset_ms},{translation_vendor},{translation_attempts},{googlecloud_version},{googlecloud_mode},{googlecloud_auth},{googlecloud_project},{microsoft_version},{microsoft_mode},{microsoft_auth},{microsoft_region},{deepl_version},{deepl_auth},{lyrics_translation},{external_subtitle_url}]
@@ -88,8 +88,6 @@ http-response ^https?://music\.youtube\.com/youtubei/v1/(?:browse|get_panel)(?:\
 # ========== googleapis browse/get_panel (1) ==========
 http-response ^https://youtubei\.googleapis\.com/youtubei/v1/(?:browse|get_panel)(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/http-response4.js, requires-body=true, timeout=30, tag=YouTube googleapis browse, argument=[{subtitle_type},{auto_cc},{show_only_auto_translation},{subtitle_diagnostics},{subtitle_cache_size},{subtitle_source_language},{subtitle_target_language},{subtitle_position},{subtitle_tolerance_ms},{subtitle_offset_ms},{translation_vendor},{translation_attempts},{googlecloud_version},{googlecloud_mode},{googlecloud_auth},{googlecloud_project},{microsoft_version},{microsoft_mode},{microsoft_auth},{microsoft_region},{deepl_version},{deepl_auth},{lyrics_translation},{external_subtitle_url}]
 
-# ========== googleapis 带 player/get_watch 前置条件 (1) ==========
-http-response ^https://youtubei\.googleapis\.com/youtubei/v1/(?:browse|get_panel)(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/http-response4.js, requires-body=true, timeout=30, tag=YouTube googleapis player/get_watch, argument=[{subtitle_type},{auto_cc},{show_only_auto_translation},{subtitle_diagnostics},{subtitle_cache_size},{subtitle_source_language},{subtitle_target_language},{subtitle_position},{subtitle_tolerance_ms},{subtitle_offset_ms},{translation_vendor},{translation_attempts},{googlecloud_version},{googlecloud_mode},{googlecloud_auth},{googlecloud_project},{microsoft_version},{microsoft_mode},{microsoft_auth},{microsoft_region},{deepl_version},{deepl_auth},{lyrics_translation},{external_subtitle_url}]
 
 [MITM]
 hostname = %APPEND% *.googlevideo.com, youtubei.googleapis.com, www.youtube.com, m.youtube.com, tv.youtube.com, s.youtube.com, music.youtube.com
