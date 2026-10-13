@@ -32,9 +32,6 @@ show_only_auto_translation = switch,false,tag=[翻译器] 只显示译文,desc=t
 # 1) 空响应拦截 ad_break（请求阶段）
 http-request ^https://youtubei\.googleapis\.com/youtubei/v1/player/ad_break(?:\?.*)?$ script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/youtube-ad-break.js, requires-body=false, timeout=10, tag=YT-ad_break
 
-# 2) 双语字幕（响应）——完整可用，对应 Anywhere 第 37 条
-http-response ^https://(?:www|m)\.youtube\.com/api/timedtext(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/youtube-dual-subs.js, requires-body=true, timeout=30, tag=YT-DualSubs, argument=subtitle_type={subtitle_type}&show_only_auto_translation={show_only_auto_translation}
-
 # ad_break 空响应
 http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/player\/ad_break(?:\?.*)?$ script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-request.js, requires-body=false, timeout=15, tag=YT-ad-break
 
@@ -58,6 +55,9 @@ http-request ^https?:\/\/[\w-]+\.googlevideo\.com\/videoplayback script-path=htt
 
 # log_event
 http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-request.js, requires-body=true, binary-body-mode=true, timeout=15, tag=YT-log-event
+
+# 2) 双语字幕（响应）——完整可用，对应 Anywhere 第 37 条
+http-response ^https://(?:www|m)\.youtube\.com/api/timedtext(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/youtube-dual-subs.js, requires-body=true, timeout=30, tag=YT-DualSubs, argument=subtitle_type={subtitle_type}&show_only_auto_translation={show_only_auto_translation}
 
 [MITM]
 hostname = %APPEND% *.googlevideo.com, youtubei.googleapis.com, www.youtube.com, m.youtube.com, tv.youtube.com, s.youtube.com, music.youtube.com
