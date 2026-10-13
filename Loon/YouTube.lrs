@@ -56,7 +56,7 @@ http-request ^https?:\/\/[\w-]+\.googlevideo\.com\/videoplayback script-path=htt
 # log_event
 http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-request.js, requires-body=true, binary-body-mode=true, timeout=15, tag=YT-log-event
 
-# 2) 双语字幕（响应）——完整可用，对应 Anywhere 第 37 条
+# 2) 双语字幕（响应）——完整可用
 http-response ^https://(?:www|m)\.youtube\.com/api/timedtext(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/youtube-dual-subs.js, requires-body=true, timeout=30, tag=YT-DualSubs, argument=subtitle_type={subtitle_type}&show_only_auto_translation={show_only_auto_translation}
 
 [MITM]
