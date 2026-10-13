@@ -1,52 +1,83 @@
-#!name = 🍿️ DualSubs: ▶️ YouTube
-#!desc = YouTube 增强及双语字幕(歌词)
+#!name = YouTube Enhance 与 DualSubs 完整功能
+#!desc = 去广告 / 自动高清 / UI 精简 + DualSubs 双语字幕与 YouTube Music 歌词翻译\n由 Anywhere YouTubeEnhanceDualSubsFull.amrs 转换
 #!openUrl = https://dualsubs.github.io/settings/
-#!author = VirgilClyne[https://github.com/VirgilClyne]
-#!homepage = https://DualSubs.github.io/guide/youtube
+#!author = gholts, VirgilClyne
 #!icon = https://github.com/DualSubs/YouTube/raw/main/src/assets/icon_rounded.png
-#!tag = 🍿️ DualSubs
+#!tag = YouTube,字幕,去广告,Music
 #!system = iOS,iPadOS,macOS
-#!date = 2026-10-11 17:06:32
-#!version = 1.6.0
-#!system_version = 15
+#!date = 2026-10-13
 
 [Argument]
-subtitle_type = select, "Translate","Official","External", tag=[字幕] 启用类型, desc=请选择要使用的字幕，双语字幕将使用您选择类型呈现。
-auto_cc = switch, true, tag=[字幕] 自动显示, desc=是否总是自动开启字幕显示。
-show_only_auto_translation = switch, false, tag=[翻译器] 只显示自动翻译字幕, desc=是否仅显示自动翻译字幕，不显示源语言字幕。
-subtitle_diagnostics = switch, true, tag=字幕诊断日志, desc=测试期每阶段15秒最多一条，不记录字幕或凭据。
-subtitle_cache_size = input, 20, tag=字幕缓存数量, desc=0关闭；最多100个结果，歌词缓存另限128KiB。
-subtitle_source_language = input, auto, tag=原文语言, desc=auto从字幕请求读取语言；例如en或zh-CN。
-subtitle_target_language = input, zh-CN, tag=默认目标语言, desc=字幕请求已选语言优先；例如zh-CN或en。
-subtitle_position = select, "Forward","Reverse", tag=字幕顺序, desc=原文在前或译文在前。
-subtitle_tolerance_ms = input, 100, tag=合成时间容差, desc=官方或外挂字幕对齐容差；0至5000毫秒。
-subtitle_offset_ms = input, 0, tag=副轨时间偏移, desc=正值延后副轨；范围负60000至60000毫秒。
-translation_vendor = select, "Google","GoogleCloud","Microsoft","DeepL", tag=翻译引擎, desc=商业引擎需填写对应认证。
-translation_attempts = select, "1","2","3","4", tag=翻译尝试次数, desc=包括首次请求最多4次。
-googlecloud_version = select, "v2","v3", tag=Google Cloud版本, desc=v3需要项目ID及OAuth Token。
-googlecloud_mode = select, "Key","Token", tag=Google Cloud v2认证, desc=仅v2使用此选项；v3使用OAuth Token。
-googlecloud_auth = input, , tag=Google Cloud认证, desc=填入v2 Key或OAuth Token。
-googlecloud_project = input, , tag=Google Cloud项目ID, desc=v3必填。
-microsoft_version = select, "Azure","AzureCN","AzureUS", tag=Microsoft服务, desc=选择区域服务端。
-microsoft_mode = select, "Key","Token", tag=Microsoft认证方式, desc=选择Key或Bearer Token。
-microsoft_auth = input, , tag=Microsoft认证, desc=对应Key或Token。
-microsoft_region = input, global, tag=Microsoft区域, desc=Key认证的订阅区域。
-deepl_version = select, "Free","Pro", tag=DeepL服务, desc=选择Free或Pro。
-deepl_auth = input, , tag=DeepL Key, desc=填写DeepL认证Key。
-lyrics_translation = switch, true, tag=歌词翻译, desc=翻译YouTube Music已返回的歌词；不改变歌曲信息。
-external_subtitle_url = input, , tag=外挂字幕URL, desc=External模式使用；格式需与主轨相同。
+# ---------- gholts Enhance ----------
+blockUpload = switch,true,tag=隐藏上传入口,desc=隐藏导航中的上传入口
+blockShorts = switch,false,tag=隐藏 Shorts 入口,desc=隐藏导航中的 Shorts 入口
+autoHd = switch,true,tag=自动高清,desc=优先最高可用视频清晰度并防止自动降级
+blockGames = switch,true,tag=隐藏游戏推荐,desc=隐藏 Playables 游戏推荐卡片
+blockVerticalLive = switch,false,tag=隐藏竖屏直播,desc=隐藏已识别的竖屏直播推荐
+jumpAhead = switch,true,tag=启用 Jump Ahead,desc=启用原生跳过按钮并去除推广提示
+blockStore = switch,true,tag=隐藏商店与购物,desc=隐藏创作者商店和视频购物组件
+blockAi = switch,true,tag=隐藏 AI 功能,desc=隐藏 Ask 和 AI 摘要等控件
+# ---------- DualSubs 字幕 / 歌词 ----------
+Type = select,"Translate","Official",tag=[字幕] 启用类型,desc=Translate=翻译字幕 / Official=官方合成字幕
+Types = input,"Translate",tag=[歌词] 启用类型,desc=YouTube Music 歌词：填 Translate
+AutoCC = switch,true,tag=[字幕] 自动显示,desc=是否总是自动开启字幕显示
+Position = select,"Forward","Reverse",tag=[字幕] 原文位置,desc=Forward=原文在上 / Reverse=原文在下
+Vendor = select,"Google","Microsoft",tag=[翻译器] 服务商,desc=翻译 API（更多选项见 BoxJs / 设置面板）
+ShowOnly = switch,false,tag=只显示自动翻译字幕,desc=true=仅译文，false=双语
+Storage = select,"PersistentStore","Argument","database",tag=[储存] 配置类型,desc=配置读取优先级
+LogLevel = select,"WARN","OFF","ERROR","INFO","DEBUG","ALL",tag=[调试] 日志等级,desc=脚本日志输出等级
+
+[Rule]
+# 广告 initplayback / pagead / stats
+URL-REGEX,^https?://[\w-]+\.googlevideo\.com/initplayback(\?.*oad=.+)$,REJECT
+URL-REGEX,^https://www\.youtube\.com/(pagead|pcs)/,REJECT
+URL-REGEX,^https://s\.youtube\.com/api/stats/ads,REJECT
 
 [Rewrite]
+# DualSubs 在线设置面板
 response if ${url} ~= /^https:\/\/dualsubs\.github\.io\/api\/YouTube(?:\?.*)?$/i then response.body.mock_file("json", "https://github.com/DualSubs/YouTube/releases/download/v1.6.0/DualSubs.YouTube.PreferencePanes.json", 200) | response.header.add(["X-PreferencePanes-Version", "Cache-Control"], ["1.6.0", "no-store"])
-# 使用reject-img减少开销
-^https?:\/\/([\w-]+)\.googlevideo\.com\/initplayback(\?.*oad=.+)$ reject-img
+# timedtext：tlang → subtype=Translate（与 amrs rewrite 对应）
+^https://((?:www|m)\.youtube\.com/api/timedtext\?)([^#]+)&tlang=([^&#]+)&([^#]*)(#.*)?$ https://$1$2&$4&subtype=Translate$5 302
+^https://((?:www|m)\.youtube\.com/api/timedtext\?)([^#]+)&tlang=([^&#]+)(#.*)?$ https://$1$2&subtype=Translate$4 302
+^https://((?:www|m)\.youtube\.com/api/timedtext\?)tlang=([^&#]+)&([^#]*)(#.*)?$ https://$1$3&subtype=Translate$4 302
+^https://((?:www|m)\.youtube\.com/api/timedtext\?)tlang=([^&#]+)(#.*)?$ https://$1subtype=Translate$3 302
 
+[Script]
+# ==================== gholts Enhance ====================
+# ad_break 空响应
+http-request ^https://youtubei\.googleapis\.com/youtubei/v1/player/ad_break(?:\?.*)?$ script-path=https://raw.githubusercontent.com/gholts/surge/main/scripts/youtube/request.js, timeout=15, tag=YT.Enhance.ad-break
 
-# YouTube Music
-http-request ^https?:\/\/music\.youtube\.com\/youtubei\/v1\/browse(\?.+)?$ requires-body=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/http-response3.js, tag=🍿️ DualSubs.YouTubeMusic.Browse.request.json, argument=[{subtitle_type},{auto_cc},{show_only_auto_translation},{subtitle_diagnostics},{subtitle_cache_size},{subtitle_source_language},{subtitle_target_language},{subtitle_position},{subtitle_tolerance_ms},{subtitle_offset_ms},{translation_vendor},{translation_attempts},{googlecloud_version},{googlecloud_mode},{googlecloud_auth},{googlecloud_project},{microsoft_version},{microsoft_mode},{microsoft_auth},{microsoft_region},{deepl_version},{deepl_auth},{lyrics_translation},{external_subtitle_url}]
-http-request ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/browse(\?.+)?$ requires-body=1, binary-body-mode=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/http-response4.js, tag=🍿️ DualSubs.YouTube.Browse.request.proto, argument=[{subtitle_type},{auto_cc},{show_only_auto_translation},{subtitle_diagnostics},{subtitle_cache_size},{subtitle_source_language},{subtitle_target_language},{subtitle_position},{subtitle_tolerance_ms},{subtitle_offset_ms},{translation_vendor},{translation_attempts},{googlecloud_version},{googlecloud_mode},{googlecloud_auth},{googlecloud_project},{microsoft_version},{microsoft_mode},{microsoft_auth},{microsoft_region},{deepl_version},{deepl_auth},{lyrics_translation},{external_subtitle_url}]
-http-response ^https?:\/\/music\.youtube\.com\/youtubei\/v1\/browse\?(.*)subtype=Translate requires-body=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/http-response4.js, tag=🍿️ DualSubs.YouTubeMusic.Translate.Lyrics.response.json, argument=[{subtitle_type},{auto_cc},{show_only_auto_translation},{subtitle_diagnostics},{subtitle_cache_size},{subtitle_source_language},{subtitle_target_language},{subtitle_position},{subtitle_tolerance_ms},{subtitle_offset_ms},{translation_vendor},{translation_attempts},{googlecloud_version},{googlecloud_mode},{googlecloud_auth},{googlecloud_project},{microsoft_version},{microsoft_mode},{microsoft_auth},{microsoft_region},{deepl_version},{deepl_auth},{lyrics_translation},{external_subtitle_url}]
-http-response ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/browse\?(.*)subtype=Translate requires-body=1, binary-body-mode=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/http-response4.js, tag=🍿️ DualSubs.YouTubeMusic.Translate.Lyrics.response.proto, argument=[{subtitle_type},{auto_cc},{show_only_auto_translation},{subtitle_diagnostics},{subtitle_cache_size},{subtitle_source_language},{subtitle_target_language},{subtitle_position},{subtitle_tolerance_ms},{subtitle_offset_ms},{translation_vendor},{translation_attempts},{googlecloud_version},{googlecloud_mode},{googlecloud_auth},{googlecloud_project},{microsoft_version},{microsoft_mode},{microsoft_auth},{microsoft_region},{deepl_version},{deepl_auth},{lyrics_translation},{external_subtitle_url}]
+# googlevideo init / videoplayback 请求（密钥 / 自动高清）
+http-request ^https?://[\w-]+\.googlevideo\.com/(?:initplayback|videoplayback)(?:\?.*)?$ requires-body=1, binary-body-mode=1, script-path=https://raw.githubusercontent.com/gholts/surge/main/scripts/youtube/request.js, timeout=15, tag=YT.Enhance.playback-req, argument={"autoHd":{autoHd}}
+
+# log_event 请求
+http-request ^https://youtubei\.googleapis\.com/youtubei/v1/log_event(?:\?.*)?$ script-path=https://raw.githubusercontent.com/gholts/surge/main/scripts/youtube/request.js, timeout=15, tag=YT.Enhance.log-event
+
+# 主 UI / 播放响应增强（去广告、隐藏入口、画质等）
+http-response ^https://youtubei\.googleapis\.com/youtubei/v1/(?:navigation/resolve_url|browse|next|player|search|reel/reel_watch_sequence|guide|account/get_setting|get_watch)(?:\?.*)?$ requires-body=1, binary-body-mode=1, script-path=https://raw.githubusercontent.com/gholts/surge/main/scripts/youtube/response.js, timeout=30, tag=YT.Enhance.response, argument={"blockUpload":{blockUpload},"blockShorts":{blockShorts},"blockGames":{blockGames},"blockVerticalLive":{blockVerticalLive},"jumpAhead":{jumpAhead},"autoHd":{autoHd},"blockStore":{blockStore},"blockAi":{blockAi}}
+
+# config / log_event 响应（密钥相关）
+http-response ^https://youtubei\.googleapis\.com/youtubei/v1/(?:config|log_event)(?:\?.*)?$ requires-body=1, binary-body-mode=1, script-path=https://raw.githubusercontent.com/gholts/surge/main/scripts/youtube/key.js, timeout=20, tag=YT.Enhance.key
+
+# initplayback 响应（UMP）
+http-response ^https?://[\w-]+\.googlevideo\.com/initplayback(?:\?.*)?$ requires-body=1, binary-body-mode=1, script-path=https://raw.githubusercontent.com/gholts/surge/main/scripts/youtube/ump.js, timeout=30, tag=YT.Enhance.ump, argument={"blockGames":{blockGames},"blockVerticalLive":{blockVerticalLive},"jumpAhead":{jumpAhead},"autoHd":{autoHd},"blockStore":{blockStore},"blockAi":{blockAi}}
+
+# ==================== DualSubs：YouTube 字幕 ====================
+http-request ^https?://(www|m|tv)\.youtube\.com/youtubei/v1/player(\?.+)?$ requires-body=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/request.bundle.js, timeout=20, tag=DualSubs.YT.Player.req.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+http-response ^https?://(www|m|tv)\.youtube\.com/youtubei/v1/player(\?.+)?$ requires-body=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/response.bundle.js, timeout=30, tag=DualSubs.YT.Player.res.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+
+http-request ^https?://youtubei\.googleapis\.com/youtubei/v1/player(\?.+)?$ requires-body=1, binary-body-mode=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/request.bundle.js, timeout=20, tag=DualSubs.YT.Player.req.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+http-response ^https?://youtubei\.googleapis\.com/youtubei/v1/player(\?.+)?$ requires-body=1, binary-body-mode=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/response.bundle.js, timeout=30, tag=DualSubs.YT.Player.res.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+
+http-request ^https?://(www|m)\.youtube\.com/api/timedtext(\?.+)?$ script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/request.bundle.js, timeout=15, tag=DualSubs.YT.TimedText.req, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+http-response ^https?://(www|m)\.youtube\.com/api/timedtext\?(.*)subtype=(Official|External) requires-body=1, script-path=https://github.com/DualSubs/Universal/releases/latest/download/Composite.Subtitles.response.bundle.js, timeout=30, tag=DualSubs.YT.Composite.TimedText, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+http-response ^https?://(www|m)\.youtube\.com/api/timedtext\?(.*)subtype=Translate requires-body=1, script-path=https://github.com/DualSubs/Universal/releases/latest/download/Translate.response.bundle.js, timeout=30, tag=DualSubs.YT.Translate.TimedText, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+
+# ==================== DualSubs：YouTube Music 歌词 ====================
+http-request ^https?://music\.youtube\.com/youtubei/v1/browse(\?.+)?$ requires-body=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/request.bundle.js, timeout=20, tag=DualSubs.YTMusic.Browse.req.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+http-request ^https?://youtubei\.googleapis\.com/youtubei/v1/browse(\?.+)?$ requires-body=1, binary-body-mode=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/request.bundle.js, timeout=20, tag=DualSubs.YTMusic.Browse.req.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+http-response ^https?://music\.youtube\.com/youtubei/v1/browse\?(.*)subtype=Translate requires-body=1, script-path=https://github.com/DualSubs/Universal/releases/latest/download/Translate.response.bundle.js, timeout=30, tag=DualSubs.YTMusic.Translate.Lyrics.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+http-response ^https?://youtubei\.googleapis\.com/youtubei/v1/browse\?(.*)subtype=Translate requires-body=1, binary-body-mode=1, script-path=https://github.com/DualSubs/Universal/releases/latest/download/Translate.response.bundle.js, timeout=30, tag=DualSubs.YTMusic.Translate.Lyrics.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
 
 [MITM]
-hostname = www.youtube.com, m.youtube.com, tv.youtube.com, music.youtube.com, youtubei.googleapis.com, -redirector*.googlevideo.com, *.googlevideo.com
+hostname = %APPEND% dualsubs.github.io, www.youtube.com, m.youtube.com, tv.youtube.com, music.youtube.com, youtubei.googleapis.com, s.youtube.com, *.googlevideo.com
