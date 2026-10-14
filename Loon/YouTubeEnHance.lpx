@@ -1,6 +1,6 @@
-#!name=YouTube 增强
-#!desc=去除油管广告 / 支持后台播放 / 画中画 / 自动最高画质
-#!author=gholts VirgilClyne IBL3ND
+#!name=YouTube 增强 + DualSubs
+#!desc=去除油管广告 / 支持后台播放 / 画中画 / 自动最高画质 + 双语字幕
+#!author=gholts VirgilClyne IBL3ND DualSubs
 #!homepage=https://github.com/gholts/surge/tree/main/modules
 #!icon=https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/04ProxySoft/youtube(4).png
 #!tag=YouTube,去广告,增强,翻译
@@ -14,6 +14,8 @@ blockVerticalLive = switch,true,tag=隐藏竖屏直播推荐,desc=隐藏各界�
 jumpAhead = switch,true,tag=启用 Jump Ahead,desc=启用原生「Jump Ahead」跳转按钮，并去除其推广提示
 blockStore = switch,true,tag=隐藏商店和购物板块,desc=隐藏视频下方和频道主页中的创作者商店、购物板块
 nativeDownload = switch,true,tag=原生下载（实验性）,desc=实验性原生下载；未设置画质时使用 720p，服务器限制可能仍生效
+
+# DualSubs 参数
 Type = select,"Translate","Official",tag=[字幕] 启用类型,desc=请选择要使用的字幕，双语字幕将使用您选择类型呈现。
 Types = input,"Translate",tag=[歌词] 启用类型,desc=请选择要添加的歌词选项，如果为多选，则会自动决定提供的歌词类型。
 AutoCC = switch,true,tag=[字幕] 自动显示,desc=是否总是自动开启字幕显示。
@@ -28,8 +30,8 @@ LogLevel = select,"WARN","OFF","ERROR","INFO","DEBUG","ALL",tag=[调试] 日志�
 ^https:\/\/www\.youtube\.com\/(pagead|pcs)\/ - reject
 ^https:\/\/s\.youtube\.com\/api\/stats\/ads - reject
 
-
 [Script]
+#################### 主增强（必须放最前面） ####################
 # 主响应增强（去广告 / UI / 画质等）
 http-response ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(?:navigation\/resolve_url|browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch|log_event|config)(?:\?.*)?$ script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-response.js, requires-body=true, binary-body-mode=true, timeout=30, tag=YT-response, argument={"blockUpload":{blockUpload},"blockShorts":{blockShorts},"blockGames":{blockGames},"blockVerticalLive":{blockVerticalLive},"jumpAhead":{jumpAhead},"autoHd":{autoHd},"blockStore":{blockStore}}
 
@@ -54,21 +56,32 @@ http-request ^https?:\/\/[\w-]+\.googlevideo\.com\/videoplayback script-path=htt
 # log_event
 http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-request.js, requires-body=true, binary-body-mode=true, timeout=15, tag=YT-log-event
 
-# YouTube翻译
-http-request ^https?:\/\/(www|m|tv)\.youtube\.com\/youtubei\/v1\/player(\?.+)?$ requires-body=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/request.bundle.js, tag=🍿️ DualSubs.YouTube.Player.request.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
-http-response ^https?:\/\/(www|m|tv)\.youtube\.com\/youtubei\/v1\/player(\?.+)?$ requires-body=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/response.bundle.js, tag=🍿️ DualSubs.YouTube.Player.response.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
-http-request ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/player(\?.+)?$ requires-body=1, binary-body-mode=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/request.bundle.js, tag=🍿️ DualSubs.YouTube.Player.request.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
-http-response ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/player(\?.+)?$ requires-body=1, binary-body-mode=1, script-pathhttps://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/response.bundle.js, tag=🍿️ DualSubs.YouTube.Player.response.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
-http-response ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/get_watch(\?.+)?$ requires-body=1, binary-body-mode=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/response.bundle.js, tag=🍿️ DualSubs.YouTube.GetWatch.response.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
-http-request ^https?:\/\/(www|m)\.youtube\.com\/api\/timedtext(\?.+)?$ script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/request.bundle.js, tag=🍿️ DualSubs.YouTube.TimedText.request, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
-http-response ^https?:\/\/(www|m)\.youtube\.com\/api\/timedtext\?(.*)subtype=(Official|External) requires-body=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/Composite.Subtitles.response.bundle.js, tag=🍿️ DualSubs.YouTube.Composite.TimedText.response, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
-http-response ^https?:\/\/(www|m)\.youtube\.com\/api\/timedtext\?(.*)subtype=Translate requires-body=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/Translate.response.bundle.js, tag=🍿️ DualSubs.YouTube.Translate.TimedText.response, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+#################### DualSubs（放后面，冲突的响应会被跳过） ####################
+# Player 请求（www / m / tv）
+http-request ^https?:\/\/(www|m|tv)\.youtube\.com\/youtubei\/v1\/player(\?.+)?$ requires-body=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/request.bundle.js, tag=🍿️ DualSubs.YouTube.Player.request.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
 
-# YouTube Music翻译
-http-request ^https?:\/\/music\.youtube\.com\/youtubei\/v1\/browse(\?.+)?$ requires-body=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/request.bundle.js, tag=🍿️ DualSubs.YouTubeMusic.Browse.request.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
-http-request ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/browse(\?.+)?$ requires-body=1, binary-body-mode=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/request.bundle.js, tag=🍿️ DualSubs.YouTube.Browse.request.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
-http-response ^https?:\/\/music\.youtube\.com\/youtubei\/v1\/browse\?(.*)subtype=Translate requires-body=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/Translate.response.bundle.js, tag=🍿️ DualSubs.YouTubeMusic.Translate.Lyrics.response.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
-http-response ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/browse\?(.*)subtype=Translate requires-body=1, binary-body-mode=1, script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/Translate.response.bundle.js, tag=🍿️ DualSubs.YouTubeMusic.Translate.Lyrics.response.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+# Player 响应（www / m / tv）—— 会被主增强跳过，可保留可删
+http-response ^https?:\/\/(www|m|tv)\.youtube\.com\/youtubei\/v1\/player(\?.+)?$ requires-body=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/response.bundle.js, tag=🍿️ DualSubs.YouTube.Player.response.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+
+# Player 请求（youtubei proto）
+http-request ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/player(\?.+)?$ requires-body=1, binary-body-mode=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/request.bundle.js, tag=🍿️ DualSubs.YouTube.Player.request.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+
+# Player 响应（youtubei proto）—— 会被主增强跳过，可保留可删
+http-response ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/player(\?.+)?$ requires-body=1, binary-body-mode=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/response.bundle.js, tag=🍿️ DualSubs.YouTube.Player.response.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+
+# get_watch 响应 —— 会被主增强跳过，可保留可删
+http-response ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/get_watch(\?.+)?$ requires-body=1, binary-body-mode=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/response.bundle.js, tag=🍿️ DualSubs.YouTube.GetWatch.response.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+
+# TimedText（关键！不冲突，双语字幕真正生效的地方）
+http-request ^https?:\/\/(www|m)\.youtube\.com\/api\/timedtext(\?.+)?$ script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/request.bundle.js, tag=🍿️ DualSubs.YouTube.TimedText.request, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+http-response ^https?:\/\/(www|m)\.youtube\.com\/api\/timedtext\?(.*)subtype=(Official|External) requires-body=1, script-path=https://github.com/DualSubs/Universal/releases/latest/download/Composite.Subtitles.response.bundle.js, tag=🍿️ DualSubs.YouTube.Composite.TimedText.response, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+http-response ^https?:\/\/(www|m)\.youtube\.com\/api\/timedtext\?(.*)subtype=Translate requires-body=1, script-path=https://github.com/DualSubs/Universal/releases/latest/download/Translate.response.bundle.js, tag=🍿️ DualSubs.YouTube.Translate.TimedText.response, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+
+# YouTube Music 歌词
+http-request ^https?:\/\/music\.youtube\.com\/youtubei\/v1\/browse(\?.+)?$ requires-body=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/request.bundle.js, tag=🍿️ DualSubs.YouTubeMusic.Browse.request.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+http-request ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/browse(\?.+)?$ requires-body=1, binary-body-mode=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/request.bundle.js, tag=🍿️ DualSubs.YouTube.Browse.request.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+http-response ^https?:\/\/music\.youtube\.com\/youtubei\/v1\/browse\?(.*)subtype=Translate requires-body=1, script-path=https://github.com/DualSubs/Universal/releases/latest/download/Translate.response.bundle.js, tag=🍿️ DualSubs.YouTubeMusic.Translate.Lyrics.response.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
+http-response ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/browse\?(.*)subtype=Translate requires-body=1, binary-body-mode=1, script-path=https://github.com/DualSubs/Universal/releases/latest/download/Translate.response.bundle.js, tag=🍿️ DualSubs.YouTubeMusic.Translate.Lyrics.response.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
 
 [MITM]
-hostname = %APPEND% *.googlevideo.com, youtubei.googleapis.com, www.youtube.com, m.youtube.com, tv.youtube.com, s.youtube.com, music.youtube.com
+hostname = %APPEND% *.googlevideo.com, youtubei.googleapis.com, www.youtube.com, m.youtube.com, tv.youtube.com, s.youtube.com, music.youtube.com, dualsubs.github.io
