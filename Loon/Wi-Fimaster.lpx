@@ -4,6 +4,16 @@
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/WiFi.png
 
 [Rule]
+# 万能钥匙
+DOMAIN,adx-ad-prod.wkanx.com,REJECT
+DOMAIN,miniapp.51y5.net,REJECT
+DOMAIN,mobads-pre-config.bj.bcebos.com,REJECT
+DOMAIN-KEYWORD,rcv.aishuttler.com,REJECT
+DOMAIN-KEYWORD,apm.finclip.com,REJECT
+DOMAIN-KEYWORD,ios-dc.51y5.net,REJECT
+DOMAIN-KEYWORD,config.51y5.net,REJECT
+DOMAIN-KEYWORD,adx-ad-prod.wkanx.com,REJECT
+DOMAIN-KEYWORD,mkt-ad-monitor,REJECT
 URL-REGEX,"^https:\/\/coin-api\.y5coin\.com\/coin\/task\/shadowTasks(?:\?.*)?$",REJECT
 URL-REGEX,"^https:\/\/coin-api\.y5coin\.com\/coin\/common\/taskAdConfig(?:\?.*)?$",REJECT
 DOMAIN,taichi.51y5.net,REJECT
