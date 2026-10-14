@@ -27,6 +27,15 @@ hostname = coin-api.y5coin.com, lf-cdn-tos.bytescm.com, di.aishuttler.com, track
 name = 万能钥匙去广告 Reject
 routing = 2
 
+2, adx-ad-prod.wkanx.com
+2, miniapp.51y5.net
+2, mobads-pre-config.bj.bcebos.com
+3, rcv.aishuttler.com
+3, apm.finclip.com
+3, ios-dc.51y5.net
+3, config.51y5.net
+3, adx-ad-prod.wkanx.com
+3, mkt-ad-monitor
 2, taichi.51y5.net
 2, cdn-api-auth.zztfly.com
 2, app.aishuttler.com
