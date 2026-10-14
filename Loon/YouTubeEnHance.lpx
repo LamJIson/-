@@ -33,46 +33,46 @@ LogLevel = select,"WARN","OFF","ERROR","INFO","DEBUG","ALL",tag=[调试] 日志�
 [Script]
 #################### 主增强（必须放最前面） ####################
 # 主响应增强（去广告 / UI / 画质等）
-http-response ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(?:navigation\/resolve_url|browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch|log_event|config)(?:\?.*)?$ script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-response.js, requires-body=true, binary-body-mode=true, timeout=30, tag=YT-response, argument={"blockUpload":{blockUpload},"blockShorts":{blockShorts},"blockGames":{blockGames},"blockVerticalLive":{blockVerticalLive},"jumpAhead":{jumpAhead},"autoHd":{autoHd},"blockStore":{blockStore}}
+http-response ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(?:navigation\/resolve_url|browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch|log_event|config)(?:\?.*)?$ script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-response.js, requires-body=true, binary-body-mode=true, timeout=30, tag=YT-response, argument="{\"blockUpload\":{blockUpload},\"blockShorts\":{blockShorts},\"blockGames\":{blockGames},\"blockVerticalLive\":{blockVerticalLive},\"jumpAhead\":{jumpAhead},\"autoHd\":{autoHd},\"blockStore\":{blockStore}}"
 
 # ad_break 空响应
 http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/player\/ad_break(?:\?.*)?$ script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-request.js, requires-body=false, timeout=15, tag=YT-ad-break
 
 # 原生下载（响应）
-http-response ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/offline\/get_download_action(?:\?.*)?$ script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-response.js, requires-body=true, binary-body-mode=true, timeout=30, tag=YT-download, argument={"nativeDownload":{nativeDownload}}
+http-response ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/offline\/get_download_action(?:\?.*)?$ script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-response.js, requires-body=true, binary-body-mode=true, timeout=30, tag=YT-download, argument="{\"nativeDownload\":{nativeDownload}}"
 
 # player 请求（原生下载相关）
-http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/player(?:\?.*)?$ script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-request.js, requires-body=true, binary-body-mode=true, timeout=15, tag=YT-download-player, argument={"nativeDownload":{nativeDownload}}
+http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/player(?:\?.*)?$ script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-request.js, requires-body=true, binary-body-mode=true, timeout=15, tag=YT-download-player, argument="{\"nativeDownload\":{nativeDownload}}"
 
 # initplayback 响应（UMP）
-http-response ^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback(?:\?.*)?$ script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-response.js, requires-body=true, binary-body-mode=true, timeout=30, tag=YT-ump, argument={"blockGames":{blockGames},"blockVerticalLive":{blockVerticalLive},"jumpAhead":{jumpAhead},"autoHd":{autoHd},"blockStore":{blockStore}}
+http-response ^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback(?:\?.*)?$ script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-response.js, requires-body=true, binary-body-mode=true, timeout=30, tag=YT-ump, argument="{\"blockGames\":{blockGames},\"blockVerticalLive\":{blockVerticalLive},\"jumpAhead\":{jumpAhead},\"autoHd\":{autoHd},\"blockStore\":{blockStore}}"
 
 # initplayback 请求
 http-request ^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback(?:\?.*)?$ script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-request.js, requires-body=true, binary-body-mode=true, timeout=15, tag=YT-init
 
 # videoplayback 自动高清
-http-request ^https?:\/\/[\w-]+\.googlevideo\.com\/videoplayback script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-request.js, requires-body=true, binary-body-mode=true, timeout=15, tag=YT-auto-hd, argument={"autoHd":{autoHd}}
+http-request ^https?:\/\/[\w-]+\.googlevideo\.com\/videoplayback script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-request.js, requires-body=true, binary-body-mode=true, timeout=15, tag=YT-auto-hd, argument="{\"autoHd\":{autoHd}}"
 
 # log_event
 http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-request.js, requires-body=true, binary-body-mode=true, timeout=15, tag=YT-log-event
 
-#################### DualSubs（放后面，冲突的响应会被跳过） ####################
+#################### DualSubs（放后面） ####################
 # Player 请求（www / m / tv）
 http-request ^https?:\/\/(www|m|tv)\.youtube\.com\/youtubei\/v1\/player(\?.+)?$ requires-body=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/request.bundle.js, tag=🍿️ DualSubs.YouTube.Player.request.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
 
-# Player 响应（www / m / tv）—— 会被主增强跳过，可保留可删
+# Player 响应（www / m / tv）
 http-response ^https?:\/\/(www|m|tv)\.youtube\.com\/youtubei\/v1\/player(\?.+)?$ requires-body=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/response.bundle.js, tag=🍿️ DualSubs.YouTube.Player.response.json, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
 
 # Player 请求（youtubei proto）
 http-request ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/player(\?.+)?$ requires-body=1, binary-body-mode=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/request.bundle.js, tag=🍿️ DualSubs.YouTube.Player.request.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
 
-# Player 响应（youtubei proto）—— 会被主增强跳过，可保留可删
+# Player 响应（youtubei proto）
 http-response ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/player(\?.+)?$ requires-body=1, binary-body-mode=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/response.bundle.js, tag=🍿️ DualSubs.YouTube.Player.response.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
 
-# get_watch 响应 —— 会被主增强跳过，可保留可删
+# get_watch 响应
 http-response ^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/get_watch(\?.+)?$ requires-body=1, binary-body-mode=1, script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/response.bundle.js, tag=🍿️ DualSubs.YouTube.GetWatch.response.proto, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
 
-# TimedText（关键！不冲突，双语字幕真正生效的地方）
+# TimedText（双语字幕真正生效的地方）
 http-request ^https?:\/\/(www|m)\.youtube\.com\/api\/timedtext(\?.+)?$ script-path=https://github.com/DualSubs/YouTube/releases/download/v1.6.0/request.bundle.js, tag=🍿️ DualSubs.YouTube.TimedText.request, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
 http-response ^https?:\/\/(www|m)\.youtube\.com\/api\/timedtext\?(.*)subtype=(Official|External) requires-body=1, script-path=https://github.com/DualSubs/Universal/releases/latest/download/Composite.Subtitles.response.bundle.js, tag=🍿️ DualSubs.YouTube.Composite.TimedText.response, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
 http-response ^https?:\/\/(www|m)\.youtube\.com\/api\/timedtext\?(.*)subtype=Translate requires-body=1, script-path=https://github.com/DualSubs/Universal/releases/latest/download/Translate.response.bundle.js, tag=🍿️ DualSubs.YouTube.Translate.TimedText.response, argument=[{Type},{Types},{AutoCC},{Position},{Vendor},{ShowOnly},{Storage},{LogLevel}]
