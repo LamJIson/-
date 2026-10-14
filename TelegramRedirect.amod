@@ -5,11 +5,11 @@ icon-light = iVBORw0KGgoAAAANSUhEUgAAAJAAAACQCAIAAABoJHXvAAAAAXNSR0IArs4c6QAAAAl
 # Telegram 跳转 - Anywhere MITM RuleSet
 # 原模块: https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/Telegram.yaml
 
-[Parameter]
-1, 0, CLIENT, Telegram 客户端, 选择要跳转到的 Telegram 客户端, Telegram, "[Telegram, Nagram, Swiftgram, Turrit, iMe, Nicegram, Lingogram]"
-
 [MITM]
 hostname = t.me, telegram.me
+
+[Parameter]
+1, 0, CLIENT, Telegram 客户端, 选择要跳转到的 Telegram 客户端, Telegram, "[Telegram, Nagram, Swiftgram, Turrit, iMe, Nicegram, Lingogram]"
 
 [Rule]
 # request 阶段脚本：匹配 t.me / telegram.me 链接并返回 302
