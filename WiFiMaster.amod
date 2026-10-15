@@ -16,10 +16,6 @@ hostname = cds.wifi188.com, lf-cdn-tos.bytescm.com, di.aishuttler.com, cdn.aiyit
 # reject-dict → 200 + {}
 0, 0, ^https?://cds\.wifi188\.com/feeds\.sec, 2, {}
 
-# ---------- URL-REGEX REJECT / REJECT-DICT ----------
-# 金币任务相关
-0, 0, ^https://coin-api\.y5coin\.com/coin/task/shadowTasks(?:\?.*)?$, 2, {}
-0, 0, ^https://coin-api\.y5coin\.com/coin/common/taskAdConfig(?:\?.*)?$, 2, {}
 
 # 穿山甲等广告组件
 0, 0, ^https://lf-cdn-tos\.bytescm\.com/obj/static/ad/play-comp/playable-component-sdk/index-[A-Za-z0-9_-]+\.js(?:\?.*)?$, 2, {}
@@ -39,9 +35,6 @@ hostname = cds.wifi188.com, lf-cdn-tos.bytescm.com, di.aishuttler.com, cdn.aiyit
 0, 0, ^https://cdn\.aiyituo\.com/yt/prod/material/video/\d{8}/[A-Za-z0-9_-]+\.m3u8(?:\?.*)?$, 2, 
 0, 0, ^https://cdn\.aiyituo\.com/yt/prod/material/video/\d{8}/[A-Za-z0-9_-]+\.(?:mp4|mov|m3u8)(?:\?.*)?$, 2, 
 
-# ---------- 脚本：清空广告配置 JSON ----------
-# 对应原 http-response .../sdk_config|fs_config → wifimaster.js
-1, 100, ^https://adx-ad-prod\.wkanx\.com/v1/api/(?:sdk_config|fs_config)(?:\?.*)?$, ZnVuY3Rpb24gcHJvY2VzcyhjdHgpIHsKICBpZiAoY3R4LnBoYXNlICE9PSAicmVzcG9uc2UiKSB7CiAgICByZXR1cm47CiAgfQogIHRyeSB7CiAgICB2YXIgdGV4dCA9ICIiOwogICAgaWYgKGN0eC5ib2R5IGluc3RhbmNlb2YgVWludDhBcnJheSkgewogICAgICB0ZXh0ID0gU3RyaW5nLmZyb21DaGFyQ29kZS5hcHBseShudWxsLCBjdHguYm9keSk7CiAgICB9IGVsc2UgaWYgKHR5cGVvZiBjdHguYm9keSA9PT0gInN0cmluZyIpIHsKICAgICAgdGV4dCA9IGN0eC5ib2R5OwogICAgfSBlbHNlIHsKICAgICAgcmV0dXJuOwogICAgfQogICAgdmFyIG9iaiA9IEpTT04ucGFyc2UodGV4dCk7CiAgICBvYmoubWVzc2FnZSA9ICIiOwogICAgb2JqLmNvZGUgPSAwOwogICAgaWYgKCFvYmouZGF0YSB8fCB0eXBlb2Ygb2JqLmRhdGEgIT09ICJvYmplY3QiKSB7CiAgICAgIG9iai5kYXRhID0ge307CiAgICB9CiAgICBvYmouZGF0YS5yZXNwX3R5cGUgPSAyOwogICAgb2JqLmRhdGEuZGF0YSA9ICIiOwogICAgb2JqLmRhdGEucmVzcF9tc2cgPSAiIjsKICAgIHZhciBvdXQgPSBKU09OLnN0cmluZ2lmeShvYmopOwogICAgY3R4LmJvZHkgPSBvdXQ7CiAgfSBjYXRjaCAoZSkgewogICAgQW55d2hlcmUubG9nICYmIEFueXdoZXJlLmxvZy5pbmZvKCJhZCBjb25maWcgaGFuZGxlIGZhaWxlZDogIiArIGUpOwogIH0KfQ==
 
 [Routing]
 # WiFi万能钥匙 广告域名拦截（合并版）
