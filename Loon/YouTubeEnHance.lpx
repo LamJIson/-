@@ -1,9 +1,9 @@
-#!name=YouTube 增强 + DualSubs
-#!desc=去除油管广告 / 支持后台播放 / 画中画 / 自动最高画质 + 双语字幕
-#!author=gholts VirgilClyne IBL3ND DualSubs
+#!name=YouTube 增强
+#!desc=去除油管广告 / 支持后台播放 / 画中画 / 自动最高画质
+#!author=gholts IBL3ND
 #!homepage=https://github.com/gholts/surge/tree/main/modules
 #!icon=https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/04ProxySoft/youtube(4).png
-#!tag=YouTube,去广告,增强,翻译
+#!tag=YouTube,去广告,增强
 
 [Argument]
 blockUpload = switch,false,tag=隐藏「上传」入口,desc=隐藏导航栏中的「上传」入口
