@@ -14,11 +14,42 @@ blockVerticalLive = switch,true,tag=隐藏竖屏直播推荐,desc=隐藏各界�
 jumpAhead = switch,true,tag=启用 Jump Ahead,desc=启用原生「Jump Ahead」跳转按钮，并去除其推广提示
 blockStore = switch,true,tag=隐藏商店和购物板块,desc=隐藏视频下方和频道主页中的创作者商店、购物板块
 nativeDownload = switch,true,tag=原生下载（实验性）,desc=实验性原生下载；未设置画质时使用 720p，服务器限制可能仍生效
+##########翻译###########
+subtitle_type = select,"Translate","Official","External",tag=[字幕] 启用类型,desc=请选择要使用的字幕，双语字幕将使用您选择类型呈现。
+auto_cc = switch,true,tag=[字幕] 自动显示,desc=是否总是自动开启字幕显示。
+show_only_auto_translation = switch,false,tag=[翻译器] 只显示自动翻译字幕,desc=是否仅显示自动翻译字幕，不显示源语言字幕。
+subtitle_diagnostics = switch,true,tag=字幕诊断日志,desc=测试期每阶段15秒最多一条，不记录字幕或凭据
+subtitle_cache_size = input,20,tag=字幕缓存数量,desc=0关闭；最多100个结果
+subtitle_source_language = input,auto,tag=原文语言,desc=auto从字幕请求读取语言；例如en或zh-CN
+subtitle_target_language = input,zh-CN,tag=默认目标语言,desc=字幕请求已选语言优先；例如zh-CN或en
+subtitle_position = select,"Forward","Reverse",tag=字幕顺序,desc=原文在前或译文在前
+subtitle_tolerance_ms = input,100,tag=合成时间容差,desc=官方或外挂字幕对齐容差；0至5000毫秒
+subtitle_offset_ms = input,0,tag=副轨时间偏移,desc=正值延后副轨；范围负60000至60000毫秒
+translation_vendor = select,"Google","GoogleCloud","Microsoft","DeepL",tag=翻译引擎,desc=商业引擎需填写对应认证
+translation_attempts = select,"1","2","3","4",tag=翻译尝试次数,desc=包括首次请求最多4次
+googlecloud_version = select,"v2","v3",tag=Google Cloud版本,desc=v3需要项目ID及OAuth Token
+googlecloud_mode = select,"Key","Token",tag=Google Cloud v2认证,desc=仅v2使用此选项
+googlecloud_auth = input,,tag=Google Cloud认证,desc=填入v2 Key或OAuth Token
+googlecloud_project = input,,tag=Google Cloud项目ID,desc=v3必填
+microsoft_version = select,"Azure","AzureCN","AzureUS",tag=Microsoft服务,desc=选择区域服务端
+microsoft_mode = select,"Key","Token",tag=Microsoft认证方式,desc=选择Key或Bearer Token
+microsoft_auth = input,,tag=Microsoft认证,desc=对应Key或Token
+microsoft_region = input,global,tag=Microsoft区域,desc=Key认证的订阅区域
+deepl_version = select,"Free","Pro",tag=DeepL服务,desc=选择Free或Pro
+deepl_auth = input,,tag=DeepL Key,desc=填写DeepL认证Key
+lyrics_translation = switch,true,tag=歌词翻译,desc=翻译YouTube Music已返回的歌词；不改变歌曲信息
+external_subtitle_url = input,,tag=外挂字幕URL,desc=External模式使用；格式需与主轨相同
+
 
 [Rewrite]
 # 广告相关直接 404
 ^https:\/\/www\.youtube\.com\/(pagead|pcs)\/ - reject
 ^https:\/\/s\.youtube\.com\/api\/stats\/ads - reject
+# URL Rewrite for timedtext (force Translate subtype)
+^https://((?:www|m)\.youtube\.com/api/timedtext\?)([^#]+)&tlang=([^&#]+)&([^#]*)(#.*)?$ https://$1$2&$4&subtype=Translate$5 header
+^https://((?:www|m)\.youtube\.com/api/timedtext\?)([^#]+)&tlang=([^&#]+)(#.*)?$ https://$1$2&subtype=Translate$4 header
+^https://((?:www|m)\.youtube\.com/api/timedtext\?)tlang=([^&#]+)&([^#]*)(#.*)?$ https://$1$3&subtype=Translate$4 header
+^https://((?:www|m)\.youtube\.com/api/timedtext\?)tlang=([^&#]+)(#.*)?$ https://$1subtype=Translate$3 header
 
 [Script]
 #################### 主增强（必须放最前面） ####################
@@ -46,6 +77,14 @@ http-request ^https?:\/\/[\w-]+\.googlevideo\.com\/videoplayback script-path=htt
 # log_event
 http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event script-path=https://raw.githubusercontent.com/IBL3ND/module/refs/heads/main/youtube-request.js, requires-body=true, binary-body-mode=true, timeout=15, tag=YT-log-event
 
+###########翻译##########
+# ===== 字幕相关（已适配 Loon，使用兼容层）=====
+# 请把 script_19_loon.js 和 script_20_loon.js 放到可访问位置，
+# 或修改下面的 script-path 为你的实际路径 / raw 地址。
+
+http-request ^https?://(?:www|m)\.youtube\.com/api/timedtext(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/translate1.js, requires-body=true, timeout=30, tag=YT-timedtext-req, argument=[{subtitle_type},{auto_cc},{show_only_auto_translation},{subtitle_diagnostics},{subtitle_cache_size},{subtitle_source_language},{subtitle_target_language},{subtitle_position},{subtitle_tolerance_ms},{subtitle_offset_ms},{translation_vendor},{translation_attempts},{googlecloud_version},{googlecloud_mode},{googlecloud_auth},{googlecloud_project},{microsoft_version},{microsoft_mode},{microsoft_auth},{microsoft_region},{deepl_version},{deepl_auth},{lyrics_translation},{external_subtitle_url}]
+
+http-response ^https?://(?:www|m)\.youtube\.com/api/timedtext(?:\?|$) script-path=https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/Script/translate2.js, requires-body=true, timeout=30, tag=YT-timedtext-resp, argument=[{subtitle_type},{auto_cc},{show_only_auto_translation},{subtitle_diagnostics},{subtitle_cache_size},{subtitle_source_language},{subtitle_target_language},{subtitle_position},{subtitle_tolerance_ms},{subtitle_offset_ms},{translation_vendor},{translation_attempts},{googlecloud_version},{googlecloud_mode},{googlecloud_auth},{googlecloud_project},{microsoft_version},{microsoft_mode},{microsoft_auth},{microsoft_region},{deepl_version},{deepl_auth},{lyrics_translation},{external_subtitle_url}]
 
 [MITM]
-hostname = %APPEND% *.googlevideo.com, youtubei.googleapis.com, www.youtube.com, m.youtube.com, tv.youtube.com, s.youtube.com, music.youtube.com
+hostname = googlevideo.com, youtubei.googleapis.com, www.youtube.com, m.youtube.com, tv.youtube.com, s.youtube.com, music.youtube.com
