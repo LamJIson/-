@@ -491,11 +491,12 @@ function dashboardIcon(symbol, color, width, height) {
 
 function dashboardPanel(children, options) {
   options = options || {};
+  // Egern stack 仅支持 alignItems: start | end | center
+  // 不支持 justifyContent / stretch，使用会导致大号不渲染
   return {
     type: 'stack',
     direction: options.direction || 'column',
-    alignItems: options.alignItems || 'stretch',
-    justifyContent: options.justifyContent || 'center',
+    alignItems: options.alignItems || 'center',
     flex: options.flex === undefined ? 1 : options.flex,
     padding: options.padding || [9, 10, 9, 10],
     gap: options.gap === undefined ? 4 : options.gap,
@@ -747,7 +748,7 @@ function buildMediumWidget(data, fromCache) {
   };
 }
 
-/* 大号 / 超大号：仪表盘三栏布局 */
+/* 大号 / 超大号：仪表盘三栏布局（仅用官方支持的 DSL 属性） */
 function buildLargeWidget(data, fromCache) {
   const fee = data.fee || {};
   const voice = data.voice || {};
@@ -761,8 +762,8 @@ function buildLargeWidget(data, fromCache) {
   const remainMB = Number(flow.remainMB) || 0;
 
   const hasDetail = totalMB > 0;
-  const usedPercent = hasDetail ? getUsagePercent(usedMB, totalMB) : null;
-  const remainingPercent = hasDetail ? 100 - usedPercent : null;
+  const usedPercent = hasDetail ? getUsagePercent(usedMB, totalMB) : 0;
+  const remainingPercent = hasDetail ? 100 - usedPercent : 100;
 
   const displayRemaining = `${remaining.toLocaleString('zh-CN', {
     maximumFractionDigits: 2,
@@ -786,6 +787,7 @@ function buildLargeWidget(data, fromCache) {
     voice.unit === '分钟' ? '分钟' : voice.unit || '分钟'
   }`;
 
+  // 左侧：流量主卡 + 半圆进度
   const gaugePanel = dashboardPanel(
     [
       {
@@ -794,57 +796,48 @@ function buildLargeWidget(data, fromCache) {
         alignItems: 'center',
         gap: 5,
         children: [
-          dashboardIcon('chart.pie.fill', COLORS.pink.light, 18, 18),
+          dashboardIcon('chart.pie.fill', COLORS.pink.light, 16, 16),
           dashboardText('流量主卡', 'headline', COLORS.value, 'semibold'),
         ],
       },
-      { type: 'spacer' },
       {
-        type: 'stack',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 4,
-        children: [
-          dashboardIcon(
-            'gauge.with.dots.needle.67percent',
-            COLORS.pink.light,
-            62,
-            62
-          ),
-          dashboardText(percentLabel, 'title2', COLORS.pink.light, 'bold'),
-          dashboardText('流量使用率', 'caption2', COLORS.title),
-        ],
+        type: 'image',
+        src: makeSemiGaugeSVG(usedPercent),
+        width: 100,
+        height: 60,
       },
-      { type: 'spacer' },
+      dashboardText(percentLabel, 'title3', COLORS.pink.light, 'bold'),
+      dashboardText('流量使用率', 'caption2', COLORS.title),
       {
         type: 'stack',
         direction: 'row',
         alignItems: 'center',
         gap: 4,
         children: [
-          dashboardIcon('chart.xyaxis.line', COLORS.pink.light, 14, 14),
+          dashboardIcon('chart.xyaxis.line', COLORS.pink.light, 13, 13),
           dashboardText('流量趋势', 'caption2', COLORS.title),
         ],
       },
     ],
     {
-      flex: 0.95,
-      padding: [10, 12, 10, 12],
-      gap: 4,
+      flex: 1,
+      padding: [12, 12, 12, 12],
+      gap: 8,
       radius: 22,
       light: '#FFFFFFC9',
       dark: '#FFFFFF0B',
+      alignItems: 'center',
     }
   );
 
+  // 中间：剩余流量
   const flowPanel = {
     type: 'stack',
     direction: 'column',
     alignItems: 'start',
-    justifyContent: 'center',
-    flex: 1.35,
-    padding: [5, 5, 5, 5],
-    gap: 7,
+    flex: 1.4,
+    padding: [8, 6, 8, 6],
+    gap: 6,
     children: [
       {
         type: 'stack',
@@ -853,7 +846,12 @@ function buildLargeWidget(data, fromCache) {
         gap: 4,
         children: [
           dashboardIcon('checkmark.circle.fill', COLORS.green.light, 13, 13),
-          dashboardText(remainLabel, 'subheadline', COLORS.green.light, 'semibold'),
+          dashboardText(
+            remainLabel,
+            'subheadline',
+            COLORS.green.light,
+            'semibold'
+          ),
         ],
       },
       {
@@ -862,7 +860,7 @@ function buildLargeWidget(data, fromCache) {
         font: { size: 'largeTitle', weight: 'bold' },
         textColor: COLORS.value,
         maxLines: 1,
-        minScale: 0.42,
+        minScale: 0.4,
       },
       dashboardText(`已用 ${displayUsed}`, 'subheadline', COLORS.title),
       dashboardText(`套餐 ${displayTotal}`, 'subheadline', COLORS.title),
@@ -877,6 +875,7 @@ function buildLargeWidget(data, fromCache) {
     ],
   };
 
+  // 右侧：话费
   const feePanel = dashboardPanel(
     [
       {
@@ -888,7 +887,6 @@ function buildLargeWidget(data, fromCache) {
           {
             type: 'stack',
             alignItems: 'center',
-            justifyContent: 'center',
             width: 34,
             height: 34,
             backgroundColor: {
@@ -896,7 +894,7 @@ function buildLargeWidget(data, fromCache) {
               dark: '#F5A33A22',
             },
             borderRadius: 17,
-            children: [dashboardIcon('yensign', COLORS.orange, 16, 16)],
+            children: [dashboardIcon('yensign.circle.fill', COLORS.orange, 16, 16)],
           },
           dashboardText('话费', 'subheadline', COLORS.title),
         ],
@@ -904,14 +902,17 @@ function buildLargeWidget(data, fromCache) {
       dashboardText(feeValue, 'title2', COLORS.value, 'bold'),
     ],
     {
-      padding: [8, 10, 8, 10],
-      gap: 5,
+      padding: [10, 12, 10, 12],
+      gap: 6,
       radius: 18,
       light: '#FFFFFFC9',
       dark: '#FFFFFF0B',
+      alignItems: 'start',
+      flex: 1,
     }
   );
 
+  // 右侧：语音
   const voicePanel = dashboardPanel(
     [
       {
@@ -923,7 +924,6 @@ function buildLargeWidget(data, fromCache) {
           {
             type: 'stack',
             alignItems: 'center',
-            justifyContent: 'center',
             width: 34,
             height: 34,
             backgroundColor: {
@@ -939,20 +939,21 @@ function buildLargeWidget(data, fromCache) {
       dashboardText(voiceValue, 'title2', COLORS.value, 'bold'),
     ],
     {
-      padding: [8, 10, 8, 10],
-      gap: 5,
+      padding: [10, 12, 10, 12],
+      gap: 6,
       radius: 18,
       light: '#FFFFFFC9',
       dark: '#FFFFFF0B',
+      alignItems: 'start',
+      flex: 1,
     }
   );
 
   const rightPanel = {
     type: 'stack',
     direction: 'column',
-    alignItems: 'stretch',
-    justifyContent: 'center',
-    flex: 0.95,
+    alignItems: 'center',
+    flex: 1,
     gap: 8,
     children: [
       feePanel,
@@ -961,8 +962,7 @@ function buildLargeWidget(data, fromCache) {
         type: 'stack',
         direction: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        padding: [5, 6, 5, 6],
+        padding: [6, 10, 6, 10],
         backgroundColor: {
           light: '#E7F8F0',
           dark: '#20B87920',
@@ -994,7 +994,7 @@ function buildLargeWidget(data, fromCache) {
       {
         type: 'stack',
         direction: 'row',
-        alignItems: 'stretch',
+        alignItems: 'center',
         gap: 9,
         flex: 1,
         children: [gaugePanel, flowPanel, rightPanel],
