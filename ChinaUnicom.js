@@ -1,5 +1,5 @@
 /**
- * 中国联通话费流量小组件（玻璃拟态风格 · 对齐官方卡片视觉）
+ * 中国联通话费流量小组件（玻璃拟态风格）
  *
  * 自动获取方式：
  * 1. 打开中国联通 App
@@ -12,129 +12,52 @@
  *
  * 数据接口：
  * https://m.client.10010.com/mobileserviceimportant/home/queryUserInfoSeven
- * （汇总：话费/语音/流量总数）
  *
- * 流量明细接口（通用/定向分项）：
+ * 流量明细：
  * POST https://m.client.10010.com/servicequerybusiness/operationservice/queryOcsPackageFlowLeftContentRevisedInJune
  *
- * 三种用法（同一个 JS）：
+ * 同一脚本三种入口：
  * http_request → 自动抓 Cookie / 手机号
  * generic      → 显示 Widget
- * schedule     → 保活：定时查一次接口续 session（ctx.cron 或 Env CU_KEEPALIVE=true）
+ * schedule     → 保活（ctx.cron 或 Env CU_KEEPALIVE=true）
  *
- * 环境变量（可选）：
- * CU_SHOW_GENERAL_FLOW=true/false     是否计入通用流量（默认 true）
- * CU_SHOW_DIRECTIONAL_FLOW=true/false 是否计入定向/免流流量（默认 true）
- * CU_KEEPALIVE=true                   schedule 保活开关
+ * 可选环境变量：
+ * CU_SHOW_GENERAL_FLOW=true/false
+ * CU_SHOW_DIRECTIONAL_FLOW=true/false
+ * CU_KEEPALIVE=true
  */
 
-/* =========================================================
- * 基础配置
- * ========================================================= */
-
 const API_HOST = 'm.client.10010.com';
-
 const API_URL =
   'https://m.client.10010.com/mobileserviceimportant/home/queryUserInfoSeven';
-
 const FLOW_DETAIL_URL =
   'https://m.client.10010.com/servicequerybusiness/operationservice/queryOcsPackageFlowLeftContentRevisedInJune';
 
-/* =========================================================
- * 颜色（对齐截图：粉色主调 + 玻璃拟态）
- * ========================================================= */
-
 const COLORS = {
-  // 主背景（半透明玻璃）
-  bg: {
-    light: '#FFFFFFE6',
-    dark: '#1C1C1EE6',
-  },
-
-  // 卡片内背景
-  card: {
-    light: '#FFFFFFCC',
-    dark: '#2C2C2ECC',
-  },
-
-  // 边框
-  border: {
-    light: '#FFFFFF80',
-    dark: '#3A3A3C80',
-  },
-
-  // 主文字
-  title: {
-    light: '#1C1C1E',
-    dark: '#F5F5F7',
-  },
-
-  // 次要文字
-  subtitle: {
-    light: '#8E8E93',
-    dark: '#98989D',
-  },
-
-  // 联通粉 / 强调色
-  accent: {
-    light: '#E60012',
-    dark: '#FF375F',
-  },
-
-  softPink: {
-    light: '#FF6B8A',
-    dark: '#FF6B8A',
-  },
-
-  // 话费橙
-  fee: {
-    light: '#FF9500',
-    dark: '#FF9F0A',
-  },
-
-  // 语音绿
-  voice: {
-    light: '#34C759',
-    dark: '#30D158',
-  },
-
-  // 错误
-  error: {
-    light: '#FF3B30',
-    dark: '#FF453A',
-  },
-
-  // 胶囊浅底
-  capsuleBg: {
-    light: '#FFFFFF90',
-    dark: '#FFFFFF12',
-  },
-
-  // 5G 徽章
-  badgeBg: {
-    light: '#FFE5EC',
-    dark: '#3A1F2A',
-  },
-
-  badgeText: {
-    light: '#E60012',
-    dark: '#FF6B8A',
-  },
+  bg: { light: '#F5F5F7', dark: '#1C1C1E' },
+  card: { light: '#FFFFFF', dark: '#2C2C2E' },
+  border: { light: '#E5E5EA', dark: '#3A3A3C' },
+  title: { light: '#1C1C1E', dark: '#FFFFFF' },
+  subtitle: { light: '#8E8E93', dark: '#98989D' },
+  accent: { light: '#E60012', dark: '#FF375F' },
+  softPink: { light: '#FF6B8A', dark: '#FF6B8A' },
+  fee: { light: '#FF9500', dark: '#FF9F0A' },
+  voice: { light: '#34C759', dark: '#30D158' },
+  error: { light: '#FF3B30', dark: '#FF453A' },
+  capsuleBg: { light: '#F2F2F7', dark: '#3A3A3C' },
+  badgeBg: { light: '#FFE5EC', dark: '#3A1F2A' },
+  badgeText: { light: '#E60012', dark: '#FF6B8A' },
 };
 
-/* =========================================================
- * Cookie / 手机号捕获
- * ========================================================= */
+/* ===================== Cookie / 手机号捕获 ===================== */
 
 function getRequestHeader(headers, name) {
   if (!headers) return '';
-
   try {
     if (typeof headers.get === 'function') {
       return headers.get(name) || '';
     }
   } catch (e) {}
-
   try {
     for (const key of Object.keys(headers)) {
       if (String(key).toLowerCase() === name.toLowerCase()) {
@@ -142,65 +65,52 @@ function getRequestHeader(headers, name) {
       }
     }
   } catch (e) {}
-
   return '';
 }
 
 function extractPhone(url) {
   if (!url) return '';
-
   try {
     const match = url.match(/[?&]desmobiel=([^&]+)/i);
-    if (match && match[1]) {
-      return decodeURIComponent(match[1]).trim();
-    }
+    if (match && match[1]) return decodeURIComponent(match[1]).trim();
   } catch (e) {}
-
   return '';
 }
 
 async function handleCapture(ctx) {
   const req = ctx.request || {};
   const url = String(req.url || '');
+  if (!url || !url.includes(API_HOST)) return;
 
-  if (!url) return;
-  if (!url.includes(API_HOST)) return;
-
-  const cookie = String(
-    getRequestHeader(req.headers, 'cookie') || ''
-  ).trim();
-
+  const cookie = String(getRequestHeader(req.headers, 'cookie') || '').trim();
   const phone = extractPhone(url);
-
   let changed = false;
 
   if (cookie) {
-    const oldCookie = ctx.storage.get('unicom_cookie') || '';
-    if (cookie !== oldCookie) {
+    const old = ctx.storage.get('unicom_cookie') || '';
+    if (cookie !== old) {
       ctx.storage.set('unicom_cookie', cookie);
       changed = true;
     }
   }
-
   if (phone) {
-    const oldPhone = ctx.storage.get('unicom_phone') || '';
-    if (phone !== oldPhone) {
+    const old = ctx.storage.get('unicom_phone') || '';
+    if (phone !== old) {
       ctx.storage.set('unicom_phone', phone);
       changed = true;
     }
   }
-
   if (changed && cookie && phone) {
-    ctx.notify({
-      title: '中国联通',
-      body: '已自动获取登录信息，小组件将自动更新',
-    });
+    try {
+      ctx.notify({
+        title: '中国联通',
+        body: '已自动获取登录信息，小组件将自动更新',
+      });
+    } catch (e) {}
   }
 }
 
-/* =========================================================
- * 数据请求
- * ========================================================= */
+/* ===================== 请求 ===================== */
 
 async function fetchUnicomData(ctx, cookie, phone) {
   const url =
@@ -228,17 +138,12 @@ async function fetchUnicomData(ctx, cookie, phone) {
     e.transient = true;
     throw e;
   }
-
   if (resp.status === 401 || resp.status === 403) {
     const e = new Error(`HTTP ${resp.status}`);
     e.authFailed = true;
     throw e;
   }
-
-  if (resp.status !== 200) {
-    throw new Error(`HTTP ${resp.status}`);
-  }
-
+  if (resp.status !== 200) throw new Error(`HTTP ${resp.status}`);
   return await resp.json();
 }
 
@@ -252,17 +157,13 @@ async function fetchFlowDetail(ctx, cookie) {
     },
     credentials: 'omit',
   });
-
   if (!resp || resp.status !== 200) {
     throw new Error(`HTTP ${resp ? resp.status : 'no-response'}`);
   }
-
   const data = await resp.json();
-
   if (!data || String(data.code) !== '0000') {
     throw new Error(`API 返回异常：${data?.code || 'unknown'}`);
   }
-
   return data;
 }
 
@@ -278,7 +179,6 @@ function isDirectionalFlowItem(item, resourceName) {
   const addupItemCode = String(item.addupItemCode || '');
   const addUpItemName = String(item.addUpItemName || '');
   const feePolicyName = String(item.feePolicyName || '');
-
   return (
     addupItemCode === '40008' ||
     addUpItemName === '套餐内专享免费流量' ||
@@ -290,18 +190,10 @@ function isDirectionalFlowItem(item, resourceName) {
 function formatFlowValue(value, unit) {
   const v = parseFloat(value) || 0;
   const u = String(unit || '').toUpperCase();
-
   if ((u === 'MB' || u === 'M') && v >= 1024) {
-    return {
-      value: Math.round((v / 1024) * 100) / 100,
-      unit: 'GB',
-    };
+    return { value: Math.round((v / 1024) * 100) / 100, unit: 'GB' };
   }
-
-  return {
-    value: Math.round(v * 100) / 100,
-    unit: String(unit || 'MB'),
-  };
+  return { value: Math.round(v * 100) / 100, unit: String(unit || 'MB') };
 }
 
 function parseFlowDetail(data) {
@@ -315,20 +207,15 @@ function parseFlowDetail(data) {
   for (const key of Object.keys(FLOW_RESOURCE_NAMES)) {
     const resourceName = FLOW_RESOURCE_NAMES[key];
     const list = data[key];
-
     if (!Array.isArray(list)) continue;
-
     for (const res of list) {
       const details = res.details;
       if (!Array.isArray(details)) continue;
-
       for (const item of details) {
         const directional = isDirectionalFlowItem(item, resourceName);
-
         const remain = Math.max(0, parseFloat(item.remain) || 0);
         const total = Math.max(0, parseFloat(item.total) || 0);
         const used = Math.max(0, parseFloat(item.use) || 0);
-
         if (directional) {
           directionalRemain += remain;
           directionalTotal += total;
@@ -341,7 +228,6 @@ function parseFlowDetail(data) {
       }
     }
   }
-
   return {
     generalRemain,
     directionalRemain,
@@ -351,10 +237,6 @@ function parseFlowDetail(data) {
     directionalUsed,
   };
 }
-
-/* =========================================================
- * 数据解析
- * ========================================================= */
 
 function parseUnicomData(res) {
   if (
@@ -366,11 +248,9 @@ function parseUnicomData(res) {
   ) {
     throw new Error(`API 返回异常：${res?.code || 'unknown'}`);
   }
-
   const feeResource = res.feeResource;
   const voiceResource = res.voiceResource;
   const flowResource = res.flowResource;
-
   const flowFormatted = formatFlowValue(
     flowResource.flowPersent ?? 0,
     flowResource.newUnit || 'MB'
@@ -382,38 +262,28 @@ function parseUnicomData(res) {
       value: feeResource.feePersent ?? 0,
       unit: feeResource.newUnit || '元',
     },
-
     voice: {
       title: voiceResource.dynamicVoiceTitle || '剩余语音',
       value: voiceResource.voicePersent ?? 0,
       unit: voiceResource.newUnit || '分钟',
     },
-
     flow: {
       title: flowResource.dynamicFlowTitle || '剩余流量',
       value: flowFormatted.value,
       unit: flowFormatted.unit,
-      // 以下字段在明细成功后会被覆盖
-      remainMB: parseFloat(flowResource.flowPersent) || 0,
-      usedMB: 0,
-      totalMB: 0,
+      usedFormatted: { value: 0, unit: 'MB' },
+      totalFormatted: { value: flowFormatted.value, unit: flowFormatted.unit },
       percentUsed: 0,
       percentRemain: 100,
     },
-
     updateTime: new Date().toLocaleTimeString('zh-CN', {
       hour: '2-digit',
       minute: '2-digit',
       timeZone: 'Asia/Shanghai',
     }),
-
     timestamp: Date.now(),
   };
 }
-
-/* =========================================================
- * 加载数据
- * ========================================================= */
 
 function notifyExpiredOnce(ctx, cookie) {
   const key = 'unicom_expired_notified';
@@ -439,149 +309,79 @@ async function loadData(ctx) {
   const phone = ctx.storage.get('unicom_phone') || '';
 
   if (!cookie || !phone) {
-    return {
-      data: null,
-      configured: false,
-      error: null,
-    };
+    return { data: null, configured: false, error: null };
   }
 
   try {
     const res = await fetchUnicomData(ctx, cookie, phone);
     const data = parseUnicomData(res);
 
-    const showGeneralFlow = ctx.env.CU_SHOW_GENERAL_FLOW !== 'false';
-    const showDirectionalFlow = ctx.env.CU_SHOW_DIRECTIONAL_FLOW !== 'false';
+    const showGeneral = ctx.env?.CU_SHOW_GENERAL_FLOW !== 'false';
+    const showDirectional = ctx.env?.CU_SHOW_DIRECTIONAL_FLOW !== 'false';
 
     try {
       const detail = await fetchFlowDetail(ctx, cookie);
-      const {
-        generalRemain,
-        directionalRemain,
-        generalTotal,
-        directionalTotal,
-        generalUsed,
-        directionalUsed,
-      } = parseFlowDetail(detail);
+      const p = parseFlowDetail(detail);
 
       let remainMB = 0;
       let totalMB = 0;
       let usedMB = 0;
-
-      if (showGeneralFlow) {
-        remainMB += generalRemain;
-        totalMB += generalTotal;
-        usedMB += generalUsed;
+      if (showGeneral) {
+        remainMB += p.generalRemain;
+        totalMB += p.generalTotal;
+        usedMB += p.generalUsed;
       }
-      if (showDirectionalFlow) {
-        remainMB += directionalRemain;
-        totalMB += directionalTotal;
-        usedMB += directionalUsed;
+      if (showDirectional) {
+        remainMB += p.directionalRemain;
+        totalMB += p.directionalTotal;
+        usedMB += p.directionalUsed;
       }
-
-      // 若 total 为 0，用 remain + used 兜底
       if (totalMB <= 0 && (remainMB > 0 || usedMB > 0)) {
         totalMB = remainMB + usedMB;
       }
 
-      const formattedRemain = formatFlowValue(remainMB, 'MB');
-      const formattedUsed = formatFlowValue(usedMB, 'MB');
-      const formattedTotal = formatFlowValue(totalMB, 'MB');
-
-      data.flow.value = formattedRemain.value;
-      data.flow.unit = formattedRemain.unit;
-      data.flow.remainMB = remainMB;
-      data.flow.usedMB = usedMB;
-      data.flow.totalMB = totalMB;
-      data.flow.usedFormatted = formattedUsed;
-      data.flow.totalFormatted = formattedTotal;
-
+      const fr = formatFlowValue(remainMB, 'MB');
+      const fu = formatFlowValue(usedMB, 'MB');
+      const ft = formatFlowValue(totalMB, 'MB');
+      data.flow.value = fr.value;
+      data.flow.unit = fr.unit;
+      data.flow.usedFormatted = fu;
+      data.flow.totalFormatted = ft;
       if (totalMB > 0) {
-        data.flow.percentUsed = Math.min(
-          100,
-          Math.round((usedMB / totalMB) * 100)
-        );
-        data.flow.percentRemain = Math.max(
-          0,
-          100 - data.flow.percentUsed
-        );
-      } else {
-        data.flow.percentUsed = 0;
-        data.flow.percentRemain = 100;
+        data.flow.percentUsed = Math.min(100, Math.round((usedMB / totalMB) * 100));
+        data.flow.percentRemain = Math.max(0, 100 - data.flow.percentUsed);
       }
     } catch (e) {
-      // 明细失败时保持汇总接口的剩余值
-      data.flow.usedFormatted = { value: 0, unit: 'MB' };
-      data.flow.totalFormatted = {
-        value: data.flow.value,
-        unit: data.flow.unit,
-      };
+      // 明细失败不影响主数据
     }
 
     ctx.storage.setJSON('unicom_datasource', data);
     clearExpiredFlag(ctx);
-
-    return {
-      data,
-      configured: true,
-      error: null,
-    };
+    return { data, configured: true, error: null };
   } catch (e) {
-    if (e && e.authFailed) {
-      notifyExpiredOnce(ctx, cookie);
-    }
-
+    if (e && e.authFailed) notifyExpiredOnce(ctx, cookie);
     const cached = ctx.storage.getJSON('unicom_datasource');
-
-    return {
-      data: cached || null,
-      configured: true,
-      error: e,
-    };
+    return { data: cached || null, configured: true, error: e };
   }
 }
 
-/* =========================================================
- * SVG 半圆进度条（用于左卡）
- * percentUsed: 0~100
- * ========================================================= */
+/* ===================== SVG 半圆进度 ===================== */
 
 function makeSemiGaugeSVG(percentUsed) {
-  const p = Math.max(0, Math.min(100, percentUsed || 0));
-  // 半圆弧：从左到右，约 180 度
-  // 用 stroke-dasharray 实现进度
+  const p = Math.max(0, Math.min(100, Number(percentUsed) || 0));
   const r = 42;
-  const cx = 50;
-  const cy = 50;
-  const circumference = Math.PI * r; // 半圆周长
-  const offset = circumference * (1 - p / 100);
-
-  // 粉色主弧 + 浅底弧
-  return (
-    `data:image/svg+xml,` +
+  const circ = Math.PI * r;
+  const offset = circ * (1 - p / 100);
+  const svg =
     `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 60'>` +
     `<path d='M 8 50 A ${r} ${r} 0 0 1 92 50' fill='none' stroke='#FFD6E0' stroke-width='8' stroke-linecap='round'/>` +
-    `<path d='M 8 50 A ${r} ${r} 0 0 1 92 50' fill='none' stroke='#FF6B8A' stroke-width='8' stroke-linecap='round' ` +
-    `stroke-dasharray='${circumference.toFixed(2)}' stroke-dashoffset='${offset.toFixed(2)}'/>` +
+    `<path d='M 8 50 A ${r} ${r} 0 0 1 92 50' fill='none' stroke='#FF6B8A' stroke-width='8' stroke-linecap='round' stroke-dasharray='${circ.toFixed(1)}' stroke-dashoffset='${offset.toFixed(1)}'/>` +
     `<circle cx='8' cy='50' r='4' fill='#FF6B8A'/>` +
-    `</svg>`
-  );
+    `</svg>`;
+  return 'data:image/svg+xml,' + encodeURIComponent(svg);
 }
 
-/* 简单趋势线装饰 */
-function makeTrendSVG() {
-  return (
-    `data:image/svg+xml,` +
-    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 20'>` +
-    `<polyline points='0,14 18,12 32,8 48,10 62,6 80,4' fill='none' stroke='#FF6B8A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/>` +
-    `<circle cx='80' cy='4' r='2.5' fill='#FF6B8A'/>` +
-    `</svg>`
-  );
-}
-
-/* =========================================================
- * 顶部标题栏（中号 / 大号）
- * ========================================================= */
+/* ===================== UI 组件 ===================== */
 
 function headerRow(updateTime) {
   return {
@@ -590,7 +390,6 @@ function headerRow(updateTime) {
     alignItems: 'center',
     gap: 6,
     children: [
-      // 左侧：Logo + 中国联通 + 5G
       {
         type: 'stack',
         direction: 'row',
@@ -599,7 +398,7 @@ function headerRow(updateTime) {
         children: [
           {
             type: 'image',
-            src: 'sf-symbol:network',
+            src: 'sf-symbol:simcard.fill',
             color: COLORS.accent,
             width: 16,
             height: 16,
@@ -628,7 +427,6 @@ function headerRow(updateTime) {
         ],
       },
       { type: 'spacer' },
-      // 右侧更新时间
       {
         type: 'text',
         text: `更新 ${updateTime || '--:--'}`,
@@ -640,11 +438,7 @@ function headerRow(updateTime) {
   };
 }
 
-/* =========================================================
- * 右侧小卡片（话费 / 语音）
- * ========================================================= */
-
-function sideCard(iconColor, iconSymbol, label, value, unit) {
+function sideCard(iconColor, symbol, label, value, unit) {
   return {
     type: 'stack',
     direction: 'row',
@@ -666,11 +460,10 @@ function sideCard(iconColor, iconSymbol, label, value, unit) {
           dark: iconColor + '33',
         },
         alignItems: 'center',
-        justifyContent: 'center',
         children: [
           {
             type: 'image',
-            src: iconSymbol,
+            src: symbol,
             color: iconColor,
             width: 14,
             height: 14,
@@ -692,7 +485,7 @@ function sideCard(iconColor, iconSymbol, label, value, unit) {
           {
             type: 'stack',
             direction: 'row',
-            alignItems: 'baseline',
+            alignItems: 'center',
             gap: 2,
             children: [
               {
@@ -718,38 +511,28 @@ function sideCard(iconColor, iconSymbol, label, value, unit) {
   };
 }
 
-/* =========================================================
- * 中号 / 大号 主布局（对齐截图）
- * ========================================================= */
-
 function buildMainWidget(data, family) {
   const flow = data.flow || {};
   const percentUsed = flow.percentUsed ?? 0;
   const percentRemain = flow.percentRemain ?? 100;
-
   const usedText = flow.usedFormatted
     ? `${flow.usedFormatted.value} ${flow.usedFormatted.unit}`
     : '—';
   const totalText = flow.totalFormatted
     ? `${flow.totalFormatted.value} ${flow.totalFormatted.unit}`
     : '—';
+  const isLarge = family === 'systemLarge' || family === 'systemExtraLarge';
 
-  const isLarge =
-    family === 'systemLarge' || family === 'systemExtraLarge';
-
-  // 左侧：流量主卡 + 半圆进度
   const leftCard = {
     type: 'stack',
     direction: 'column',
     alignItems: 'center',
     gap: 6,
-    padding: [10, 10, 8, 10],
+    padding: [10, 8, 8, 8],
     backgroundColor: COLORS.card,
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: COLORS.border,
-    flex: isLarge ? 0 : 1,
-    width: isLarge ? 120 : undefined,
     children: [
       {
         type: 'stack',
@@ -776,8 +559,8 @@ function buildMainWidget(data, family) {
       {
         type: 'image',
         src: makeSemiGaugeSVG(percentUsed),
-        width: isLarge ? 90 : 80,
-        height: isLarge ? 54 : 48,
+        width: isLarge ? 88 : 76,
+        height: isLarge ? 52 : 46,
       },
       {
         type: 'text',
@@ -786,21 +569,13 @@ function buildMainWidget(data, family) {
         textColor: COLORS.softPink,
         maxLines: 1,
       },
-      {
-        type: 'image',
-        src: makeTrendSVG(),
-        width: 56,
-        height: 14,
-      },
     ],
   };
 
-  // 中间：大数字剩余 + 已用/套餐
   const centerBlock = {
     type: 'stack',
     direction: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
     gap: 4,
     flex: 1,
     children: [
@@ -808,10 +583,7 @@ function buildMainWidget(data, family) {
         type: 'stack',
         padding: [3, 10, 3, 10],
         borderRadius: 10,
-        backgroundColor: {
-          light: '#FFE5EC',
-          dark: '#3A1F2A',
-        },
+        backgroundColor: COLORS.badgeBg,
         children: [
           {
             type: 'text',
@@ -825,7 +597,7 @@ function buildMainWidget(data, family) {
       {
         type: 'stack',
         direction: 'row',
-        alignItems: 'baseline',
+        alignItems: 'center',
         gap: 4,
         children: [
           {
@@ -862,23 +634,20 @@ function buildMainWidget(data, family) {
     ],
   };
 
-  // 右侧：话费 + 语音
   const rightColumn = {
     type: 'stack',
     direction: 'column',
     gap: 8,
-    flex: isLarge ? 0 : 1,
-    width: isLarge ? 140 : undefined,
     children: [
       sideCard(
-        COLORS.fee.light,
+        '#FF9500',
         'sf-symbol:yensign.circle.fill',
         '话费',
         data.fee?.value ?? '—',
         data.fee?.unit === '元' ? '元' : data.fee?.unit || '元'
       ),
       sideCard(
-        COLORS.voice.light,
+        '#34C759',
         'sf-symbol:phone.fill',
         '语音',
         data.voice?.value ?? '—',
@@ -887,60 +656,24 @@ function buildMainWidget(data, family) {
     ],
   };
 
-  const mainRow = {
-    type: 'stack',
-    direction: 'row',
-    alignItems: 'center',
-    gap: 10,
-    flex: 1,
-    children: [leftCard, centerBlock, rightColumn],
-  };
-
-  // 底部提示（大号多一行）
-  const bottomHint = isLarge
-    ? {
-        type: 'stack',
-        direction: 'row',
-        alignItems: 'center',
-        children: [
-          { type: 'spacer' },
-          {
-            type: 'stack',
-            padding: [4, 10, 4, 10],
-            borderRadius: 10,
-            backgroundColor: {
-              light: '#E8F8EE',
-              dark: '#1A3A28',
-            },
-            children: [
-              {
-                type: 'text',
-                text: `${percentUsed}% 已用`,
-                font: { size: 'caption2', weight: 'medium' },
-                textColor: COLORS.voice,
-              },
-            ],
-          },
-        ],
-      }
-    : null;
-
-  const children = [headerRow(data.updateTime), mainRow];
-  if (bottomHint) children.push(bottomHint);
-
   return {
     type: 'widget',
     padding: [12, 14, 12, 14],
     gap: 10,
     backgroundColor: COLORS.bg,
     refreshAfter: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
-    children,
+    children: [
+      headerRow(data.updateTime),
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        gap: 10,
+        children: [leftCard, centerBlock, rightColumn],
+      },
+    ],
   };
 }
-
-/* =========================================================
- * 小尺寸
- * ========================================================= */
 
 function buildSmall(data) {
   const flow = data.flow || {};
@@ -954,7 +687,6 @@ function buildSmall(data) {
     backgroundColor: COLORS.bg,
     refreshAfter: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
     children: [
-      // 顶部：联通 + 更新时间
       {
         type: 'stack',
         direction: 'row',
@@ -968,7 +700,7 @@ function buildSmall(data) {
             children: [
               {
                 type: 'image',
-                src: 'sf-symbol:network',
+                src: 'sf-symbol:simcard.fill',
                 color: COLORS.accent,
                 width: 13,
                 height: 13,
@@ -991,8 +723,6 @@ function buildSmall(data) {
           },
         ],
       },
-
-      // 大数字剩余
       {
         type: 'stack',
         direction: 'column',
@@ -1002,7 +732,7 @@ function buildSmall(data) {
           {
             type: 'stack',
             direction: 'row',
-            alignItems: 'baseline',
+            alignItems: 'center',
             gap: 3,
             children: [
               {
@@ -1030,8 +760,6 @@ function buildSmall(data) {
           },
         ],
       },
-
-      // 底部两卡：话费 + 语音
       {
         type: 'stack',
         direction: 'row',
@@ -1097,10 +825,6 @@ function buildSmall(data) {
   };
 }
 
-/* =========================================================
- * 锁屏
- * ========================================================= */
-
 function buildLockScreen(data, family) {
   const SUB = { light: '#FFFFFFB3', dark: '#FFFFFFB3' };
   const flow = data.flow || {};
@@ -1147,7 +871,6 @@ function buildLockScreen(data, family) {
     };
   }
 
-  // accessoryRectangular
   const line = (label, value, unit) => ({
     type: 'stack',
     direction: 'row',
@@ -1190,10 +913,6 @@ function buildLockScreen(data, family) {
     ],
   };
 }
-
-/* =========================================================
- * 错误界面
- * ========================================================= */
 
 function buildError(title, message) {
   return {
@@ -1264,10 +983,6 @@ function buildError(title, message) {
   };
 }
 
-/* =========================================================
- * Widget 主逻辑
- * ========================================================= */
-
 async function handleWidget(ctx) {
   const title = '中国联通';
   const result = await loadData(ctx);
@@ -1276,21 +991,18 @@ async function handleWidget(ctx) {
   if (!result.configured) {
     return buildError(title, '请打开联通 App，进入首页并点击余额位置');
   }
-
   if (!data) {
     return buildError(title, '数据获取失败，请重新打开联通 App 查询一次');
   }
 
   const family = ctx.widgetFamily || 'systemSmall';
 
-  if (family.startsWith('accessory')) {
+  if (String(family).startsWith('accessory')) {
     return buildLockScreen(data, family);
   }
-
   if (family === 'systemSmall') {
     return buildSmall(data);
   }
-
   if (
     family === 'systemMedium' ||
     family === 'systemLarge' ||
@@ -1298,36 +1010,24 @@ async function handleWidget(ctx) {
   ) {
     return buildMainWidget(data, family);
   }
-
   return buildSmall(data);
 }
-
-/* =========================================================
- * 保活
- * ========================================================= */
 
 async function handleKeepAlive(ctx) {
   const cookie = ctx.storage.get('unicom_cookie') || '';
   const phone = ctx.storage.get('unicom_phone') || '';
   if (!cookie || !phone) return;
-
   try {
     await fetchUnicomData(ctx, cookie, phone);
   } catch (e) {}
 }
 
-/* =========================================================
- * Egern 入口
- * ========================================================= */
-
 export default async function (ctx) {
   if (ctx.request && ctx.request.url) {
     return handleCapture(ctx);
   }
-
   if (ctx.cron || (ctx.env && ctx.env.CU_KEEPALIVE === 'true')) {
     return handleKeepAlive(ctx);
   }
-
   return handleWidget(ctx);
 }
