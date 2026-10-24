@@ -1,58 +1,177 @@
 /**
- * 中国联通话费流量小组件 - Egern 玻璃卡片重设计版
- * 保留：自动捕获 Cookie/手机号、话费/语音/流量查询、通用/定向流量筛选、缓存、过期提醒、保活。
- * 用法：http_request 自动捕获；generic 显示组件；schedule / CU_KEEPALIVE 保活。
+ * 中国联通话费流量小组件（玻璃拟态风格 · 对齐官方卡片视觉）
+ *
+ * 自动获取方式：
+ * 1. 打开中国联通 App
+ * 2. 进入首页
+ * 3. 点击当前余额 / 话费位置，让 App 查询一次
+ * 4. Egern 会自动捕获联通 App 请求中的 Cookie 和手机号
+ * 5. 小组件自动使用捕获的数据，无需手动填写环境变量
+ *
+ * 自动捕获域名：m.client.10010.com
+ *
+ * 数据接口：
+ * https://m.client.10010.com/mobileserviceimportant/home/queryUserInfoSeven
+ * （汇总：话费/语音/流量总数）
+ *
+ * 流量明细接口（通用/定向分项）：
+ * POST https://m.client.10010.com/servicequerybusiness/operationservice/queryOcsPackageFlowLeftContentRevisedInJune
+ *
+ * 三种用法（同一个 JS）：
+ * http_request → 自动抓 Cookie / 手机号
+ * generic      → 显示 Widget
+ * schedule     → 保活：定时查一次接口续 session（ctx.cron 或 Env CU_KEEPALIVE=true）
+ *
+ * 环境变量（可选）：
+ * CU_SHOW_GENERAL_FLOW=true/false     是否计入通用流量（默认 true）
+ * CU_SHOW_DIRECTIONAL_FLOW=true/false 是否计入定向/免流流量（默认 true）
+ * CU_KEEPALIVE=true                   schedule 保活开关
  */
 
+/* =========================================================
+ * 基础配置
+ * ========================================================= */
+
 const API_HOST = 'm.client.10010.com';
-const API_URL = 'https://m.client.10010.com/mobileserviceimportant/home/queryUserInfoSeven';
-const FLOW_DETAIL_URL = 'https://m.client.10010.com/servicequerybusiness/operationservice/queryOcsPackageFlowLeftContentRevisedInJune';
+
+const API_URL =
+  'https://m.client.10010.com/mobileserviceimportant/home/queryUserInfoSeven';
+
+const FLOW_DETAIL_URL =
+  'https://m.client.10010.com/servicequerybusiness/operationservice/queryOcsPackageFlowLeftContentRevisedInJune';
+
+/* =========================================================
+ * 颜色（对齐截图：粉色主调 + 玻璃拟态）
+ * ========================================================= */
 
 const COLORS = {
-  bg: { light: '#F5F5FA', dark: '#202024' },
-  border: { light: '#FFFFFFCC', dark: '#FFFFFF1A' },
-  title: { light: '#7C8190', dark: '#A5A5B0' },
-  value: { light: '#171923', dark: '#F8F8FC' },
-  time: { light: '#9296A3', dark: '#8D8D98' },
-  error: { light: '#E60012', dark: '#FF5364' },
-  capsuleBg: { light: '#FFFFFFB8', dark: '#FFFFFF0D' },
-  accent: { light: '#E60012', dark: '#FF5268' },
-  pink: { light: '#F45A91', dark: '#FF78A7' },
-  green: { light: '#20B879', dark: '#43D69B' },
-  orange: { light: '#F5A33A', dark: '#FFB454' },
-  blue: { light: '#6599F6', dark: '#83ACFF' },
+  // 主背景（半透明玻璃）
+  bg: {
+    light: '#FFFFFFE6',
+    dark: '#1C1C1EE6',
+  },
+
+  // 卡片内背景
+  card: {
+    light: '#FFFFFFCC',
+    dark: '#2C2C2ECC',
+  },
+
+  // 边框
+  border: {
+    light: '#FFFFFF80',
+    dark: '#3A3A3C80',
+  },
+
+  // 主文字
+  title: {
+    light: '#1C1C1E',
+    dark: '#F5F5F7',
+  },
+
+  // 次要文字
+  subtitle: {
+    light: '#8E8E93',
+    dark: '#98989D',
+  },
+
+  // 联通粉 / 强调色
+  accent: {
+    light: '#E60012',
+    dark: '#FF375F',
+  },
+
+  softPink: {
+    light: '#FF6B8A',
+    dark: '#FF6B8A',
+  },
+
+  // 话费橙
+  fee: {
+    light: '#FF9500',
+    dark: '#FF9F0A',
+  },
+
+  // 语音绿
+  voice: {
+    light: '#34C759',
+    dark: '#30D158',
+  },
+
+  // 错误
+  error: {
+    light: '#FF3B30',
+    dark: '#FF453A',
+  },
+
+  // 胶囊浅底
+  capsuleBg: {
+    light: '#FFFFFF90',
+    dark: '#FFFFFF12',
+  },
+
+  // 5G 徽章
+  badgeBg: {
+    light: '#FFE5EC',
+    dark: '#3A1F2A',
+  },
+
+  badgeText: {
+    light: '#E60012',
+    dark: '#FF6B8A',
+  },
 };
 
-/* ---------------- Cookie / 手机号自动捕获 ---------------- */
+/* =========================================================
+ * Cookie / 手机号捕获
+ * ========================================================= */
+
 function getRequestHeader(headers, name) {
   if (!headers) return '';
+
   try {
-    if (typeof headers.get === 'function') return headers.get(name) || '';
-  } catch (_) {}
+    if (typeof headers.get === 'function') {
+      return headers.get(name) || '';
+    }
+  } catch (e) {}
+
   try {
     for (const key of Object.keys(headers)) {
-      if (String(key).toLowerCase() === name.toLowerCase()) return headers[key] || '';
+      if (String(key).toLowerCase() === name.toLowerCase()) {
+        return headers[key] || '';
+      }
     }
-  } catch (_) {}
+  } catch (e) {}
+
   return '';
 }
 
 function extractPhone(url) {
   if (!url) return '';
+
   try {
-    const match = String(url).match(/[?&]desmobiel=([^&]+)/i);
-    if (match && match[1]) return decodeURIComponent(match[1]).trim();
-  } catch (_) {}
+    const match = url.match(/[?&]desmobiel=([^&]+)/i);
+    if (match && match[1]) {
+      return decodeURIComponent(match[1]).trim();
+    }
+  } catch (e) {}
+
   return '';
 }
 
 async function handleCapture(ctx) {
   const req = ctx.request || {};
   const url = String(req.url || '');
-  if (!url || !url.includes(API_HOST)) return;
 
-  const cookie = String(getRequestHeader(req.headers, 'cookie') || '').trim();
+  if (!url) return;
+  if (!url.includes(API_HOST)) return;
+
+  const cookie = String(
+    getRequestHeader(req.headers, 'cookie') || ''
+  ).trim();
+
   const phone = extractPhone(url);
+
   let changed = false;
 
   if (cookie) {
@@ -62,6 +181,7 @@ async function handleCapture(ctx) {
       changed = true;
     }
   }
+
   if (phone) {
     const oldPhone = ctx.storage.get('unicom_phone') || '';
     if (phone !== oldPhone) {
@@ -69,31 +189,56 @@ async function handleCapture(ctx) {
       changed = true;
     }
   }
+
   if (changed && cookie && phone) {
-    ctx.notify({ title: '中国联通', body: '已自动获取登录信息，小组件将自动更新' });
+    ctx.notify({
+      title: '中国联通',
+      body: '已自动获取登录信息，小组件将自动更新',
+    });
   }
 }
 
-/* ---------------- 网络请求 ---------------- */
+/* =========================================================
+ * 数据请求
+ * ========================================================= */
+
 async function fetchUnicomData(ctx, cookie, phone) {
-  const url = `${API_URL}?version=iphone_c@10.0100&desmobiel=${encodeURIComponent(phone)}&showType=0`;
-  const resp = await ctx.http.get(url, {
-    timeout: 10000,
-    headers: {
-      Host: API_HOST,
-      'User-Agent': 'ChinaUnicom.x CFNetwork iOS/16.3',
-      Cookie: cookie,
-    },
-    credentials: 'omit',
-  }).catch(e => { e.transient = true; throw e; });
+  const url =
+    `${API_URL}?version=iphone_c@10.0100` +
+    `&desmobiel=${encodeURIComponent(phone)}` +
+    `&showType=0`;
+
+  const resp = await ctx.http
+    .get(url, {
+      timeout: 10000,
+      headers: {
+        Host: API_HOST,
+        'User-Agent': 'ChinaUnicom.x CFNetwork iOS/16.3',
+        Cookie: cookie,
+      },
+      credentials: 'omit',
+    })
+    .catch((e) => {
+      e.transient = true;
+      throw e;
+    });
 
   if (!resp) {
-    const e = new Error('no-response'); e.transient = true; throw e;
+    const e = new Error('no-response');
+    e.transient = true;
+    throw e;
   }
+
   if (resp.status === 401 || resp.status === 403) {
-    const e = new Error(`HTTP ${resp.status}`); e.authFailed = true; throw e;
+    const e = new Error(`HTTP ${resp.status}`);
+    e.authFailed = true;
+    throw e;
   }
-  if (resp.status !== 200) throw new Error(`HTTP ${resp.status}`);
+
+  if (resp.status !== 200) {
+    throw new Error(`HTTP ${resp.status}`);
+  }
+
   return await resp.json();
 }
 
@@ -107,9 +252,17 @@ async function fetchFlowDetail(ctx, cookie) {
     },
     credentials: 'omit',
   });
-  if (!resp || resp.status !== 200) throw new Error(`HTTP ${resp ? resp.status : 'no-response'}`);
+
+  if (!resp || resp.status !== 200) {
+    throw new Error(`HTTP ${resp ? resp.status : 'no-response'}`);
+  }
+
   const data = await resp.json();
-  if (!data || String(data.code) !== '0000') throw new Error(`API 返回异常：${data?.code || 'unknown'}`);
+
+  if (!data || String(data.code) !== '0000') {
+    throw new Error(`API 返回异常：${data?.code || 'unknown'}`);
+  }
+
   return data;
 }
 
@@ -122,51 +275,60 @@ const FLOW_RESOURCE_NAMES = {
 };
 
 function isDirectionalFlowItem(item, resourceName) {
-  const code = String(item.addupItemCode || '');
-  const name = String(item.addUpItemName || '');
-  const policy = String(item.feePolicyName || '');
-  return code === '40008' || name === '套餐内专享免费流量' || resourceName === '免流流量' || /（免流）|畅视/.test(policy);
+  const addupItemCode = String(item.addupItemCode || '');
+  const addUpItemName = String(item.addUpItemName || '');
+  const feePolicyName = String(item.feePolicyName || '');
+
+  return (
+    addupItemCode === '40008' ||
+    addUpItemName === '套餐内专享免费流量' ||
+    resourceName === '免流流量' ||
+    /（免流）|畅视/.test(feePolicyName)
+  );
 }
 
 function formatFlowValue(value, unit) {
   const v = parseFloat(value) || 0;
   const u = String(unit || '').toUpperCase();
+
   if ((u === 'MB' || u === 'M') && v >= 1024) {
-    return { value: Math.round(v / 1024 * 100) / 100, unit: 'GB' };
+    return {
+      value: Math.round((v / 1024) * 100) / 100,
+      unit: 'GB',
+    };
   }
-  return { value: Math.round(v * 100) / 100, unit: String(unit || 'MB') };
+
+  return {
+    value: Math.round(v * 100) / 100,
+    unit: String(unit || 'MB'),
+  };
 }
 
-function round2(value) {
-  return Math.round((Number(value) || 0) * 100) / 100;
-}
-
-function formatGBFromMB(value) {
-  return round2((Number(value) || 0) / 1024);
-}
-
-function getUsagePercent(used, total) {
-  if (!(total > 0)) return 0;
-  return Math.max(0, Math.min(100, Math.round((used / total) * 100)));
-}
-
-// 汇总流量明细，单位按原脚本约定为 MB。
 function parseFlowDetail(data) {
-  let generalRemain = 0, directionalRemain = 0;
-  let generalTotal = 0, directionalTotal = 0;
-  let generalUsed = 0, directionalUsed = 0;
+  let generalRemain = 0;
+  let directionalRemain = 0;
+  let generalTotal = 0;
+  let directionalTotal = 0;
+  let generalUsed = 0;
+  let directionalUsed = 0;
 
   for (const key of Object.keys(FLOW_RESOURCE_NAMES)) {
     const resourceName = FLOW_RESOURCE_NAMES[key];
     const list = data[key];
+
     if (!Array.isArray(list)) continue;
+
     for (const res of list) {
-      if (!Array.isArray(res.details)) continue;
-      for (const item of res.details) {
+      const details = res.details;
+      if (!Array.isArray(details)) continue;
+
+      for (const item of details) {
         const directional = isDirectionalFlowItem(item, resourceName);
+
         const remain = Math.max(0, parseFloat(item.remain) || 0);
         const total = Math.max(0, parseFloat(item.total) || 0);
         const used = Math.max(0, parseFloat(item.use) || 0);
+
         if (directional) {
           directionalRemain += remain;
           directionalTotal += total;
@@ -179,316 +341,993 @@ function parseFlowDetail(data) {
       }
     }
   }
-  return { generalRemain, directionalRemain, generalTotal, directionalTotal, generalUsed, directionalUsed };
+
+  return {
+    generalRemain,
+    directionalRemain,
+    generalTotal,
+    directionalTotal,
+    generalUsed,
+    directionalUsed,
+  };
 }
 
-/* ---------------- 汇总接口数据解析 ---------------- */
+/* =========================================================
+ * 数据解析
+ * ========================================================= */
+
 function parseUnicomData(res) {
-  if (!res || res.code !== 'Y' || !res.feeResource || !res.voiceResource || !res.flowResource) {
+  if (
+    !res ||
+    res.code !== 'Y' ||
+    !res.feeResource ||
+    !res.voiceResource ||
+    !res.flowResource
+  ) {
     throw new Error(`API 返回异常：${res?.code || 'unknown'}`);
   }
-  const fee = res.feeResource;
-  const voice = res.voiceResource;
-  const flow = res.flowResource;
-  const formatted = formatFlowValue(flow.flowPersent ?? 0, flow.newUnit || 'MB');
+
+  const feeResource = res.feeResource;
+  const voiceResource = res.voiceResource;
+  const flowResource = res.flowResource;
+
+  const flowFormatted = formatFlowValue(
+    flowResource.flowPersent ?? 0,
+    flowResource.newUnit || 'MB'
+  );
 
   return {
     fee: {
-      title: fee.dynamicFeeTitle || '剩余话费',
-      value: fee.feePersent ?? 0,
-      unit: fee.newUnit || '元',
+      title: feeResource.dynamicFeeTitle || '剩余话费',
+      value: feeResource.feePersent ?? 0,
+      unit: feeResource.newUnit || '元',
     },
+
     voice: {
-      title: voice.dynamicVoiceTitle || '剩余语音',
-      value: voice.voicePersent ?? 0,
-      unit: voice.newUnit || '分钟',
+      title: voiceResource.dynamicVoiceTitle || '剩余语音',
+      value: voiceResource.voicePersent ?? 0,
+      unit: voiceResource.newUnit || '分钟',
     },
+
     flow: {
-      title: flow.dynamicFlowTitle || '剩余流量',
-      value: formatted.value,
-      unit: formatted.unit,
+      title: flowResource.dynamicFlowTitle || '剩余流量',
+      value: flowFormatted.value,
+      unit: flowFormatted.unit,
+      // 以下字段在明细成功后会被覆盖
+      remainMB: parseFloat(flowResource.flowPersent) || 0,
+      usedMB: 0,
+      totalMB: 0,
+      percentUsed: 0,
+      percentRemain: 100,
     },
+
     updateTime: new Date().toLocaleTimeString('zh-CN', {
-      hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Shanghai',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Asia/Shanghai',
     }),
+
     timestamp: Date.now(),
   };
 }
 
-/* ---------------- 数据加载 / 缓存 ---------------- */
+/* =========================================================
+ * 加载数据
+ * ========================================================= */
+
 function notifyExpiredOnce(ctx, cookie) {
   const key = 'unicom_expired_notified';
   const marker = cookie || 'none';
   if (ctx.storage.get(key) === marker) return;
   ctx.storage.set(key, marker);
   try {
-    ctx.notify({ title: '中国联通', body: '登录已过期，请重新打开联通 App 获取登录信息' });
-  } catch (_) {}
+    ctx.notify({
+      title: '中国联通',
+      body: '登录已过期，请重新打开联通 App 获取登录信息',
+    });
+  } catch (e) {}
 }
 
 function clearExpiredFlag(ctx) {
-  try { ctx.storage.remove('unicom_expired_notified'); } catch (_) {}
+  try {
+    ctx.storage.remove('unicom_expired_notified');
+  } catch (e) {}
 }
 
 async function loadData(ctx) {
   const cookie = ctx.storage.get('unicom_cookie') || '';
   const phone = ctx.storage.get('unicom_phone') || '';
-  if (!cookie || !phone) return { data: null, configured: false, error: null };
+
+  if (!cookie || !phone) {
+    return {
+      data: null,
+      configured: false,
+      error: null,
+    };
+  }
 
   try {
     const res = await fetchUnicomData(ctx, cookie, phone);
     const data = parseUnicomData(res);
+
     const showGeneralFlow = ctx.env.CU_SHOW_GENERAL_FLOW !== 'false';
     const showDirectionalFlow = ctx.env.CU_SHOW_DIRECTIONAL_FLOW !== 'false';
 
-    // 明细接口失败时保留汇总接口原始剩余量，不影响话费和语音。
     try {
       const detail = await fetchFlowDetail(ctx, cookie);
-      const parsed = parseFlowDetail(detail);
-      let flowRemain = 0, flowTotal = 0, flowUsed = 0;
+      const {
+        generalRemain,
+        directionalRemain,
+        generalTotal,
+        directionalTotal,
+        generalUsed,
+        directionalUsed,
+      } = parseFlowDetail(detail);
+
+      let remainMB = 0;
+      let totalMB = 0;
+      let usedMB = 0;
+
       if (showGeneralFlow) {
-        flowRemain += parsed.generalRemain;
-        flowTotal += parsed.generalTotal;
-        flowUsed += parsed.generalUsed;
+        remainMB += generalRemain;
+        totalMB += generalTotal;
+        usedMB += generalUsed;
       }
       if (showDirectionalFlow) {
-        flowRemain += parsed.directionalRemain;
-        flowTotal += parsed.directionalTotal;
-        flowUsed += parsed.directionalUsed;
+        remainMB += directionalRemain;
+        totalMB += directionalTotal;
+        usedMB += directionalUsed;
       }
-      const formatted = formatFlowValue(flowRemain, 'MB');
-      data.flow.value = formatted.value;
-      data.flow.unit = formatted.unit;
-      data.flow.remainMB = flowRemain;
-      data.flow.totalMB = flowTotal;
-      data.flow.usedMB = flowUsed;
-      data.flow.usedPercent = flowTotal > 0 ? getUsagePercent(flowUsed, flowTotal) : null;
-    } catch (_) {
-      // 详情接口异常时，UI 会显示“明细暂不可用”，不会伪造总量/使用率。
+
+      // 若 total 为 0，用 remain + used 兜底
+      if (totalMB <= 0 && (remainMB > 0 || usedMB > 0)) {
+        totalMB = remainMB + usedMB;
+      }
+
+      const formattedRemain = formatFlowValue(remainMB, 'MB');
+      const formattedUsed = formatFlowValue(usedMB, 'MB');
+      const formattedTotal = formatFlowValue(totalMB, 'MB');
+
+      data.flow.value = formattedRemain.value;
+      data.flow.unit = formattedRemain.unit;
+      data.flow.remainMB = remainMB;
+      data.flow.usedMB = usedMB;
+      data.flow.totalMB = totalMB;
+      data.flow.usedFormatted = formattedUsed;
+      data.flow.totalFormatted = formattedTotal;
+
+      if (totalMB > 0) {
+        data.flow.percentUsed = Math.min(
+          100,
+          Math.round((usedMB / totalMB) * 100)
+        );
+        data.flow.percentRemain = Math.max(
+          0,
+          100 - data.flow.percentUsed
+        );
+      } else {
+        data.flow.percentUsed = 0;
+        data.flow.percentRemain = 100;
+      }
+    } catch (e) {
+      // 明细失败时保持汇总接口的剩余值
+      data.flow.usedFormatted = { value: 0, unit: 'MB' };
+      data.flow.totalFormatted = {
+        value: data.flow.value,
+        unit: data.flow.unit,
+      };
     }
 
     ctx.storage.setJSON('unicom_datasource', data);
     clearExpiredFlag(ctx);
-    return { data, configured: true, error: null };
+
+    return {
+      data,
+      configured: true,
+      error: null,
+    };
   } catch (e) {
-    if (e && e.authFailed) notifyExpiredOnce(ctx, cookie);
+    if (e && e.authFailed) {
+      notifyExpiredOnce(ctx, cookie);
+    }
+
     const cached = ctx.storage.getJSON('unicom_datasource');
-    return { data: cached || null, configured: true, error: e };
+
+    return {
+      data: cached || null,
+      configured: true,
+      error: e,
+    };
   }
 }
 
-/* ---------------- Egern 组件 UI 帮助函数 ---------------- */
-function headerRow(title, data, fromCache) {
+/* =========================================================
+ * SVG 半圆进度条（用于左卡）
+ * percentUsed: 0~100
+ * ========================================================= */
+
+function makeSemiGaugeSVG(percentUsed) {
+  const p = Math.max(0, Math.min(100, percentUsed || 0));
+  // 半圆弧：从左到右，约 180 度
+  // 用 stroke-dasharray 实现进度
+  const r = 42;
+  const cx = 50;
+  const cy = 50;
+  const circumference = Math.PI * r; // 半圆周长
+  const offset = circumference * (1 - p / 100);
+
+  // 粉色主弧 + 浅底弧
+  return (
+    `data:image/svg+xml,` +
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 60'>` +
+    `<path d='M 8 50 A ${r} ${r} 0 0 1 92 50' fill='none' stroke='#FFD6E0' stroke-width='8' stroke-linecap='round'/>` +
+    `<path d='M 8 50 A ${r} ${r} 0 0 1 92 50' fill='none' stroke='#FF6B8A' stroke-width='8' stroke-linecap='round' ` +
+    `stroke-dasharray='${circumference.toFixed(2)}' stroke-dashoffset='${offset.toFixed(2)}'/>` +
+    `<circle cx='8' cy='50' r='4' fill='#FF6B8A'/>` +
+    `</svg>`
+  );
+}
+
+/* 简单趋势线装饰 */
+function makeTrendSVG() {
+  return (
+    `data:image/svg+xml,` +
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 20'>` +
+    `<polyline points='0,14 18,12 32,8 48,10 62,6 80,4' fill='none' stroke='#FF6B8A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/>` +
+    `<circle cx='80' cy='4' r='2.5' fill='#FF6B8A'/>` +
+    `</svg>`
+  );
+}
+
+/* =========================================================
+ * 顶部标题栏（中号 / 大号）
+ * ========================================================= */
+
+function headerRow(updateTime) {
   return {
-    type: 'stack', direction: 'row', alignItems: 'center', gap: 6,
+    type: 'stack',
+    direction: 'row',
+    alignItems: 'center',
+    gap: 6,
     children: [
-      { type: 'image', src: 'sf-symbol:antenna.radiowaves.left.and.right', color: COLORS.accent, width: 18, height: 18 },
-      { type: 'text', text: title, font: { size: 'headline', weight: 'bold' }, textColor: COLORS.value, maxLines: 1, minScale: 0.8 },
+      // 左侧：Logo + 中国联通 + 5G
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        gap: 6,
+        children: [
+          {
+            type: 'image',
+            src: 'sf-symbol:network',
+            color: COLORS.accent,
+            width: 16,
+            height: 16,
+          },
+          {
+            type: 'text',
+            text: '中国联通',
+            font: { size: 'headline', weight: 'semibold' },
+            textColor: COLORS.title,
+            maxLines: 1,
+          },
+          {
+            type: 'stack',
+            padding: [2, 6, 2, 6],
+            borderRadius: 6,
+            backgroundColor: COLORS.badgeBg,
+            children: [
+              {
+                type: 'text',
+                text: '5G',
+                font: { size: 'caption2', weight: 'bold' },
+                textColor: COLORS.badgeText,
+              },
+            ],
+          },
+        ],
+      },
       { type: 'spacer' },
-      { type: 'text', text: `${fromCache ? '缓存' : '更新'} ${data?.updateTime || '--:--'}`, font: { size: 'caption2' }, textColor: COLORS.time, maxLines: 1 },
+      // 右侧更新时间
+      {
+        type: 'text',
+        text: `更新 ${updateTime || '--:--'}`,
+        font: { size: 'caption2' },
+        textColor: COLORS.subtitle,
+        maxLines: 1,
+      },
     ],
   };
 }
 
-function textNode(text, size, color, weight) {
-  return { type: 'text', text: String(text), font: { size, weight: weight || 'regular' }, textColor: color, maxLines: 1, minScale: 0.5 };
-}
+/* =========================================================
+ * 右侧小卡片（话费 / 语音）
+ * ========================================================= */
 
-function iconNode(symbol, color, width = 17, height = 17) {
-  return { type: 'image', src: `sf-symbol:${symbol}`, color, width, height };
-}
-
-function panel(children, options = {}) {
+function sideCard(iconColor, iconSymbol, label, value, unit) {
   return {
-    type: 'stack', direction: options.direction || 'column',
-    alignItems: options.alignItems || 'stretch',
-    justifyContent: options.justifyContent || 'center',
-    flex: options.flex === undefined ? 1 : options.flex,
-    padding: options.padding || [9, 10, 9, 10],
-    gap: options.gap === undefined ? 4 : options.gap,
-    backgroundColor: { light: options.light || '#FFFFFFC9', dark: options.dark || '#FFFFFF0D' },
-    borderRadius: options.radius || 18, borderWidth: 1, borderColor: COLORS.border,
+    type: 'stack',
+    direction: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: [8, 10, 8, 10],
+    backgroundColor: COLORS.capsuleBg,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    children: [
+      {
+        type: 'stack',
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        backgroundColor: {
+          light: iconColor + '22',
+          dark: iconColor + '33',
+        },
+        alignItems: 'center',
+        justifyContent: 'center',
+        children: [
+          {
+            type: 'image',
+            src: iconSymbol,
+            color: iconColor,
+            width: 14,
+            height: 14,
+          },
+        ],
+      },
+      {
+        type: 'stack',
+        direction: 'column',
+        gap: 1,
+        children: [
+          {
+            type: 'text',
+            text: label,
+            font: { size: 'caption2', weight: 'medium' },
+            textColor: COLORS.subtitle,
+            maxLines: 1,
+          },
+          {
+            type: 'stack',
+            direction: 'row',
+            alignItems: 'baseline',
+            gap: 2,
+            children: [
+              {
+                type: 'text',
+                text: String(value),
+                font: { size: 'title3', weight: 'bold' },
+                textColor: COLORS.title,
+                maxLines: 1,
+                minScale: 0.6,
+              },
+              {
+                type: 'text',
+                text: unit,
+                font: { size: 'caption2' },
+                textColor: COLORS.subtitle,
+                maxLines: 1,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+}
+
+/* =========================================================
+ * 中号 / 大号 主布局（对齐截图）
+ * ========================================================= */
+
+function buildMainWidget(data, family) {
+  const flow = data.flow || {};
+  const percentUsed = flow.percentUsed ?? 0;
+  const percentRemain = flow.percentRemain ?? 100;
+
+  const usedText = flow.usedFormatted
+    ? `${flow.usedFormatted.value} ${flow.usedFormatted.unit}`
+    : '—';
+  const totalText = flow.totalFormatted
+    ? `${flow.totalFormatted.value} ${flow.totalFormatted.unit}`
+    : '—';
+
+  const isLarge =
+    family === 'systemLarge' || family === 'systemExtraLarge';
+
+  // 左侧：流量主卡 + 半圆进度
+  const leftCard = {
+    type: 'stack',
+    direction: 'column',
+    alignItems: 'center',
+    gap: 6,
+    padding: [10, 10, 8, 10],
+    backgroundColor: COLORS.card,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    flex: isLarge ? 0 : 1,
+    width: isLarge ? 120 : undefined,
+    children: [
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        gap: 4,
+        children: [
+          {
+            type: 'image',
+            src: 'sf-symbol:clock.fill',
+            color: COLORS.softPink,
+            width: 11,
+            height: 11,
+          },
+          {
+            type: 'text',
+            text: '流量主卡',
+            font: { size: 'caption2', weight: 'medium' },
+            textColor: COLORS.subtitle,
+            maxLines: 1,
+          },
+        ],
+      },
+      {
+        type: 'image',
+        src: makeSemiGaugeSVG(percentUsed),
+        width: isLarge ? 90 : 80,
+        height: isLarge ? 54 : 48,
+      },
+      {
+        type: 'text',
+        text: `${percentUsed}% 已用`,
+        font: { size: 'caption2', weight: 'semibold' },
+        textColor: COLORS.softPink,
+        maxLines: 1,
+      },
+      {
+        type: 'image',
+        src: makeTrendSVG(),
+        width: 56,
+        height: 14,
+      },
+    ],
+  };
+
+  // 中间：大数字剩余 + 已用/套餐
+  const centerBlock = {
+    type: 'stack',
+    direction: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    flex: 1,
+    children: [
+      {
+        type: 'stack',
+        padding: [3, 10, 3, 10],
+        borderRadius: 10,
+        backgroundColor: {
+          light: '#FFE5EC',
+          dark: '#3A1F2A',
+        },
+        children: [
+          {
+            type: 'text',
+            text: `${percentRemain}% 剩余`,
+            font: { size: 'caption2', weight: 'semibold' },
+            textColor: COLORS.accent,
+            maxLines: 1,
+          },
+        ],
+      },
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'baseline',
+        gap: 4,
+        children: [
+          {
+            type: 'text',
+            text: String(flow.value ?? '—'),
+            font: { size: isLarge ? 'largeTitle' : 'title', weight: 'bold' },
+            textColor: COLORS.title,
+            maxLines: 1,
+            minScale: 0.5,
+          },
+          {
+            type: 'text',
+            text: flow.unit || 'GB',
+            font: { size: 'title3', weight: 'semibold' },
+            textColor: COLORS.title,
+            maxLines: 1,
+          },
+        ],
+      },
+      {
+        type: 'text',
+        text: `已用 ${usedText}`,
+        font: { size: 'caption1' },
+        textColor: COLORS.subtitle,
+        maxLines: 1,
+      },
+      {
+        type: 'text',
+        text: `套餐 ${totalText}`,
+        font: { size: 'caption2' },
+        textColor: COLORS.subtitle,
+        maxLines: 1,
+      },
+    ],
+  };
+
+  // 右侧：话费 + 语音
+  const rightColumn = {
+    type: 'stack',
+    direction: 'column',
+    gap: 8,
+    flex: isLarge ? 0 : 1,
+    width: isLarge ? 140 : undefined,
+    children: [
+      sideCard(
+        COLORS.fee.light,
+        'sf-symbol:yensign.circle.fill',
+        '话费',
+        data.fee?.value ?? '—',
+        data.fee?.unit === '元' ? '元' : data.fee?.unit || '元'
+      ),
+      sideCard(
+        COLORS.voice.light,
+        'sf-symbol:phone.fill',
+        '语音',
+        data.voice?.value ?? '—',
+        data.voice?.unit === '分钟' ? '分' : data.voice?.unit || '分'
+      ),
+    ],
+  };
+
+  const mainRow = {
+    type: 'stack',
+    direction: 'row',
+    alignItems: 'center',
+    gap: 10,
+    flex: 1,
+    children: [leftCard, centerBlock, rightColumn],
+  };
+
+  // 底部提示（大号多一行）
+  const bottomHint = isLarge
+    ? {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        children: [
+          { type: 'spacer' },
+          {
+            type: 'stack',
+            padding: [4, 10, 4, 10],
+            borderRadius: 10,
+            backgroundColor: {
+              light: '#E8F8EE',
+              dark: '#1A3A28',
+            },
+            children: [
+              {
+                type: 'text',
+                text: `${percentUsed}% 已用`,
+                font: { size: 'caption2', weight: 'medium' },
+                textColor: COLORS.voice,
+              },
+            ],
+          },
+        ],
+      }
+    : null;
+
+  const children = [headerRow(data.updateTime), mainRow];
+  if (bottomHint) children.push(bottomHint);
+
+  return {
+    type: 'widget',
+    padding: [12, 14, 12, 14],
+    gap: 10,
+    backgroundColor: COLORS.bg,
+    refreshAfter: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
     children,
   };
 }
 
-function buildMainWidget(title, data, fromCache) {
-  const fee = data.fee || {};
-  const voice = data.voice || {};
+/* =========================================================
+ * 小尺寸
+ * ========================================================= */
+
+function buildSmall(data) {
   const flow = data.flow || {};
-  const value = Number(flow.value) || 0;
-  const unit = flow.unit || 'MB';
-  const totalMB = Number(flow.totalMB) || 0;
-  const usedMB = Number(flow.usedMB) || 0;
-  const remainMB = Number(flow.remainMB);
-  const hasDetail = totalMB > 0;
-  const usedPercent = hasDetail ? getUsagePercent(usedMB, totalMB) : null;
-  const remainingPercent = hasDetail ? 100 - usedPercent : null;
-  const remainingText = `${value.toLocaleString('zh-CN', { maximumFractionDigits: 2 })} ${unit}`;
-
-  const leftPanel = panel([
-    { type: 'stack', direction: 'row', alignItems: 'center', gap: 5, children: [iconNode('chart.pie.fill', COLORS.pink), textNode('流量主卡', 'headline', COLORS.value, 'semibold')] },
-    { type: 'spacer' },
-    { type: 'stack', alignItems: 'center', justifyContent: 'center', gap: 5, children: [
-      iconNode('gauge', COLORS.pink, 54, 54),
-      textNode(hasDetail ? `${usedPercent}% 已用` : '流量余量', 'title2', COLORS.pink, 'bold'),
-      textNode('流量使用率', 'caption2', COLORS.title),
-    ] },
-    { type: 'spacer' },
-    { type: 'stack', direction: 'row', alignItems: 'center', gap: 4, children: [iconNode('chart.xyaxis.line', COLORS.pink, 14, 14), textNode('流量趋势', 'caption2', COLORS.title)] },
-  ], { flex: 0.92, padding: [10, 10, 10, 10], gap: 4, radius: 22 });
-
-  const centerPanel = {
-    type: 'stack', direction: 'column', alignItems: 'start', justifyContent: 'center', flex: 1.35,
-    padding: [4, 4, 4, 4], gap: 7,
-    children: [
-      { type: 'stack', direction: 'row', alignItems: 'center', gap: 4, children: [iconNode('checkmark.circle.fill', COLORS.green, 13, 13), textNode(hasDetail ? `${remainingPercent}% 剩余` : '当前剩余流量', 'subheadline', COLORS.green, 'semibold')] },
-      { type: 'text', text: remainingText, font: { size: 'largeTitle', weight: 'bold' }, textColor: COLORS.value, maxLines: 1, minScale: 0.38 },
-      textNode(hasDetail ? `已用 ${formatGBFromMB(usedMB)} GB` : '已用量：明细暂不可用', 'subheadline', COLORS.title),
-      textNode(hasDetail ? `套餐 ${formatGBFromMB(totalMB)} GB` : '套餐总量：明细暂不可用', 'subheadline', COLORS.title),
-      { type: 'spacer' },
-      textNode(hasDetail ? `剩余 ${round2(remainMB / 1024)} GB` : '数据来自中国联通接口', 'caption2', COLORS.time),
-    ],
-  };
-
-  const feePanel = panel([
-    { type: 'stack', direction: 'row', alignItems: 'center', gap: 7, children: [
-      { type: 'stack', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, backgroundColor: { light: '#FFF0D9', dark: '#F5A33A22' }, borderRadius: 16, children: [iconNode('yensign', COLORS.orange, 15, 15)] },
-      textNode('话费', 'subheadline', COLORS.title),
-    ] },
-    textNode(`${fee.value ?? '--'} ${fee.unit || '元'}`, 'title2', COLORS.value, 'bold'),
-  ], { padding: [8, 9, 8, 9], gap: 5, radius: 18 });
-
-  const voicePanel = panel([
-    { type: 'stack', direction: 'row', alignItems: 'center', gap: 7, children: [
-      { type: 'stack', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, backgroundColor: { light: '#DFF8EC', dark: '#20B87922' }, borderRadius: 16, children: [iconNode('phone.fill', COLORS.green, 15, 15)] },
-      textNode('语音', 'subheadline', COLORS.title),
-    ] },
-    textNode(`${voice.value ?? '--'} ${voice.unit || '分钟'}`, 'title2', COLORS.value, 'bold'),
-  ], { padding: [8, 9, 8, 9], gap: 5, radius: 18 });
-
-  const rightPanel = {
-    type: 'stack', direction: 'column', alignItems: 'stretch', justifyContent: 'center', flex: 0.94, gap: 8,
-    children: [feePanel, voicePanel, {
-      type: 'stack', direction: 'row', alignItems: 'center', justifyContent: 'center', padding: [5, 6, 5, 6],
-      backgroundColor: { light: '#E7F8F0', dark: '#20B87920' }, borderRadius: 15,
-      children: [textNode(hasDetail ? `${usedPercent}% 已用` : '流量详情', 'subheadline', COLORS.green, 'semibold')],
-    }],
-  };
+  const percentUsed = flow.percentUsed ?? 0;
+  const percentRemain = flow.percentRemain ?? 100;
 
   return {
-    type: 'widget', padding: [10, 12, 10, 12], gap: 8,
+    type: 'widget',
+    padding: [10, 10, 10, 10],
+    gap: 8,
     backgroundColor: COLORS.bg,
     refreshAfter: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
-    children: [headerRow(title, data, fromCache), {
-      type: 'stack', direction: 'row', alignItems: 'stretch', gap: 8, flex: 1,
-      children: [leftPanel, centerPanel, rightPanel],
-    }],
-  };
-}
-
-/* ---------------- 小尺寸组件 ---------------- */
-function smallRow(color, symbol, glyph, value, unit, label) {
-  const icon = symbol
-    ? iconNode(symbol, '#FFFFFF', 15, 15)
-    : { type: 'text', text: glyph, font: { size: 'headline', weight: 'bold' }, textColor: '#FFFFFF' };
-  return {
-    type: 'stack', direction: 'row', alignItems: 'center', gap: 8, flex: 1,
-    padding: [4, 8, 4, 8],
-    backgroundColor: { light: `${color}20`, dark: `${color}25` }, borderRadius: 14,
     children: [
-      { type: 'stack', direction: 'row', alignItems: 'center', justifyContent: 'center', width: 30, height: 30, borderRadius: 15, backgroundColor: { light: color, dark: `${color}80` }, children: [icon] },
-      { type: 'stack', direction: 'column', flex: 1, children: [
-        { type: 'stack', direction: 'row', alignItems: 'center', gap: 3, children: [
-          { type: 'text', text: String(value), font: { size: 'title3', weight: 'bold' }, textColor: color, maxLines: 1, minScale: 0.5 },
-          { type: 'text', text: String(unit), font: { size: 'caption1', weight: 'semibold' }, textColor: color, maxLines: 1 },
+      // 顶部：联通 + 更新时间
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        children: [
+          {
+            type: 'stack',
+            direction: 'row',
+            alignItems: 'center',
+            gap: 4,
+            children: [
+              {
+                type: 'image',
+                src: 'sf-symbol:network',
+                color: COLORS.accent,
+                width: 13,
+                height: 13,
+              },
+              {
+                type: 'text',
+                text: '中国联通',
+                font: { size: 'caption1', weight: 'semibold' },
+                textColor: COLORS.title,
+                maxLines: 1,
+              },
+            ],
+          },
           { type: 'spacer' },
-        ] },
-        { type: 'text', text: String(label), font: { size: 'caption2', weight: 'medium' }, textColor: color, maxLines: 1, minScale: 0.65 },
-      ] },
+          {
+            type: 'text',
+            text: data.updateTime || '--:--',
+            font: { size: 'caption2' },
+            textColor: COLORS.subtitle,
+          },
+        ],
+      },
+
+      // 大数字剩余
+      {
+        type: 'stack',
+        direction: 'column',
+        alignItems: 'center',
+        gap: 2,
+        children: [
+          {
+            type: 'stack',
+            direction: 'row',
+            alignItems: 'baseline',
+            gap: 3,
+            children: [
+              {
+                type: 'text',
+                text: String(flow.value ?? '—'),
+                font: { size: 'title', weight: 'bold' },
+                textColor: COLORS.title,
+                maxLines: 1,
+                minScale: 0.55,
+              },
+              {
+                type: 'text',
+                text: flow.unit || 'GB',
+                font: { size: 'caption1', weight: 'semibold' },
+                textColor: COLORS.subtitle,
+              },
+            ],
+          },
+          {
+            type: 'text',
+            text: `${percentRemain}% 剩余 · ${percentUsed}% 已用`,
+            font: { size: 'caption2' },
+            textColor: COLORS.softPink,
+            maxLines: 1,
+          },
+        ],
+      },
+
+      // 底部两卡：话费 + 语音
+      {
+        type: 'stack',
+        direction: 'row',
+        gap: 6,
+        children: [
+          {
+            type: 'stack',
+            direction: 'column',
+            alignItems: 'center',
+            flex: 1,
+            padding: [6, 4, 6, 4],
+            backgroundColor: COLORS.capsuleBg,
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: COLORS.border,
+            children: [
+              {
+                type: 'text',
+                text: '话费',
+                font: { size: 'caption2' },
+                textColor: COLORS.subtitle,
+              },
+              {
+                type: 'text',
+                text: `${data.fee?.value ?? '—'}`,
+                font: { size: 'headline', weight: 'bold' },
+                textColor: COLORS.fee,
+                maxLines: 1,
+                minScale: 0.6,
+              },
+            ],
+          },
+          {
+            type: 'stack',
+            direction: 'column',
+            alignItems: 'center',
+            flex: 1,
+            padding: [6, 4, 6, 4],
+            backgroundColor: COLORS.capsuleBg,
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: COLORS.border,
+            children: [
+              {
+                type: 'text',
+                text: '语音',
+                font: { size: 'caption2' },
+                textColor: COLORS.subtitle,
+              },
+              {
+                type: 'text',
+                text: `${data.voice?.value ?? '—'}`,
+                font: { size: 'headline', weight: 'bold' },
+                textColor: COLORS.voice,
+                maxLines: 1,
+                minScale: 0.6,
+              },
+            ],
+          },
+        ],
+      },
     ],
   };
 }
 
-function buildSmall(title, data, fromCache) {
-  return {
-    type: 'widget', padding: [10, 10, 10, 10], gap: 6,
-    backgroundColor: COLORS.bg,
-    refreshAfter: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
-    children: [
-      headerRow(title, data, fromCache),
-      smallRow('#F5A33A', null, '¥', data.fee.value, data.fee.unit, data.fee.title),
-      smallRow('#6599F6', 'antenna.radiowaves.left.and.right', '', data.flow.value, data.flow.unit, data.flow.title),
-      smallRow('#20B879', 'phone.fill', '', data.voice.value, data.voice.unit, data.voice.title),
-    ],
-  };
-}
+/* =========================================================
+ * 锁屏
+ * ========================================================= */
 
-/* ---------------- 锁屏组件 ---------------- */
-function buildLockScreen(title, data, family) {
-  const sub = { light: '#FFFFFFB3', dark: '#FFFFFFB3' };
+function buildLockScreen(data, family) {
+  const SUB = { light: '#FFFFFFB3', dark: '#FFFFFFB3' };
+  const flow = data.flow || {};
+
   if (family === 'accessoryInline') {
-    return { type: 'widget', children: [{ type: 'text', text: `${title} ${data.fee.value}${data.fee.unit} · ${data.flow.value}${data.flow.unit}`, font: { size: 'caption1', weight: 'medium' }, maxLines: 1, minScale: 0.5 }] };
+    return {
+      type: 'widget',
+      children: [
+        {
+          type: 'text',
+          text: `联通 ${data.fee?.value ?? '—'}${data.fee?.unit || '元'} · ${flow.value ?? '—'}${flow.unit || 'GB'}`,
+          font: { size: 'caption1', weight: 'medium' },
+          maxLines: 1,
+          minScale: 0.5,
+        },
+      ],
+    };
   }
+
   if (family === 'accessoryCircular') {
-    return { type: 'widget', padding: 2, children: [
-      { type: 'spacer' },
-      { type: 'text', text: String(data.flow.value), font: { size: 'headline', weight: 'bold' }, textAlign: 'center', maxLines: 1, minScale: 0.5 },
-      { type: 'text', text: data.flow.unit, font: { size: 'caption2' }, textColor: sub, textAlign: 'center', maxLines: 1 },
-      { type: 'spacer' },
-    ] };
+    return {
+      type: 'widget',
+      padding: 2,
+      children: [
+        { type: 'spacer' },
+        {
+          type: 'text',
+          text: `${flow.value ?? '—'}`,
+          font: { size: 'headline', weight: 'bold' },
+          textAlign: 'center',
+          maxLines: 1,
+          minScale: 0.5,
+        },
+        {
+          type: 'text',
+          text: flow.unit || 'GB',
+          font: { size: 'caption2' },
+          textColor: SUB,
+          textAlign: 'center',
+          maxLines: 1,
+        },
+        { type: 'spacer' },
+      ],
+    };
   }
-  const line = (label, value, unit) => ({ type: 'stack', direction: 'row', alignItems: 'center', gap: 4, children: [
-    { type: 'text', text: label, font: { size: 'caption2', weight: 'medium' }, textColor: sub, maxLines: 1 },
-    { type: 'spacer' },
-    { type: 'text', text: String(value), font: { size: 'caption1', weight: 'bold' }, maxLines: 1, minScale: 0.6 },
-    { type: 'text', text: String(unit), font: { size: 'caption2' }, textColor: sub, maxLines: 1 },
-  ] });
-  return { type: 'widget', padding: 2, gap: 2, children: [line('话费', data.fee.value, data.fee.unit), line('流量', data.flow.value, data.flow.unit), line('语音', data.voice.value, data.voice.unit)] };
+
+  // accessoryRectangular
+  const line = (label, value, unit) => ({
+    type: 'stack',
+    direction: 'row',
+    alignItems: 'center',
+    gap: 4,
+    children: [
+      {
+        type: 'text',
+        text: label,
+        font: { size: 'caption2', weight: 'medium' },
+        textColor: SUB,
+        maxLines: 1,
+      },
+      { type: 'spacer' },
+      {
+        type: 'text',
+        text: String(value),
+        font: { size: 'caption1', weight: 'bold' },
+        maxLines: 1,
+        minScale: 0.6,
+      },
+      {
+        type: 'text',
+        text: String(unit),
+        font: { size: 'caption2' },
+        textColor: SUB,
+        maxLines: 1,
+      },
+    ],
+  });
+
+  return {
+    type: 'widget',
+    padding: 2,
+    gap: 2,
+    children: [
+      line('话费', data.fee?.value ?? '—', data.fee?.unit || '元'),
+      line('流量', flow.value ?? '—', flow.unit || 'GB'),
+      line('语音', data.voice?.value ?? '—', data.voice?.unit || '分'),
+    ],
+  };
 }
 
-/* ---------------- 错误提示 ---------------- */
+/* =========================================================
+ * 错误界面
+ * ========================================================= */
+
 function buildError(title, message) {
   return {
-    type: 'widget', padding: 12, gap: 8, backgroundColor: COLORS.bg,
+    type: 'widget',
+    padding: 12,
+    backgroundColor: COLORS.bg,
     children: [
-      { type: 'stack', direction: 'row', alignItems: 'center', gap: 6, children: [iconNode('exclamationmark.triangle.fill', COLORS.error, 15, 15), { type: 'text', text: title, font: { size: 'headline', weight: 'semibold' }, textColor: COLORS.value, maxLines: 1 }] },
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        gap: 6,
+        children: [
+          {
+            type: 'image',
+            src: 'sf-symbol:exclamationmark.triangle.fill',
+            color: COLORS.error,
+            width: 15,
+            height: 15,
+          },
+          {
+            type: 'text',
+            text: title,
+            font: { size: 'headline', weight: 'semibold' },
+            textColor: COLORS.title,
+            maxLines: 1,
+          },
+        ],
+      },
       { type: 'spacer' },
-      { type: 'text', text: message, font: { size: 'caption1', weight: 'medium' }, textColor: COLORS.title, textAlign: 'center', maxLines: 3, minScale: 0.75 },
+      {
+        type: 'text',
+        text: message,
+        font: { size: 'caption1', weight: 'medium' },
+        textColor: COLORS.subtitle,
+        textAlign: 'center',
+        maxLines: 3,
+        minScale: 0.75,
+      },
       { type: 'spacer' },
-      { type: 'stack', direction: 'row', alignItems: 'center', justifyContent: 'center', padding: [6, 10, 6, 10], backgroundColor: COLORS.capsuleBg, borderRadius: 10, borderWidth: 1, borderColor: COLORS.border, children: [{ type: 'text', text: '打开联通 App 查询一次', font: { size: 'caption2', weight: 'medium' }, textColor: COLORS.accent, maxLines: 1 }] },
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        children: [
+          { type: 'spacer' },
+          {
+            type: 'stack',
+            padding: [5, 12, 5, 12],
+            backgroundColor: COLORS.capsuleBg,
+            borderRadius: 10,
+            borderWidth: 1,
+            borderColor: COLORS.border,
+            children: [
+              {
+                type: 'text',
+                text: '打开联通 App 查询一次',
+                font: { size: 'caption2', weight: 'medium' },
+                textColor: COLORS.accent,
+                maxLines: 1,
+              },
+            ],
+          },
+          { type: 'spacer' },
+        ],
+      },
     ],
   };
 }
 
-/* ---------------- Widget 主逻辑 ---------------- */
+/* =========================================================
+ * Widget 主逻辑
+ * ========================================================= */
+
 async function handleWidget(ctx) {
   const title = '中国联通';
   const result = await loadData(ctx);
   const data = result.data;
-  if (!result.configured) return buildError(title, '请打开联通 App，进入首页并点击余额位置');
-  if (!data) return buildError(title, '数据获取失败，请重新打开联通 App 查询一次');
+
+  if (!result.configured) {
+    return buildError(title, '请打开联通 App，进入首页并点击余额位置');
+  }
+
+  if (!data) {
+    return buildError(title, '数据获取失败，请重新打开联通 App 查询一次');
+  }
 
   const family = ctx.widgetFamily || 'systemSmall';
-  if (family.startsWith('accessory')) return buildLockScreen(title, data, family);
-  if (family === 'systemSmall') return buildSmall(title, data, false);
-  if (family === 'systemMedium' || family === 'systemLarge' || family === 'systemExtraLarge') {
-    return buildMainWidget(title, data, false);
+
+  if (family.startsWith('accessory')) {
+    return buildLockScreen(data, family);
   }
-  return buildSmall(title, data, false);
+
+  if (family === 'systemSmall') {
+    return buildSmall(data);
+  }
+
+  if (
+    family === 'systemMedium' ||
+    family === 'systemLarge' ||
+    family === 'systemExtraLarge'
+  ) {
+    return buildMainWidget(data, family);
+  }
+
+  return buildSmall(data);
 }
 
-/* ---------------- 保活模式 ---------------- */
+/* =========================================================
+ * 保活
+ * ========================================================= */
+
 async function handleKeepAlive(ctx) {
   const cookie = ctx.storage.get('unicom_cookie') || '';
   const phone = ctx.storage.get('unicom_phone') || '';
   if (!cookie || !phone) return;
-  try { await fetchUnicomData(ctx, cookie, phone); } catch (_) {}
+
+  try {
+    await fetchUnicomData(ctx, cookie, phone);
+  } catch (e) {}
 }
 
-/* ---------------- Egern 入口 ---------------- */
-export default async function(ctx) {
-  if (ctx.request && ctx.request.url) return handleCapture(ctx);
-  if (ctx.cron || (ctx.env && ctx.env.CU_KEEPALIVE === 'true')) return handleKeepAlive(ctx);
+/* =========================================================
+ * Egern 入口
+ * ========================================================= */
+
+export default async function (ctx) {
+  if (ctx.request && ctx.request.url) {
+    return handleCapture(ctx);
+  }
+
+  if (ctx.cron || (ctx.env && ctx.env.CU_KEEPALIVE === 'true')) {
+    return handleKeepAlive(ctx);
+  }
+
   return handleWidget(ctx);
 }
