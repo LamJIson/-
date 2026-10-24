@@ -37,10 +37,15 @@ const COLORS = {
   bg: { light: '#F5F5F7', dark: '#1C1C1E' },
   card: { light: '#FFFFFF', dark: '#2C2C2E' },
   border: { light: '#E5E5EA', dark: '#3A3A3C' },
-  title: { light: '#1C1C1E', dark: '#FFFFFF' },
+  title: { light: '#8E8E93', dark: '#98989D' },
   subtitle: { light: '#8E8E93', dark: '#98989D' },
+  value: { light: '#1C1C1E', dark: '#FFFFFF' },
+  time: { light: '#999999', dark: '#666666' },
   accent: { light: '#E60012', dark: '#FF375F' },
   softPink: { light: '#FF6B8A', dark: '#FF6B8A' },
+  pink: { light: '#FF6B8A', dark: '#FF6B8A' },
+  green: { light: '#34C759', dark: '#30D158' },
+  orange: { light: '#FF9500', dark: '#FF9F0A' },
   fee: { light: '#FF9500', dark: '#FF9F0A' },
   voice: { light: '#34C759', dark: '#30D158' },
   error: { light: '#FF3B30', dark: '#FF453A' },
@@ -273,6 +278,9 @@ function parseUnicomData(res) {
       unit: flowFormatted.unit,
       usedFormatted: { value: 0, unit: 'MB' },
       totalFormatted: { value: flowFormatted.value, unit: flowFormatted.unit },
+      remainMB: 0,
+      usedMB: 0,
+      totalMB: 0,
       percentUsed: 0,
       percentRemain: 100,
     },
@@ -347,6 +355,9 @@ async function loadData(ctx) {
       data.flow.unit = fr.unit;
       data.flow.usedFormatted = fu;
       data.flow.totalFormatted = ft;
+      data.flow.remainMB = remainMB;
+      data.flow.usedMB = usedMB;
+      data.flow.totalMB = totalMB;
       if (totalMB > 0) {
         data.flow.percentUsed = Math.min(100, Math.round((usedMB / totalMB) * 100));
         data.flow.percentRemain = Math.max(0, 100 - data.flow.percentUsed);
@@ -383,7 +394,7 @@ function makeSemiGaugeSVG(percentUsed) {
 
 /* ===================== UI 组件 ===================== */
 
-function headerRow(updateTime) {
+function headerRow(updateTime, fromCache) {
   return {
     type: 'stack',
     direction: 'row',
@@ -407,7 +418,7 @@ function headerRow(updateTime) {
             type: 'text',
             text: '中国联通',
             font: { size: 'headline', weight: 'semibold' },
-            textColor: COLORS.title,
+            textColor: COLORS.value,
             maxLines: 1,
           },
           {
@@ -429,12 +440,73 @@ function headerRow(updateTime) {
       { type: 'spacer' },
       {
         type: 'text',
-        text: `更新 ${updateTime || '--:--'}`,
+        text: fromCache
+          ? `缓存 ${updateTime || '--:--'}`
+          : `更新 ${updateTime || '--:--'}`,
         font: { size: 'caption2' },
-        textColor: COLORS.subtitle,
+        textColor: COLORS.time,
         maxLines: 1,
       },
     ],
+  };
+}
+
+function round2(n) {
+  return Math.round((Number(n) || 0) * 100) / 100;
+}
+
+function formatGBFromMB(mb) {
+  return round2((Number(mb) || 0) / 1024);
+}
+
+function getUsagePercent(used, total) {
+  const t = Number(total) || 0;
+  if (t <= 0) return 0;
+  return Math.min(100, Math.round(((Number(used) || 0) / t) * 100));
+}
+
+function dashboardText(text, size, color, weight) {
+  return {
+    type: 'text',
+    text: String(text),
+    font: {
+      size,
+      weight: weight || 'regular',
+    },
+    textColor: color,
+    maxLines: 1,
+    minScale: 0.55,
+  };
+}
+
+function dashboardIcon(symbol, color, width, height) {
+  return {
+    type: 'image',
+    src: `sf-symbol:${symbol}`,
+    color,
+    width: width || 17,
+    height: height || 17,
+  };
+}
+
+function dashboardPanel(children, options) {
+  options = options || {};
+  return {
+    type: 'stack',
+    direction: options.direction || 'column',
+    alignItems: options.alignItems || 'stretch',
+    justifyContent: options.justifyContent || 'center',
+    flex: options.flex === undefined ? 1 : options.flex,
+    padding: options.padding || [9, 10, 9, 10],
+    gap: options.gap === undefined ? 4 : options.gap,
+    backgroundColor: {
+      light: options.light || '#FFFFFFB8',
+      dark: options.dark || '#FFFFFF0D',
+    },
+    borderRadius: options.radius || 18,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    children,
   };
 }
 
@@ -492,7 +564,7 @@ function sideCard(iconColor, symbol, label, value, unit) {
                 type: 'text',
                 text: String(value),
                 font: { size: 'title3', weight: 'bold' },
-                textColor: COLORS.title,
+                textColor: COLORS.value,
                 maxLines: 1,
                 minScale: 0.6,
               },
@@ -511,7 +583,8 @@ function sideCard(iconColor, symbol, label, value, unit) {
   };
 }
 
-function buildMainWidget(data, family) {
+/* 中号布局 */
+function buildMediumWidget(data, fromCache) {
   const flow = data.flow || {};
   const percentUsed = flow.percentUsed ?? 0;
   const percentRemain = flow.percentRemain ?? 100;
@@ -521,7 +594,6 @@ function buildMainWidget(data, family) {
   const totalText = flow.totalFormatted
     ? `${flow.totalFormatted.value} ${flow.totalFormatted.unit}`
     : '—';
-  const isLarge = family === 'systemLarge' || family === 'systemExtraLarge';
 
   const leftCard = {
     type: 'stack',
@@ -559,8 +631,8 @@ function buildMainWidget(data, family) {
       {
         type: 'image',
         src: makeSemiGaugeSVG(percentUsed),
-        width: isLarge ? 88 : 76,
-        height: isLarge ? 52 : 46,
+        width: 76,
+        height: 46,
       },
       {
         type: 'text',
@@ -603,8 +675,8 @@ function buildMainWidget(data, family) {
           {
             type: 'text',
             text: String(flow.value ?? '—'),
-            font: { size: isLarge ? 'largeTitle' : 'title', weight: 'bold' },
-            textColor: COLORS.title,
+            font: { size: 'title', weight: 'bold' },
+            textColor: COLORS.value,
             maxLines: 1,
             minScale: 0.5,
           },
@@ -612,7 +684,7 @@ function buildMainWidget(data, family) {
             type: 'text',
             text: flow.unit || 'GB',
             font: { size: 'title3', weight: 'semibold' },
-            textColor: COLORS.title,
+            textColor: COLORS.value,
             maxLines: 1,
           },
         ],
@@ -663,13 +735,269 @@ function buildMainWidget(data, family) {
     backgroundColor: COLORS.bg,
     refreshAfter: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
     children: [
-      headerRow(data.updateTime),
+      headerRow(data.updateTime, fromCache),
       {
         type: 'stack',
         direction: 'row',
         alignItems: 'center',
         gap: 10,
         children: [leftCard, centerBlock, rightColumn],
+      },
+    ],
+  };
+}
+
+/* 大号 / 超大号：仪表盘三栏布局 */
+function buildLargeWidget(data, fromCache) {
+  const fee = data.fee || {};
+  const voice = data.voice || {};
+  const flow = data.flow || {};
+
+  const remaining = Number(flow.value) || 0;
+  const flowUnit = flow.unit || 'MB';
+
+  const totalMB = Number(flow.totalMB) || 0;
+  const usedMB = Number(flow.usedMB) || 0;
+  const remainMB = Number(flow.remainMB) || 0;
+
+  const hasDetail = totalMB > 0;
+  const usedPercent = hasDetail ? getUsagePercent(usedMB, totalMB) : null;
+  const remainingPercent = hasDetail ? 100 - usedPercent : null;
+
+  const displayRemaining = `${remaining.toLocaleString('zh-CN', {
+    maximumFractionDigits: 2,
+  })} ${flowUnit}`;
+
+  const displayUsed = hasDetail
+    ? `${formatGBFromMB(usedMB)} GB`
+    : '明细暂不可用';
+
+  const displayTotal = hasDetail
+    ? `${formatGBFromMB(totalMB)} GB`
+    : '总量暂不可用';
+
+  const percentLabel = hasDetail ? `${usedPercent}% 已用` : '流量余量';
+  const remainLabel = hasDetail
+    ? `${remainingPercent}% 剩余`
+    : '当前剩余流量';
+
+  const feeValue = `${fee.value ?? '--'}${fee.unit || '元'}`;
+  const voiceValue = `${voice.value ?? '--'}${
+    voice.unit === '分钟' ? '分钟' : voice.unit || '分钟'
+  }`;
+
+  const gaugePanel = dashboardPanel(
+    [
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        gap: 5,
+        children: [
+          dashboardIcon('chart.pie.fill', COLORS.pink.light, 18, 18),
+          dashboardText('流量主卡', 'headline', COLORS.value, 'semibold'),
+        ],
+      },
+      { type: 'spacer' },
+      {
+        type: 'stack',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 4,
+        children: [
+          dashboardIcon(
+            'gauge.with.dots.needle.67percent',
+            COLORS.pink.light,
+            62,
+            62
+          ),
+          dashboardText(percentLabel, 'title2', COLORS.pink.light, 'bold'),
+          dashboardText('流量使用率', 'caption2', COLORS.title),
+        ],
+      },
+      { type: 'spacer' },
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        gap: 4,
+        children: [
+          dashboardIcon('chart.xyaxis.line', COLORS.pink.light, 14, 14),
+          dashboardText('流量趋势', 'caption2', COLORS.title),
+        ],
+      },
+    ],
+    {
+      flex: 0.95,
+      padding: [10, 12, 10, 12],
+      gap: 4,
+      radius: 22,
+      light: '#FFFFFFC9',
+      dark: '#FFFFFF0B',
+    }
+  );
+
+  const flowPanel = {
+    type: 'stack',
+    direction: 'column',
+    alignItems: 'start',
+    justifyContent: 'center',
+    flex: 1.35,
+    padding: [5, 5, 5, 5],
+    gap: 7,
+    children: [
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        gap: 4,
+        children: [
+          dashboardIcon('checkmark.circle.fill', COLORS.green.light, 13, 13),
+          dashboardText(remainLabel, 'subheadline', COLORS.green.light, 'semibold'),
+        ],
+      },
+      {
+        type: 'text',
+        text: displayRemaining,
+        font: { size: 'largeTitle', weight: 'bold' },
+        textColor: COLORS.value,
+        maxLines: 1,
+        minScale: 0.42,
+      },
+      dashboardText(`已用 ${displayUsed}`, 'subheadline', COLORS.title),
+      dashboardText(`套餐 ${displayTotal}`, 'subheadline', COLORS.title),
+      { type: 'spacer' },
+      dashboardText(
+        hasDetail
+          ? `剩余 ${round2(remainMB / 1024)} GB`
+          : '数据来自中国联通',
+        'caption2',
+        COLORS.time
+      ),
+    ],
+  };
+
+  const feePanel = dashboardPanel(
+    [
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        gap: 7,
+        children: [
+          {
+            type: 'stack',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 34,
+            height: 34,
+            backgroundColor: {
+              light: '#FFF0D9',
+              dark: '#F5A33A22',
+            },
+            borderRadius: 17,
+            children: [dashboardIcon('yensign', COLORS.orange, 16, 16)],
+          },
+          dashboardText('话费', 'subheadline', COLORS.title),
+        ],
+      },
+      dashboardText(feeValue, 'title2', COLORS.value, 'bold'),
+    ],
+    {
+      padding: [8, 10, 8, 10],
+      gap: 5,
+      radius: 18,
+      light: '#FFFFFFC9',
+      dark: '#FFFFFF0B',
+    }
+  );
+
+  const voicePanel = dashboardPanel(
+    [
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        gap: 7,
+        children: [
+          {
+            type: 'stack',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 34,
+            height: 34,
+            backgroundColor: {
+              light: '#DFF8EC',
+              dark: '#20B87922',
+            },
+            borderRadius: 17,
+            children: [dashboardIcon('phone.fill', COLORS.green, 16, 16)],
+          },
+          dashboardText('语音', 'subheadline', COLORS.title),
+        ],
+      },
+      dashboardText(voiceValue, 'title2', COLORS.value, 'bold'),
+    ],
+    {
+      padding: [8, 10, 8, 10],
+      gap: 5,
+      radius: 18,
+      light: '#FFFFFFC9',
+      dark: '#FFFFFF0B',
+    }
+  );
+
+  const rightPanel = {
+    type: 'stack',
+    direction: 'column',
+    alignItems: 'stretch',
+    justifyContent: 'center',
+    flex: 0.95,
+    gap: 8,
+    children: [
+      feePanel,
+      voicePanel,
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: [5, 6, 5, 6],
+        backgroundColor: {
+          light: '#E7F8F0',
+          dark: '#20B87920',
+        },
+        borderRadius: 15,
+        children: [
+          dashboardText(
+            hasDetail ? `${usedPercent}% 已用` : '流量详情',
+            'subheadline',
+            COLORS.green,
+            'semibold'
+          ),
+        ],
+      },
+    ],
+  };
+
+  return {
+    type: 'widget',
+    padding: [10, 12, 10, 12],
+    gap: 8,
+    backgroundColor: {
+      light: '#F5F5FA',
+      dark: '#202024',
+    },
+    refreshAfter: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+    children: [
+      headerRow(data.updateTime, fromCache),
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'stretch',
+        gap: 9,
+        flex: 1,
+        children: [gaugePanel, flowPanel, rightPanel],
       },
     ],
   };
@@ -709,7 +1037,7 @@ function buildSmall(data) {
                 type: 'text',
                 text: '中国联通',
                 font: { size: 'caption1', weight: 'semibold' },
-                textColor: COLORS.title,
+                textColor: COLORS.value,
                 maxLines: 1,
               },
             ],
@@ -739,7 +1067,7 @@ function buildSmall(data) {
                 type: 'text',
                 text: String(flow.value ?? '—'),
                 font: { size: 'title', weight: 'bold' },
-                textColor: COLORS.title,
+                textColor: COLORS.value,
                 maxLines: 1,
                 minScale: 0.55,
               },
@@ -937,7 +1265,7 @@ function buildError(title, message) {
             type: 'text',
             text: title,
             font: { size: 'headline', weight: 'semibold' },
-            textColor: COLORS.title,
+            textColor: COLORS.value,
             maxLines: 1,
           },
         ],
@@ -987,6 +1315,7 @@ async function handleWidget(ctx) {
   const title = '中国联通';
   const result = await loadData(ctx);
   const data = result.data;
+  const fromCache = !!(result.error && data);
 
   if (!result.configured) {
     return buildError(title, '请打开联通 App，进入首页并点击余额位置');
@@ -1003,12 +1332,11 @@ async function handleWidget(ctx) {
   if (family === 'systemSmall') {
     return buildSmall(data);
   }
-  if (
-    family === 'systemMedium' ||
-    family === 'systemLarge' ||
-    family === 'systemExtraLarge'
-  ) {
-    return buildMainWidget(data, family);
+  if (family === 'systemMedium') {
+    return buildMediumWidget(data, fromCache);
+  }
+  if (family === 'systemLarge' || family === 'systemExtraLarge') {
+    return buildLargeWidget(data, fromCache);
   }
   return buildSmall(data);
 }
