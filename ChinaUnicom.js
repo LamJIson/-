@@ -759,7 +759,6 @@ function buildLargeWidget(data, fromCache) {
 
   const totalMB = Number(flow.totalMB) || 0;
   const usedMB = Number(flow.usedMB) || 0;
-  const remainMB = Number(flow.remainMB) || 0;
 
   const hasDetail = totalMB > 0;
   const usedPercent = hasDetail ? getUsagePercent(usedMB, totalMB) : 0;
@@ -771,88 +770,142 @@ function buildLargeWidget(data, fromCache) {
 
   const displayUsed = hasDetail
     ? `${formatGBFromMB(usedMB)} GB`
-    : '明细暂不可用';
+    : '—';
 
   const displayTotal = hasDetail
     ? `${formatGBFromMB(totalMB)} GB`
-    : '总量暂不可用';
+    : '—';
 
-  const percentLabel = hasDetail ? `${usedPercent}% 已用` : '流量余量';
-  const remainLabel = hasDetail
-    ? `${remainingPercent}% 剩余`
-    : '当前剩余流量';
+  const feeNum = fee.value ?? '--';
+  const voiceNum = voice.value ?? '--';
 
-  const feeValue = `${fee.value ?? '--'}${fee.unit || '元'}`;
-  const voiceValue = `${voice.value ?? '--'}${
-    voice.unit === '分钟' ? '分钟' : voice.unit || '分钟'
-  }`;
-
-  // 左侧：流量主卡 + 半圆进度
-  const gaugePanel = dashboardPanel(
-    [
-      {
-        type: 'stack',
-        direction: 'row',
-        alignItems: 'center',
-        gap: 5,
-        children: [
-          dashboardIcon('chart.pie.fill', COLORS.pink.light, 16, 16),
-          dashboardText('流量主卡', 'headline', COLORS.value, 'semibold'),
-        ],
-      },
-      {
-        type: 'image',
-        src: makeSemiGaugeSVG(usedPercent),
-        width: 100,
-        height: 60,
-      },
-      dashboardText(percentLabel, 'title3', COLORS.pink.light, 'bold'),
-      dashboardText('流量使用率', 'caption2', COLORS.title),
-      {
-        type: 'stack',
-        direction: 'row',
-        alignItems: 'center',
-        gap: 4,
-        children: [
-          dashboardIcon('chart.xyaxis.line', COLORS.pink.light, 13, 13),
-          dashboardText('流量趋势', 'caption2', COLORS.title),
-        ],
-      },
-    ],
-    {
-      flex: 1,
-      padding: [12, 12, 12, 12],
-      gap: 8,
-      radius: 22,
-      light: '#FFFFFFC9',
-      dark: '#FFFFFF0B',
-      alignItems: 'center',
-    }
-  );
-
-  // 中间：剩余流量
-  const flowPanel = {
+  // 顶栏：信号 + 中国联通 + 流量主卡徽章 + 更新时间
+  const topBar = {
     type: 'stack',
-    direction: 'column',
-    alignItems: 'start',
-    flex: 1.4,
-    padding: [8, 6, 8, 6],
+    direction: 'row',
+    alignItems: 'center',
     gap: 6,
     children: [
       {
+        type: 'image',
+        src: 'sf-symbol:antenna.radiowaves.left.and.right',
+        color: COLORS.accent,
+        width: 16,
+        height: 16,
+      },
+      {
+        type: 'text',
+        text: '中国联通',
+        font: { size: 'headline', weight: 'bold' },
+        textColor: COLORS.value,
+        maxLines: 1,
+      },
+      {
         type: 'stack',
-        direction: 'row',
-        alignItems: 'center',
-        gap: 4,
+        padding: [3, 8, 3, 8],
+        borderRadius: 10,
+        backgroundColor: {
+          light: '#FFE5EC',
+          dark: '#3A1F2A',
+        },
         children: [
-          dashboardIcon('checkmark.circle.fill', COLORS.green.light, 13, 13),
-          dashboardText(
-            remainLabel,
-            'subheadline',
-            COLORS.green.light,
-            'semibold'
-          ),
+          {
+            type: 'text',
+            text: '流量主卡',
+            font: { size: 'caption2', weight: 'semibold' },
+            textColor: {
+              light: '#E60012',
+              dark: '#FF6B8A',
+            },
+            maxLines: 1,
+          },
         ],
+      },
+      { type: 'spacer' },
+      {
+        type: 'text',
+        text: fromCache
+          ? `缓存 ${data.updateTime || '--:--'}`
+          : `更新 ${data.updateTime || '--:--'}`,
+        font: { size: 'caption2' },
+        textColor: COLORS.time,
+        maxLines: 1,
+      },
+    ],
+  };
+
+  // 分割线
+  const divider = {
+    type: 'stack',
+    direction: 'row',
+    height: 1,
+    backgroundColor: COLORS.border,
+    children: [{ type: 'spacer' }],
+  };
+
+  // 左：使用率粉卡
+  const usageCard = {
+    type: 'stack',
+    direction: 'column',
+    alignItems: 'center',
+    gap: 4,
+    padding: [14, 12, 12, 12],
+    width: 96,
+    backgroundColor: {
+      light: '#FFF0F3',
+      dark: '#3A1F2A',
+    },
+    borderRadius: 18,
+    children: [
+      {
+        type: 'image',
+        src: 'sf-symbol:gauge.with.needle.fill',
+        color: COLORS.pink.light,
+        width: 28,
+        height: 28,
+      },
+      {
+        type: 'text',
+        text: `${usedPercent}%`,
+        font: { size: 'title2', weight: 'bold' },
+        textColor: COLORS.pink.light,
+        maxLines: 1,
+      },
+      {
+        type: 'text',
+        text: '已用',
+        font: { size: 'title3', weight: 'semibold' },
+        textColor: COLORS.pink.light,
+        maxLines: 1,
+      },
+      {
+        type: 'text',
+        text: '流量使用率',
+        font: { size: 'caption2' },
+        textColor: {
+          light: '#E8A0B0',
+          dark: '#C08090',
+        },
+        maxLines: 1,
+      },
+    ],
+  };
+
+  // 右：剩余流量
+  const remainBlock = {
+    type: 'stack',
+    direction: 'column',
+    alignItems: 'start',
+    gap: 4,
+    flex: 1,
+    padding: [4, 4, 4, 8],
+    children: [
+      {
+        type: 'text',
+        text: `${remainingPercent}% 剩余`,
+        font: { size: 'subheadline', weight: 'semibold' },
+        textColor: COLORS.green.light,
+        maxLines: 1,
       },
       {
         type: 'text',
@@ -860,146 +913,161 @@ function buildLargeWidget(data, fromCache) {
         font: { size: 'largeTitle', weight: 'bold' },
         textColor: COLORS.value,
         maxLines: 1,
-        minScale: 0.4,
+        minScale: 0.45,
       },
-      dashboardText(`已用 ${displayUsed}`, 'subheadline', COLORS.title),
-      dashboardText(`套餐 ${displayTotal}`, 'subheadline', COLORS.title),
-      { type: 'spacer' },
-      dashboardText(
-        hasDetail
-          ? `剩余 ${round2(remainMB / 1024)} GB`
-          : '数据来自中国联通',
-        'caption2',
-        COLORS.time
-      ),
+      {
+        type: 'text',
+        text: `已用 ${displayUsed}`,
+        font: { size: 'subheadline' },
+        textColor: COLORS.subtitle,
+        maxLines: 1,
+      },
+      {
+        type: 'text',
+        text: `套餐 ${displayTotal}`,
+        font: { size: 'subheadline' },
+        textColor: COLORS.subtitle,
+        maxLines: 1,
+      },
     ],
   };
 
-  // 右侧：话费
-  const feePanel = dashboardPanel(
-    [
-      {
-        type: 'stack',
-        direction: 'row',
-        alignItems: 'center',
-        gap: 7,
-        children: [
-          {
-            type: 'stack',
-            alignItems: 'center',
-            width: 34,
-            height: 34,
-            backgroundColor: {
-              light: '#FFF0D9',
-              dark: '#F5A33A22',
-            },
-            borderRadius: 17,
-            children: [dashboardIcon('yensign.circle.fill', COLORS.orange, 16, 16)],
-          },
-          dashboardText('话费', 'subheadline', COLORS.title),
-        ],
-      },
-      dashboardText(feeValue, 'title2', COLORS.value, 'bold'),
-    ],
-    {
-      padding: [10, 12, 10, 12],
-      gap: 6,
-      radius: 18,
-      light: '#FFFFFFC9',
-      dark: '#FFFFFF0B',
-      alignItems: 'start',
-      flex: 1,
-    }
-  );
+  const middleRow = {
+    type: 'stack',
+    direction: 'row',
+    alignItems: 'center',
+    gap: 14,
+    flex: 1,
+    children: [usageCard, remainBlock],
+  };
 
-  // 右侧：语音
-  const voicePanel = dashboardPanel(
-    [
-      {
-        type: 'stack',
-        direction: 'row',
-        alignItems: 'center',
-        gap: 7,
-        children: [
-          {
-            type: 'stack',
-            alignItems: 'center',
-            width: 34,
-            height: 34,
-            backgroundColor: {
-              light: '#DFF8EC',
-              dark: '#20B87922',
-            },
-            borderRadius: 17,
-            children: [dashboardIcon('phone.fill', COLORS.green, 16, 16)],
-          },
-          dashboardText('语音', 'subheadline', COLORS.title),
-        ],
-      },
-      dashboardText(voiceValue, 'title2', COLORS.value, 'bold'),
-    ],
-    {
-      padding: [10, 12, 10, 12],
-      gap: 6,
-      radius: 18,
-      light: '#FFFFFFC9',
-      dark: '#FFFFFF0B',
-      alignItems: 'start',
-      flex: 1,
-    }
-  );
-
-  const rightPanel = {
+  // 底部话费
+  const feeCard = {
     type: 'stack',
     direction: 'column',
-    alignItems: 'center',
+    alignItems: 'start',
+    gap: 6,
     flex: 1,
-    gap: 8,
+    padding: [12, 14, 12, 14],
+    backgroundColor: {
+      light: '#FFF6E8',
+      dark: '#3A2E1A',
+    },
+    borderRadius: 18,
     children: [
-      feePanel,
-      voicePanel,
       {
         type: 'stack',
         direction: 'row',
         alignItems: 'center',
-        padding: [6, 10, 6, 10],
-        backgroundColor: {
-          light: '#E7F8F0',
-          dark: '#20B87920',
-        },
-        borderRadius: 15,
+        gap: 6,
         children: [
-          dashboardText(
-            hasDetail ? `${usedPercent}% 已用` : '流量详情',
-            'subheadline',
-            COLORS.green,
-            'semibold'
-          ),
+          {
+            type: 'image',
+            src: 'sf-symbol:wallet.pass.fill',
+            color: COLORS.orange.light,
+            width: 14,
+            height: 14,
+          },
+          {
+            type: 'text',
+            text: '剩余话费',
+            font: { size: 'subheadline', weight: 'medium' },
+            textColor: COLORS.subtitle,
+            maxLines: 1,
+          },
+        ],
+      },
+      {
+        type: 'text',
+        text: `¥${feeNum}`,
+        font: { size: 'title', weight: 'bold' },
+        textColor: COLORS.value,
+        maxLines: 1,
+        minScale: 0.6,
+      },
+    ],
+  };
+
+  // 底部语音
+  const voiceCard = {
+    type: 'stack',
+    direction: 'column',
+    alignItems: 'start',
+    gap: 6,
+    flex: 1,
+    padding: [12, 14, 12, 14],
+    backgroundColor: {
+      light: '#E8F8F0',
+      dark: '#1A3A28',
+    },
+    borderRadius: 18,
+    children: [
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        gap: 6,
+        children: [
+          {
+            type: 'image',
+            src: 'sf-symbol:phone.fill',
+            color: COLORS.green.light,
+            width: 14,
+            height: 14,
+          },
+          {
+            type: 'text',
+            text: '剩余语音',
+            font: { size: 'subheadline', weight: 'medium' },
+            textColor: COLORS.subtitle,
+            maxLines: 1,
+          },
+        ],
+      },
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        gap: 2,
+        children: [
+          {
+            type: 'text',
+            text: String(voiceNum),
+            font: { size: 'title', weight: 'bold' },
+            textColor: COLORS.value,
+            maxLines: 1,
+            minScale: 0.6,
+          },
+          {
+            type: 'text',
+            text: '分',
+            font: { size: 'title3', weight: 'semibold' },
+            textColor: COLORS.value,
+            maxLines: 1,
+          },
         ],
       },
     ],
+  };
+
+  const bottomRow = {
+    type: 'stack',
+    direction: 'row',
+    alignItems: 'center',
+    gap: 10,
+    children: [feeCard, voiceCard],
   };
 
   return {
     type: 'widget',
-    padding: [10, 12, 10, 12],
-    gap: 8,
+    padding: [14, 16, 14, 16],
+    gap: 12,
     backgroundColor: {
-      light: '#F5F5FA',
-      dark: '#202024',
+      light: '#FFFFFF',
+      dark: '#1C1C1E',
     },
     refreshAfter: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
-    children: [
-      headerRow(data.updateTime, fromCache),
-      {
-        type: 'stack',
-        direction: 'row',
-        alignItems: 'center',
-        gap: 9,
-        flex: 1,
-        children: [gaugePanel, flowPanel, rightPanel],
-      },
-    ],
+    children: [topBar, divider, middleRow, bottomRow],
   };
 }
 
