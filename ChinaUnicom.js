@@ -1397,7 +1397,7 @@ function buildLargeWidget(data, fromCache) {
       { type: 'spacer' },
       {
         type: 'text',
-        text: '每 30 分钟刷新',
+        text: '',
         font: { size: 'caption2' },
         textColor: COLORS.time,
         maxLines: 1,
