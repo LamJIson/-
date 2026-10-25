@@ -914,7 +914,7 @@ function buildMediumWidget(data, fromCache) {
       },
       {
         type: 'text',
-        text: `总量 ${totalText} · 已用 ${usedText}`,
+        text: `总量 ${totalText}`,
         font: { size: 'caption1', weight: 'semibold' },
         textColor: COLORS.value,
         maxLines: 1,
@@ -922,7 +922,16 @@ function buildMediumWidget(data, fromCache) {
       },
     ],
   };
-
+      {
+        type: 'text',
+        text: `已用 ${usedText}`,
+        font: { size: 'caption1', weight: 'semibold' },
+        textColor: COLORS.value,
+        maxLines: 1,
+        minScale: 0.7,
+      },
+    ],
+  };
   // 右：话费语音
   const rightCol = {
     type: 'stack',
