@@ -678,24 +678,23 @@ function buildMediumWidget(data, fromCache) {
     : '—';
   const todayText = formatTodayUsageText(flow);
 
-  // 顶栏：无 5G / 流量主卡
   const topBar = {
     type: 'stack',
     direction: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 5,
     children: [
       {
         type: 'image',
         src: 'sf-symbol:antenna.radiowaves.left.and.right',
         color: COLORS.accent,
-        width: 15,
-        height: 15,
+        width: 13,
+        height: 13,
       },
       {
         type: 'text',
         text: '中国联通',
-        font: { size: 'headline', weight: 'bold' },
+        font: { size: 'subheadline', weight: 'bold' },
         textColor: COLORS.value,
         maxLines: 1,
       },
@@ -712,31 +711,30 @@ function buildMediumWidget(data, fromCache) {
     ],
   };
 
-  // 左：剩余流量大数字
   const leftCol = {
     type: 'stack',
     direction: 'column',
     alignItems: 'start',
-    gap: 4,
-    flex: 1.3,
+    gap: 2,
+    flex: 1.35,
     children: [
       {
         type: 'stack',
         direction: 'row',
         alignItems: 'center',
-        gap: 5,
+        gap: 4,
         children: [
           {
             type: 'image',
             src: 'sf-symbol:chart.pie.fill',
             color: COLORS.accent,
-            width: 14,
-            height: 14,
+            width: 12,
+            height: 12,
           },
           {
             type: 'text',
             text: '剩余流量',
-            font: { size: 'subheadline', weight: 'semibold' },
+            font: { size: 'caption1', weight: 'semibold' },
             textColor: COLORS.value,
             maxLines: 1,
           },
@@ -745,10 +743,10 @@ function buildMediumWidget(data, fromCache) {
       {
         type: 'text',
         text: `${flow.value ?? '—'} ${flow.unit || 'GB'}`,
-        font: { size: 'title', weight: 'bold' },
+        font: { size: 'title3', weight: 'bold' },
         textColor: COLORS.value,
         maxLines: 1,
-        minScale: 0.5,
+        minScale: 0.45,
       },
       {
         type: 'text',
@@ -756,82 +754,75 @@ function buildMediumWidget(data, fromCache) {
         font: { size: 'caption2' },
         textColor: COLORS.subtitle,
         maxLines: 1,
-        minScale: 0.7,
+        minScale: 0.55,
       },
     ],
   };
 
-  // 中：剩余% + 半圆进度 + 已用%
   const centerCol = {
     type: 'stack',
     direction: 'column',
     alignItems: 'center',
-    gap: 2,
-    flex: 0.9,
+    gap: 1,
+    flex: 0.85,
     children: [
       {
         type: 'text',
         text: `${percentRemain}% 剩余`,
-        font: { size: 'caption1', weight: 'semibold' },
-        textColor: {
-          light: '#7B6CF0',
-          dark: '#A99BFF',
-        },
+        font: { size: 'caption2', weight: 'semibold' },
+        textColor: { light: '#7B6CF0', dark: '#A99BFF' },
         maxLines: 1,
       },
       {
         type: 'image',
         src: makeSemiGaugeSVG(percentUsed),
-        width: 64,
-        height: 38,
+        width: 52,
+        height: 30,
       },
       {
         type: 'text',
         text: `${percentUsed}% 已用`,
         font: { size: 'caption2', weight: 'semibold' },
-        textColor: {
-          light: '#7B6CF0',
-          dark: '#A99BFF',
-        },
+        textColor: { light: '#7B6CF0', dark: '#A99BFF' },
         maxLines: 1,
       },
     ],
   };
 
-  // 右：话费 + 语音
   const rightCol = {
     type: 'stack',
     direction: 'column',
     alignItems: 'start',
-    gap: 8,
-    flex: 0.95,
+    gap: 5,
+    flex: 0.9,
     children: [
       {
         type: 'stack',
         direction: 'row',
         alignItems: 'center',
-        gap: 5,
+        gap: 4,
         children: [
           {
             type: 'image',
             src: 'sf-symbol:yensign.circle.fill',
             color: COLORS.orange.light,
-            width: 14,
-            height: 14,
+            width: 12,
+            height: 12,
           },
           {
             type: 'text',
             text: '话费',
-            font: { size: 'caption1' },
+            font: { size: 'caption2' },
             textColor: COLORS.subtitle,
             maxLines: 1,
           },
           {
             type: 'text',
             text: `¥${fee.value ?? '--'}`,
-            font: { size: 'subheadline', weight: 'bold' },
+            font: { size: 'caption1', weight: 'bold' },
             textColor: COLORS.value,
             maxLines: 1,
+            minScale: 0.6,
           },
         ],
       },
@@ -839,31 +830,29 @@ function buildMediumWidget(data, fromCache) {
         type: 'stack',
         direction: 'row',
         alignItems: 'center',
-        gap: 5,
+        gap: 4,
         children: [
           {
             type: 'image',
             src: 'sf-symbol:phone.fill',
-            color: {
-              light: '#7B6CF0',
-              dark: '#A99BFF',
-            },
-            width: 13,
-            height: 13,
+            color: { light: '#7B6CF0', dark: '#A99BFF' },
+            width: 11,
+            height: 11,
           },
           {
             type: 'text',
             text: '语音',
-            font: { size: 'caption1' },
+            font: { size: 'caption2' },
             textColor: COLORS.subtitle,
             maxLines: 1,
           },
           {
             type: 'text',
             text: `${voice.value ?? '--'} 分`,
-            font: { size: 'subheadline', weight: 'bold' },
+            font: { size: 'caption1', weight: 'bold' },
             textColor: COLORS.value,
             maxLines: 1,
+            minScale: 0.6,
           },
         ],
       },
@@ -874,41 +863,40 @@ function buildMediumWidget(data, fromCache) {
     type: 'stack',
     direction: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
     flex: 1,
     children: [leftCol, centerCol, rightCol],
   };
 
-  // 底部：柱状图 + 今日流量使用
   const bottomRow = {
     type: 'stack',
     direction: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
     children: [
       {
         type: 'image',
         src: makeBarChartSVG(),
-        width: 72,
-        height: 24,
+        width: 56,
+        height: 18,
       },
       {
         type: 'stack',
         direction: 'column',
         alignItems: 'start',
-        gap: 1,
+        gap: 0,
         flex: 1,
         children: [
           {
             type: 'text',
             text: '今日流量使用',
-            font: { size: 'caption1', weight: 'semibold' },
+            font: { size: 'caption2', weight: 'semibold' },
             textColor: COLORS.value,
             maxLines: 1,
           },
           {
             type: 'text',
-            text: '按今日已记录余量变化估算',
+            text: '按今日余量变化估算',
             font: { size: 'caption2' },
             textColor: COLORS.subtitle,
             maxLines: 1,
@@ -918,11 +906,8 @@ function buildMediumWidget(data, fromCache) {
       {
         type: 'text',
         text: todayText,
-        font: { size: 'subheadline', weight: 'bold' },
-        textColor: {
-          light: '#2E6B9E',
-          dark: '#6BB3E0',
-        },
+        font: { size: 'caption1', weight: 'bold' },
+        textColor: { light: '#2E6B9E', dark: '#6BB3E0' },
         maxLines: 1,
       },
     ],
@@ -930,17 +915,13 @@ function buildMediumWidget(data, fromCache) {
 
   return {
     type: 'widget',
-    padding: [12, 14, 12, 14],
-    gap: 10,
-    backgroundColor: {
-      light: '#FFFFFF',
-      dark: '#1C1C1E',
-    },
+    padding: [10, 12, 10, 12],
+    gap: 8,
+    backgroundColor: { light: '#FFFFFF', dark: '#1C1C1E' },
     refreshAfter: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
     children: [topBar, mainRow, bottomRow],
   };
 }
-
 
 /* 大号 / 超大号：仪表盘三栏布局（仅用官方支持的 DSL 属性） */
 function buildLargeWidget(data, fromCache) {
@@ -972,6 +953,7 @@ function buildLargeWidget(data, fromCache) {
 
   const feeNum = fee.value ?? '--';
   const voiceNum = voice.value ?? '--';
+  const todayText = formatTodayUsageText(flow);
 
   // 顶栏：信号 + 中国联通 + 更新时间（无 5G / 流量主卡）
   const topBar = {
@@ -1223,6 +1205,51 @@ function buildLargeWidget(data, fromCache) {
     ],
   };
 
+  const todayRow = {
+    type: 'stack',
+    direction: 'row',
+    alignItems: 'center',
+    gap: 10,
+    children: [
+      {
+        type: 'image',
+        src: makeBarChartSVG(),
+        width: 64,
+        height: 22,
+      },
+      {
+        type: 'stack',
+        direction: 'column',
+        alignItems: 'start',
+        gap: 1,
+        flex: 1,
+        children: [
+          {
+            type: 'text',
+            text: '今日流量使用',
+            font: { size: 'caption1', weight: 'semibold' },
+            textColor: COLORS.value,
+            maxLines: 1,
+          },
+          {
+            type: 'text',
+            text: '按今日已记录余量变化估算',
+            font: { size: 'caption2' },
+            textColor: COLORS.subtitle,
+            maxLines: 1,
+          },
+        ],
+      },
+      {
+        type: 'text',
+        text: todayText,
+        font: { size: 'subheadline', weight: 'bold' },
+        textColor: { light: '#2E6B9E', dark: '#6BB3E0' },
+        maxLines: 1,
+      },
+    ],
+  };
+
   const bottomRow = {
     type: 'stack',
     direction: 'row',
@@ -1233,14 +1260,14 @@ function buildLargeWidget(data, fromCache) {
 
   return {
     type: 'widget',
-    padding: [14, 16, 14, 16],
-    gap: 12,
+    padding: [12, 14, 12, 14],
+    gap: 10,
     backgroundColor: {
       light: '#FFFFFF',
       dark: '#1C1C1E',
     },
     refreshAfter: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
-    children: [topBar, divider, middleRow, bottomRow],
+    children: [topBar, divider, middleRow, bottomRow, todayRow],
   };
 }
 
