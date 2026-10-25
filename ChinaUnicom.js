@@ -493,25 +493,21 @@ function formatTodayUsageText(flow) {
 /** 简易柱状图 SVG（装饰用，模拟广电底部样式） */
 /** 中国联通「中国结」标识（简化 SVG） */
 function unicomLogoSVG() {
-  // 简化中国结：双环交错 + 中心结，联通红
+  // 中国联通中国结：四向回环 + 中心盘长（红色填充）
   const svg =
-    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>` +
-    `<g fill='none' stroke='#E60012' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'>` +
-    // 左环
-    `<path d='M20 18 C10 18 8 28 8 32 C8 42 16 48 24 48 C30 48 34 44 34 38'/>` +
-    // 右环
-    `<path d='M44 18 C54 18 56 28 56 32 C56 42 48 48 40 48 C34 48 30 44 30 38'/>` +
-    // 上弧连接
-    `<path d='M20 18 C24 10 40 10 44 18'/>` +
-    // 中心交叉结
-    `<path d='M26 32 C30 26 34 26 38 32'/>` +
-    `<path d='M26 32 C30 38 34 38 38 32'/>` +
-    // 下方两脚
-    `<path d='M24 48 L20 58'/>` +
-    `<path d='M40 48 L44 58'/>` +
-    `</g>` +
-    // 实心点缀
-    `<circle cx='32' cy='32' r='3.2' fill='#E60012'/>` +
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>` +
+    `<path fill='#E60012' d='` +
+    // 上叶
+    `M50 6c-12 0-20 8-20 18 0 6 3 10 9 14l11-11 11 11c6-4 9-8 9-14 0-10-8-18-20-18z` +
+    // 下叶
+    `M50 94c12 0 20-8 20-18 0-6-3-10-9-14L50 73 39 62c-6 4-9 8-9 14 0 10 8 18 20 18z` +
+    // 左叶
+    `M6 50c0-12 8-20 18-20 6 0 10 3 14 9L27 50l11 11c-4 6-8 9-14 9-10 0-18-8-18-20z` +
+    // 右叶
+    `M94 50c0 12-8 20-18 20-6 0-10-3-14-9L73 50 62 39c4-6 8-9 14-9 10 0 18 8 18 20z` +
+    // 中心 X 结
+    `M35 29l15 15 15-15 8 8-15 15 15 15-8 8-15-15-15 15-8-8 15-15-15-15z` +
+    `'/>` +
     `</svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
@@ -919,7 +915,7 @@ function buildMediumWidget(data, fromCache) {
       {
         type: 'text',
         text: `总量 ${totalText} · 已用 ${usedText}`,
-        font: { size: 'caption2', weight: 'medium' },
+        font: { size: 'caption1', weight: 'medium' },
         textColor: COLORS.value,
         maxLines: 1,
         minScale: 0.5,
@@ -1366,7 +1362,7 @@ function buildLargeWidget(data, fromCache) {
       },
       {
         type: 'text',
-        text: '',
+        text: '按今日已记录余量变化估算',
         font: { size: 'caption2' },
         textColor: COLORS.subtitle,
         maxLines: 1,
@@ -1397,7 +1393,7 @@ function buildLargeWidget(data, fromCache) {
       { type: 'spacer' },
       {
         type: 'text',
-        text: '',
+        text: '每 30 分钟刷新',
         font: { size: 'caption2' },
         textColor: COLORS.time,
         maxLines: 1,
@@ -1420,224 +1416,167 @@ function buildSmall(data) {
   const fee = data.fee || {};
   const voice = data.voice || {};
   const percentUsed = flow.percentUsed ?? 0;
+  const percentRemain = flow.percentRemain ?? 100;
   const usedText = flow.usedFormatted
-    ? `${flow.usedFormatted.value} ${flow.usedFormatted.unit}`
+    ? `${flow.usedFormatted.value}${flow.usedFormatted.unit}`
     : '—';
   const totalText = flow.totalFormatted
-    ? `${flow.totalFormatted.value} ${flow.totalFormatted.unit}`
+    ? `${flow.totalFormatted.value}${flow.totalFormatted.unit}`
     : '—';
   const todayText = formatTodayUsageText(flow);
 
-  const topBar = {
-    type: 'stack',
-    direction: 'row',
-    alignItems: 'center',
-    gap: 5,
-    children: [
-      {
-        type: 'image',
-        src: unicomLogoSVG(),
-        width: 16,
-        height: 16,
-      },
-      {
-        type: 'text',
-        text: '中国联通',
-        font: { size: 'subheadline', weight: 'bold' },
-        textColor: COLORS.value,
-        maxLines: 1,
-      },
-      { type: 'spacer' },
-      {
-        type: 'text',
-        text: data.updateTime || '--:--',
-        font: { size: 'caption2' },
-        textColor: COLORS.time,
-        maxLines: 1,
-      },
-    ],
-  };
-
-  const leftFlow = {
-    type: 'stack',
-    direction: 'column',
-    alignItems: 'start',
-    gap: 2,
-    flex: 1,
-    children: [
-      {
-        type: 'text',
-        text: '剩余流量',
-        font: { size: 'caption1', weight: 'semibold' },
-        textColor: COLORS.subtitle,
-        maxLines: 1,
-      },
-      {
-        type: 'text',
-        text: `${flow.value ?? '—'} ${flow.unit || 'GB'}`,
-        font: { size: 'title2', weight: 'bold' },
-        textColor: COLORS.value,
-        maxLines: 1,
-        minScale: 0.5,
-      },
-      {
-        type: 'text',
-        text: `已用 ${usedText}`,
-        font: { size: 'caption2', weight: 'semibold' },
-        textColor: { light: '#8B7CF6', dark: '#A99BFF' },
-        maxLines: 1,
-      },
-      {
-        type: 'text',
-        text: `总量 ${totalText}`,
-        font: { size: 'caption2' },
-        textColor: COLORS.subtitle,
-        maxLines: 1,
-      },
-    ],
-  };
-
-  const rightGauge = {
-    type: 'stack',
-    direction: 'column',
-    alignItems: 'center',
-    gap: 1,
-    children: [
-      {
-        type: 'image',
-        src: makeSemiGaugeSVG(percentUsed),
-        width: 70,
-        height: 40,
-      },
-      {
-        type: 'text',
-        text: `${percentUsed}% 已用`,
-        font: { size: 'caption1', weight: 'bold' },
-        textColor: { light: '#8B7CF6', dark: '#A99BFF' },
-        maxLines: 1,
-      },
-      {
-        type: 'text',
-        text: '今日',
-        font: { size: 'caption2' },
-        textColor: COLORS.subtitle,
-        maxLines: 1,
-      },
-      {
-        type: 'text',
-        text: todayText,
-        font: { size: 'headline', weight: 'bold' },
-        textColor: { light: '#2E9BC0', dark: '#5BBEDE' },
-        maxLines: 1,
-        minScale: 0.7,
-      },
-    ],
-  };
-
-  const midRow = {
-    type: 'stack',
-    direction: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flex: 1,
-    children: [leftFlow, rightGauge],
-  };
-
-  const voiceBlock = {
-    type: 'stack',
-    direction: 'column',
-    alignItems: 'start',
-    gap: 2,
-    flex: 1,
-    children: [
-      {
-        type: 'stack',
-        direction: 'row',
-        alignItems: 'center',
-        gap: 4,
-        children: [
-          {
-            type: 'image',
-            src: 'sf-symbol:phone.fill',
-            color: { light: '#8B7CF6', dark: '#A99BFF' },
-            width: 12,
-            height: 12,
-          },
-          {
-            type: 'text',
-            text: '剩余语音',
-            font: { size: 'caption2' },
-            textColor: COLORS.subtitle,
-            maxLines: 1,
-          },
-        ],
-      },
-      {
-        type: 'text',
-        text: `${voice.value ?? '--'} 分钟`,
-        font: { size: 'headline', weight: 'bold' },
-        textColor: COLORS.value,
-        maxLines: 1,
-        minScale: 0.6,
-      },
-    ],
-  };
-
-  const feeBlock = {
-    type: 'stack',
-    direction: 'column',
-    alignItems: 'start',
-    gap: 2,
-    flex: 1,
-    children: [
-      {
-        type: 'stack',
-        direction: 'row',
-        alignItems: 'center',
-        gap: 4,
-        children: [
-          {
-            type: 'image',
-            src: 'sf-symbol:yensign.circle.fill',
-            color: COLORS.orange.light,
-            width: 12,
-            height: 12,
-          },
-          {
-            type: 'text',
-            text: '剩余话费',
-            font: { size: 'caption2' },
-            textColor: COLORS.subtitle,
-            maxLines: 1,
-          },
-        ],
-      },
-      {
-        type: 'text',
-        text: `¥ ${fee.value ?? '--'}`,
-        font: { size: 'headline', weight: 'bold' },
-        textColor: COLORS.value,
-        maxLines: 1,
-        minScale: 0.6,
-      },
-    ],
-  };
-
-  const bottomRow = {
-    type: 'stack',
-    direction: 'row',
-    alignItems: 'center',
-    gap: 10,
-    children: [voiceBlock, feeBlock],
-  };
-
+  // 紧凑小号：无半圆，小字号，避免裁切
   return {
     type: 'widget',
-    padding: [12, 12, 12, 12],
-    gap: 10,
+    padding: [10, 10, 10, 10],
+    gap: 6,
     backgroundColor: { light: '#FFFFFF', dark: '#1C1C1E' },
     refreshAfter: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
-    children: [topBar, midRow, bottomRow],
+    children: [
+      // 顶栏
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        gap: 5,
+        children: [
+          {
+            type: 'image',
+            src: unicomLogoSVG(),
+            width: 14,
+            height: 14,
+          },
+          {
+            type: 'text',
+            text: '中国联通',
+            font: { size: 'caption1', weight: 'bold' },
+            textColor: COLORS.value,
+            maxLines: 1,
+          },
+          { type: 'spacer' },
+          {
+            type: 'text',
+            text: data.updateTime || '--:--',
+            font: { size: 'caption2' },
+            textColor: COLORS.time,
+            maxLines: 1,
+          },
+        ],
+      },
+      // 剩余流量
+      {
+        type: 'stack',
+        direction: 'column',
+        alignItems: 'start',
+        gap: 2,
+        children: [
+          {
+            type: 'text',
+            text: `${flow.value ?? '—'} ${flow.unit || 'GB'}`,
+            font: { size: 'title3', weight: 'bold' },
+            textColor: COLORS.value,
+            maxLines: 1,
+            minScale: 0.45,
+          },
+          {
+            type: 'text',
+            text: `${percentRemain}%剩 · ${percentUsed}%已用`,
+            font: { size: 'caption2', weight: 'semibold' },
+            textColor: { light: '#8B7CF6', dark: '#A99BFF' },
+            maxLines: 1,
+          },
+          {
+            type: 'text',
+            text: `总${totalText} · 已用${usedText}`,
+            font: { size: 'caption2' },
+            textColor: COLORS.subtitle,
+            maxLines: 1,
+            minScale: 0.6,
+          },
+        ],
+      },
+      // 今日 + 话费语音
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        gap: 6,
+        children: [
+          {
+            type: 'stack',
+            direction: 'column',
+            alignItems: 'start',
+            gap: 1,
+            flex: 1,
+            children: [
+              {
+                type: 'text',
+                text: '今日',
+                font: { size: 'caption2' },
+                textColor: COLORS.subtitle,
+                maxLines: 1,
+              },
+              {
+                type: 'text',
+                text: todayText,
+                font: { size: 'caption1', weight: 'bold' },
+                textColor: { light: '#2E9BC0', dark: '#5BBEDE' },
+                maxLines: 1,
+                minScale: 0.55,
+              },
+            ],
+          },
+          {
+            type: 'stack',
+            direction: 'column',
+            alignItems: 'start',
+            gap: 1,
+            flex: 1,
+            children: [
+              {
+                type: 'text',
+                text: '话费',
+                font: { size: 'caption2' },
+                textColor: COLORS.subtitle,
+                maxLines: 1,
+              },
+              {
+                type: 'text',
+                text: `¥${fee.value ?? '--'}`,
+                font: { size: 'caption1', weight: 'bold' },
+                textColor: COLORS.value,
+                maxLines: 1,
+                minScale: 0.55,
+              },
+            ],
+          },
+          {
+            type: 'stack',
+            direction: 'column',
+            alignItems: 'start',
+            gap: 1,
+            flex: 1,
+            children: [
+              {
+                type: 'text',
+                text: '语音',
+                font: { size: 'caption2' },
+                textColor: COLORS.subtitle,
+                maxLines: 1,
+              },
+              {
+                type: 'text',
+                text: `${voice.value ?? '--'}分`,
+                font: { size: 'caption1', weight: 'bold' },
+                textColor: COLORS.value,
+                maxLines: 1,
+                minScale: 0.55,
+              },
+            ],
+          },
+        ],
+      },
+    ],
   };
 }
 
