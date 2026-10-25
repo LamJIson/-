@@ -914,10 +914,12 @@ function buildMediumWidget(data, fromCache) {
       },
       {
         type: 'text',
-        text: `总量 ${totalText} · 已用 ${usedText}`,
-        font: { size: 'caption1', weight: 'bold' },
+        text: `总量 ${totalText} 
+               已用 ${usedText}`,
+        font: { size: 'caption1', weight: 'semibold' },
         textColor: COLORS.value,
         maxLines: 1,
+        minScale: 0.6,
       },
     ],
   };
