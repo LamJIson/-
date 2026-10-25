@@ -364,7 +364,9 @@ async function loadData(ctx) {
       }
 
       // 今日流量使用：按当日首次记录的余量与当前余量差估算
-      data.flow.todayUsedMB = updateTodayUsage(ctx, remainMB);
+      const usage = updateTodayUsage(ctx, remainMB);
+      data.flow.todayUsedMB = usage.todayUsedMB;
+      data.flow.hourlyMB = usage.hours;
       const tu = formatFlowValue(data.flow.todayUsedMB, 'MB');
       data.flow.todayUsedFormatted = tu;
     } catch (e) {
@@ -375,7 +377,9 @@ async function loadData(ctx) {
     if (data.flow.todayUsedMB == null) {
       const approxRemain = Number(data.flow.remainMB) || 0;
       if (approxRemain > 0) {
-        data.flow.todayUsedMB = updateTodayUsage(ctx, approxRemain);
+        const usage2 = updateTodayUsage(ctx, approxRemain);
+        data.flow.todayUsedMB = usage2.todayUsedMB;
+        data.flow.hourlyMB = usage2.hours;
         data.flow.todayUsedFormatted = formatFlowValue(data.flow.todayUsedMB, 'MB');
       } else {
         data.flow.todayUsedMB = 0;
@@ -389,6 +393,18 @@ async function loadData(ctx) {
   } catch (e) {
     if (e && e.authFailed) notifyExpiredOnce(ctx, cookie);
     const cached = ctx.storage.getJSON('unicom_datasource');
+    if (cached && cached.flow) {
+      try {
+        const snap = ctx.storage.getJSON('unicom_flow_snapshot');
+        if (snap && Array.isArray(snap.hours)) {
+          cached.flow.hourlyMB = snap.hours;
+          if (snap.todayUsedMB != null && cached.flow.todayUsedMB == null) {
+            cached.flow.todayUsedMB = snap.todayUsedMB;
+            cached.flow.todayUsedFormatted = formatFlowValue(snap.todayUsedMB, 'MB');
+          }
+        }
+      } catch (err) {}
+    }
     return { data: cached || null, configured: true, error: e };
   }
 }
@@ -396,9 +412,21 @@ async function loadData(ctx) {
 /** 按「今日首次余量 - 当前余量」估算今日已用流量（MB） */
 function updateTodayUsage(ctx, remainMB) {
   const remain = Math.max(0, Number(remainMB) || 0);
-  const today = new Date().toLocaleDateString('en-CA', {
+  const now = new Date();
+  // Asia/Shanghai date + hour
+  const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Shanghai',
-  });
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    hour12: false,
+  }).formatToParts(now);
+  const get = (t) => (parts.find((p) => p.type === t) || {}).value;
+  const today = `${get('year')}-${get('month')}-${get('day')}`;
+  let hour = parseInt(get('hour'), 10);
+  if (hour === 24) hour = 0;
+
   let snap = null;
   try {
     snap = ctx.storage.getJSON('unicom_flow_snapshot');
@@ -406,8 +434,26 @@ function updateTodayUsage(ctx, remainMB) {
   snap = snap || {};
 
   let baseline = remain;
-  if (snap.date === today && typeof snap.baselineMB === 'number') {
-    baseline = snap.baselineMB;
+  let hours = Array(24).fill(0);
+  if (snap.date === today) {
+    if (typeof snap.baselineMB === 'number') baseline = snap.baselineMB;
+    if (Array.isArray(snap.hours) && snap.hours.length === 24) {
+      hours = snap.hours.map((v) => Math.max(0, Number(v) || 0));
+    }
+    // 将「上次余量 - 当前余量」累加到当前小时
+    if (typeof snap.remainMB === 'number' && snap.remainMB > remain) {
+      const delta = snap.remainMB - remain;
+      const h =
+        typeof snap.lastHour === 'number' && snap.lastHour >= 0 && snap.lastHour < 24
+          ? snap.lastHour
+          : hour;
+      // 若跨小时，把增量记到上一记录小时更合理；简单策略：记到当前小时
+      hours[hour] = (hours[hour] || 0) + delta;
+    }
+  } else {
+    // 新的一天，重置
+    hours = Array(24).fill(0);
+    baseline = remain;
   }
 
   const todayUsedMB = Math.max(0, baseline - remain);
@@ -418,10 +464,12 @@ function updateTodayUsage(ctx, remainMB) {
       baselineMB: baseline,
       remainMB: remain,
       todayUsedMB,
+      hours,
+      lastHour: hour,
     });
   } catch (e) {}
 
-  return todayUsedMB;
+  return { todayUsedMB, hours };
 }
 
 function formatTodayUsageText(flow) {
@@ -436,29 +484,56 @@ function formatTodayUsageText(flow) {
 }
 
 /** 简易柱状图 SVG（装饰用，模拟广电底部样式） */
-function makeBarChartSVG(level) {
-  const lv = Math.max(0, Math.min(1, Number(level) || 0.3));
-  const base = [3, 5, 8, 12, 16, 14, 18, 20, 22, 18];
-  const bars = base.map((b, i) => {
-    const t = 0.4 + lv * 0.9;
-    return Math.max(2, Math.round(b * t * (0.7 + (i / base.length) * 0.5)));
-  });
-  const w = 90;
-  const h = 28;
-  const gap = 3;
-  const bw = (w - gap * (bars.length - 1)) / bars.length;
+function makeBarChartSVG(hourlyMB, options) {
+  options = options || {};
+  const w = options.width || 120;
+  const h = options.height || 32;
+  const hours = Array.isArray(hourlyMB) && hourlyMB.length === 24
+    ? hourlyMB.map((v) => Math.max(0, Number(v) || 0))
+    : Array(24).fill(0);
+
+  const maxV = Math.max.apply(null, hours.concat([0.01]));
+  const gap = 1.2;
+  const bw = (w - gap * 23) / 24;
   let rects = '';
-  bars.forEach((bh, i) => {
+
+  // 当前上海小时，高亮
+  let curHour = new Date().getHours();
+  try {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Shanghai',
+      hour: '2-digit',
+      hour12: false,
+    }).formatToParts(new Date());
+    const hv = (parts.find((p) => p.type === 'hour') || {}).value;
+    curHour = parseInt(hv, 10);
+    if (curHour === 24) curHour = 0;
+  } catch (e) {}
+
+  for (let i = 0; i < 24; i++) {
+    const ratio = hours[i] / maxV;
+    // 无数据时给一个极小底，有数据按比例；当前小时之后的空柱更淡
+    let bh = Math.max(hours[i] > 0 ? 3 : 1.5, Math.round(ratio * (h - 2)));
+    if (hours[i] <= 0 && i > curHour) bh = 1.2;
     const x = i * (bw + gap);
     const y = h - bh;
-    const color = i < bars.length - 2 ? '#5BBEDE' : '#2E9BC0';
-    rects += `<rect x='${x.toFixed(1)}' y='${y}' width='${bw.toFixed(1)}' height='${bh}' rx='2' fill='${color}'/>`;
-  });
+    let color = '#5BBEDE';
+    if (i === curHour) color = '#1E8FB5';
+    else if (hours[i] <= 0) color = '#5BBEDE33';
+    else if (i > curHour) color = '#5BBEDE55';
+    rects += `<rect x='${x.toFixed(2)}' y='${y}' width='${bw.toFixed(2)}' height='${bh}' rx='0.8' fill='${color}'/>`;
+  }
+
   const svg =
     `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${w} ${h}'>` +
     rects +
     `</svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+}
+
+function todayUsageLevel(flow) {
+  const mb = Number(flow && flow.todayUsedMB) || 0;
+  return Math.max(0.15, Math.min(1, mb / 1024));
 }
 
 /* ===================== SVG 半圆进度 ===================== */
@@ -498,11 +573,7 @@ function makeSemiGaugeSVG(percentUsed) {
 
 
 
-function todayUsageLevel(flow) {
-  const mb = Number(flow && flow.todayUsedMB) || 0;
-  // 以约 1GB 为满刻度，便于柱状图有变化
-  return Math.max(0.15, Math.min(1, mb / 1024));
-}
+
 
 
 /* ===================== UI 组件 ===================== */
@@ -711,7 +782,6 @@ function buildMediumWidget(data, fromCache) {
     ? `${flow.totalFormatted.value} ${flow.totalFormatted.unit}`
     : '—';
   const todayText = formatTodayUsageText(flow);
-  const barLevel = todayUsageLevel(flow);
 
   const topBar = {
     type: 'stack',
@@ -917,20 +987,20 @@ function buildMediumWidget(data, fromCache) {
     type: 'stack',
     direction: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
     children: [
       {
         type: 'image',
-        src: makeBarChartSVG(barLevel),
-        width: 60,
-        height: 20,
+        src: makeBarChartSVG(flow.hourlyMB, { width: 140, height: 28 }),
+        width: 140,
+        height: 28,
       },
+      { type: 'spacer' },
       {
         type: 'stack',
         direction: 'column',
-        alignItems: 'start',
-        gap: 0,
-        flex: 1,
+        alignItems: 'end',
+        gap: 1,
         children: [
           {
             type: 'text',
@@ -941,23 +1011,16 @@ function buildMediumWidget(data, fromCache) {
           },
           {
             type: 'text',
-            text: '按今日余量变化估算',
-            font: { size: 'caption2' },
-            textColor: COLORS.subtitle,
+            text: todayText,
+            font: { size: 'title3', weight: 'bold' },
+            textColor: { light: '#2E9BC0', dark: '#5BBEDE' },
             maxLines: 1,
+            minScale: 0.55,
           },
         ],
       },
-      {
-        type: 'text',
-        text: todayText,
-        font: { size: 'title3', weight: 'bold' },
-        textColor: { light: '#2E9BC0', dark: '#5BBEDE' },
-        maxLines: 1,
-        minScale: 0.6,
-      },
     ],
-  };
+  };;
 
   return {
     type: 'widget',
@@ -983,7 +1046,6 @@ function buildLargeWidget(data, fromCache) {
     ? `${flow.totalFormatted.value} ${flow.totalFormatted.unit}`
     : '—';
   const todayText = formatTodayUsageText(flow);
-  const barLevel = todayUsageLevel(flow);
 
   const topBar = {
     type: 'stack',
@@ -1275,9 +1337,9 @@ function buildLargeWidget(data, fromCache) {
       },
       {
         type: 'image',
-        src: makeBarChartSVG(barLevel),
-        width: 200,
-        height: 28,
+        src: makeBarChartSVG(flow.hourlyMB, { width: 220, height: 36 }),
+        width: 220,
+        height: 36,
       },
       {
         type: 'text',
