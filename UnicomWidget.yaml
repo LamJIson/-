@@ -1,6 +1,6 @@
 name: 中国联通小组件
-description: 中国联通 话费 语音 流量小组件（含定时保活）
-author: iBL3ND
+description: 中国联通 话费 语音 流量小组件 流量小时图（含定时保活）
+author: ian
 icon: https://iili.io/nEuB6Jt.png
 compat_arguments:
   cuCapture: 'true'
@@ -31,7 +31,7 @@ compat_arguments_schema:
 dns: {}
 scriptings:
 - generic:
-    name: china-unicom
+    name: 中国联通小组件
     script_url: https://raw.githubusercontent.com/LamJIson/-/refs/heads/main/ChinaUnicom.js
     env:
       CU_SHOW_GENERAL_FLOW: '{{{cuGeneralFlow}}}'
@@ -49,4 +49,4 @@ mitm:
     includes:
     - m.client.10010.com
 widgets:
-- name: china-unicom
+- name: 中国联通小组件
