@@ -1366,7 +1366,7 @@ function buildLargeWidget(data, fromCache) {
       },
       {
         type: 'text',
-        text: '按今日已记录余量变化估算',
+        text: '',
         font: { size: 'caption2' },
         textColor: COLORS.subtitle,
         maxLines: 1,
