@@ -444,17 +444,8 @@ function updateTodayUsage(ctx, remainMB) {
     }
     if (typeof snap.remainMB === 'number' && snap.remainMB > remain) {
       const delta = snap.remainMB - remain;
-      // 跨小时时把增量记在「上次所在小时」，避免挤到下一小时
-      let bucket = hour;
-      if (
-        typeof snap.lastHour === 'number' &&
-        snap.lastHour >= 0 &&
-        snap.lastHour < 24 &&
-        snap.lastHour !== hour
-      ) {
-        bucket = snap.lastHour;
-      }
-      hours[bucket] = (hours[bucket] || 0) + delta;
+      // 增量记入「当前小时」：hours[0]=0点, hours[21]=21点（从左数第22根）
+      hours[hour] = (hours[hour] || 0) + delta;
     }
   } else {
     hours = Array(24).fill(0);
