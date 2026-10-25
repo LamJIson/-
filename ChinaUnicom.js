@@ -422,12 +422,12 @@ function getLocalHour(date) {
 function updateTodayUsage(ctx, remainMB) {
   const remain = Math.max(0, Number(remainMB) || 0);
   const now = new Date();
-  // 日期与小时均跟随系统时区
   const y = now.getFullYear();
   const m = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
   const today = `${y}-${m}-${day}`;
-  const hour = getLocalHour(now); // 0 = 0:00-0:59, 21 = 21:00-21:59（第22根柱）
+  // 本地小时 0–23：柱[0]=0点, 柱[21]=21点（从左数第 22 根）
+  const hour = getLocalHour(now);
 
   let snap = null;
   try {
@@ -435,21 +435,31 @@ function updateTodayUsage(ctx, remainMB) {
   } catch (e) {}
   snap = snap || {};
 
+  // v3：纠正小时桶后强制清一次错误历史，避免旧数据偏一格
+  const HOUR_VER = 3;
   let baseline = remain;
   let hours = Array(24).fill(0);
-  if (snap.date === today) {
+
+  if (snap.date === today && snap.hourVer === HOUR_VER) {
     if (typeof snap.baselineMB === 'number') baseline = snap.baselineMB;
     if (Array.isArray(snap.hours) && snap.hours.length === 24) {
       hours = snap.hours.map((v) => Math.max(0, Number(v) || 0));
     }
     if (typeof snap.remainMB === 'number' && snap.remainMB > remain) {
       const delta = snap.remainMB - remain;
-      // 增量记入「当前小时」：hours[0]=0点, hours[21]=21点（从左数第22根）
-      hours[hour] = (hours[hour] || 0) + delta;
+      hours[hour] = (Number(hours[hour]) || 0) + delta;
+    }
+  } else if (snap.date === today && typeof snap.baselineMB === 'number') {
+    // 同一天但版本变了：保留 baseline / 今日总量，清空小时柱重新累计
+    baseline = snap.baselineMB;
+    hours = Array(24).fill(0);
+    if (typeof snap.remainMB === 'number' && snap.remainMB > remain) {
+      const delta = snap.remainMB - remain;
+      hours[hour] = delta;
     }
   } else {
-    hours = Array(24).fill(0);
     baseline = remain;
+    hours = Array(24).fill(0);
   }
 
   const todayUsedMB = Math.max(0, baseline - remain);
@@ -457,6 +467,7 @@ function updateTodayUsage(ctx, remainMB) {
   try {
     ctx.storage.setJSON('unicom_flow_snapshot', {
       date: today,
+      hourVer: HOUR_VER,
       baselineMB: baseline,
       remainMB: remain,
       todayUsedMB,
@@ -465,7 +476,7 @@ function updateTodayUsage(ctx, remainMB) {
     });
   } catch (e) {}
 
-  return { todayUsedMB, hours };
+  return { todayUsedMB, hours, hour };
 }
 
 function formatTodayUsageText(flow) {
@@ -484,7 +495,7 @@ function makeBarChartSVG(hourlyMB, options) {
   options = options || {};
   const w = options.width || 120;
   const h = options.height || 32;
-  // hours[0] = 0:00–0:59, hours[21] = 21:00–21:59（从左数第22根）
+  // 柱 i 对应本地 i:00–i:59（i=0…23）
   const hours = Array.isArray(hourlyMB) && hourlyMB.length === 24
     ? hourlyMB.map((v) => Math.max(0, Number(v) || 0))
     : Array(24).fill(0);
@@ -497,11 +508,12 @@ function makeBarChartSVG(hourlyMB, options) {
 
   for (let i = 0; i < 24; i++) {
     const ratio = hours[i] / maxV;
-    // 每根都可见：无数据也有底座，避免数错位置
     let bh;
     if (hours[i] > 0) {
       bh = Math.max(4, Math.round(ratio * (h - 2)));
-    } else if (i <= curHour) {
+    } else if (i === curHour) {
+      bh = 3.5; // 当前小时即使无数据也略高，方便对位
+    } else if (i < curHour) {
       bh = 2.5;
     } else {
       bh = 2;
@@ -510,7 +522,8 @@ function makeBarChartSVG(hourlyMB, options) {
     const y = h - bh;
     let color;
     if (i === curHour) {
-      color = '#1E8FB5'; // 当前小时：最深
+      // 当前小时：高亮，便于确认「21点=从左数第22根」
+      color = '#FF9F0A';
     } else if (hours[i] > 0) {
       color = '#5BBEDE';
     } else if (i < curHour) {
@@ -532,6 +545,8 @@ function todayUsageLevel(flow) {
   const mb = Number(flow && flow.todayUsedMB) || 0;
   return Math.max(0.15, Math.min(1, mb / 1024));
 }
+
+
 
 
 
