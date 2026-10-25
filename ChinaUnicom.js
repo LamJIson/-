@@ -583,8 +583,8 @@ function todayUsageLevel(flow) {
 
 /* ===================== SVG 半圆进度 ===================== */
 
-function makeSemiGaugeSVG(percentUsed) {
-  // 按已用百分比动态绘制上半圆弧（不依赖 stroke-dashoffset，兼容更好）
+function makeSemiGaugeSVG(percentUsed, centerLabel) {
+  // 按已用百分比动态绘制上半圆弧；centerLabel 显示在环内（如「流量」）
   const p = Math.max(0, Math.min(100, Number(percentUsed) || 0));
   const t = p / 100;
   const cx = 50;
@@ -595,16 +595,17 @@ function makeSemiGaugeSVG(percentUsed) {
 
   let progress = '';
   if (t > 0.001) {
-    // 从左侧沿上半圆扫到对应比例位置
-    const endAngle = Math.PI * (1 - t); // π → 0
+    const endAngle = Math.PI * (1 - t);
     const ex = cx + r * Math.cos(endAngle);
     const ey = cy - r * Math.sin(endAngle);
     const large = t > 0.5 ? 1 : 0;
-    // SVG Y 向下：从左经上方到右 = sweep 1? 实际上 counter-clockwise in screen = sweep 1 when going left-to-right via top
-    // 经验：从 (cx-r,cy) 到右侧上方点，sweep-flag=1 画上半弧
     progress =
       `M ${cx - r} ${cy} A ${r} ${r} 0 ${large} 1 ${ex.toFixed(2)} ${ey.toFixed(2)}`;
   }
+
+  const label = centerLabel
+    ? `<text x='${cx}' y='${cy - 6}' text-anchor='middle' font-size='11' font-weight='600' fill='#8B7CF6' font-family='-apple-system,system-ui,sans-serif'>${String(centerLabel).replace(/[<>&'"]/g, '')}</text>`
+    : '';
 
   const svg =
     `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 62'>` +
@@ -612,6 +613,7 @@ function makeSemiGaugeSVG(percentUsed) {
     (progress
       ? `<path d='${progress}' fill='none' stroke='#8B7CF6' stroke-width='10' stroke-linecap='round'/>`
       : '') +
+    label +
     `</svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
@@ -869,32 +871,10 @@ function buildMediumWidget(data, fromCache) {
     flex: 0.95,
     children: [
       {
-        type: 'stack',
-        direction: 'row',
-        alignItems: 'center',
-        gap: 4,
-        children: [
-          {
-            type: 'image',
-            src: 'sf-symbol:chart.pie.fill',
-            color: { light: '#8B7CF6', dark: '#A99BFF' },
-            width: 12,
-            height: 12,
-          },
-          {
-            type: 'text',
-            text: '流量',
-            font: { size: 'caption1', weight: 'semibold' },
-            textColor: COLORS.value,
-            maxLines: 1,
-          },
-        ],
-      },
-      {
         type: 'image',
-        src: makeSemiGaugeSVG(percentUsed),
-        width: 72,
-        height: 42,
+        src: makeSemiGaugeSVG(percentUsed, '流量'),
+        width: 78,
+        height: 48,
       },
       {
         type: 'text',
@@ -939,10 +919,10 @@ function buildMediumWidget(data, fromCache) {
       {
         type: 'text',
         text: `总量 ${totalText} · 已用 ${usedText}`,
-        font: { size: 'caption2' },
-        textColor: COLORS.subtitle,
+        font: { size: 'caption1', weight: 'medium' },
+        textColor: COLORS.value,
         maxLines: 1,
-        minScale: 0.55,
+        minScale: 0.5,
       },
     ],
   };
