@@ -1362,7 +1362,7 @@ function buildLargeWidget(data, fromCache) {
       },
       {
         type: 'text',
-        text: '按今日已记录余量变化估算',
+        text: '',
         font: { size: 'caption2' },
         textColor: COLORS.subtitle,
         maxLines: 1,
@@ -1393,7 +1393,7 @@ function buildLargeWidget(data, fromCache) {
       { type: 'spacer' },
       {
         type: 'text',
-        text: '每 30 分钟刷新',
+        text: '',
         font: { size: 'caption2' },
         textColor: COLORS.time,
         maxLines: 1,
