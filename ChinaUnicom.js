@@ -924,10 +924,10 @@ function buildMediumWidget(data, fromCache) {
       {
         type: 'text',
         text: `${flow.value ?? '—'} ${flow.unit || 'GB'}`,
-        font: { size: 'title2', weight: 'bold' },
+        font: { size: 'title', weight: 'bold' },
         textColor: COLORS.value,
         maxLines: 1,
-        minScale: 0.45,
+        minScale: 0.4,
       },
       {
         type: 'text',
@@ -1049,14 +1049,14 @@ function buildMediumWidget(data, fromCache) {
           {
             type: 'text',
             text: '今日流量使用',
-            font: { size: 'caption2', weight: 'semibold' },
-            textColor: COLORS.value,
+            font: { size: 'caption2' },
+            textColor: COLORS.subtitle,
             maxLines: 1,
           },
           {
             type: 'text',
             text: todayText,
-            font: { size: 'title3', weight: 'bold' },
+            font: { size: 'subheadline', weight: 'bold' },
             textColor: { light: '#2E9BC0', dark: '#5BBEDE' },
             maxLines: 1,
             minScale: 0.55,
