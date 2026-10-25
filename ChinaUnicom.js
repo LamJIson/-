@@ -287,7 +287,6 @@ function parseUnicomData(res) {
     updateTime: new Date().toLocaleTimeString('zh-CN', {
       hour: '2-digit',
       minute: '2-digit',
-      timeZone: 'Asia/Shanghai',
     }),
     timestamp: Date.now(),
   };
@@ -409,23 +408,26 @@ async function loadData(ctx) {
   }
 }
 
+/** 系统本地时区当前小时 0–23（0 = 0:00–0:59） */
+function getLocalHour(date) {
+  const d = date || new Date();
+  let hour = d.getHours();
+  if (!Number.isFinite(hour)) hour = 0;
+  if (hour === 24) hour = 0;
+  return ((hour % 24) + 24) % 24;
+}
+
+
 /** 按「今日首次余量 - 当前余量」估算今日已用流量（MB） */
 function updateTodayUsage(ctx, remainMB) {
   const remain = Math.max(0, Number(remainMB) || 0);
   const now = new Date();
-  // Asia/Shanghai date + hour
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Shanghai',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    hour12: false,
-  }).formatToParts(now);
-  const get = (t) => (parts.find((p) => p.type === t) || {}).value;
-  const today = `${get('year')}-${get('month')}-${get('day')}`;
-  let hour = parseInt(get('hour'), 10);
-  if (hour === 24) hour = 0;
+  // 日期与小时均跟随系统时区
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const today = `${y}-${m}-${day}`;
+  const hour = getLocalHour(now); // 0 = 0:00-0:59, 21 = 21:00-21:59（第22根柱）
 
   let snap = null;
   try {
@@ -440,18 +442,21 @@ function updateTodayUsage(ctx, remainMB) {
     if (Array.isArray(snap.hours) && snap.hours.length === 24) {
       hours = snap.hours.map((v) => Math.max(0, Number(v) || 0));
     }
-    // 将「上次余量 - 当前余量」累加到当前小时
     if (typeof snap.remainMB === 'number' && snap.remainMB > remain) {
       const delta = snap.remainMB - remain;
-      const h =
-        typeof snap.lastHour === 'number' && snap.lastHour >= 0 && snap.lastHour < 24
-          ? snap.lastHour
-          : hour;
-      // 若跨小时，把增量记到上一记录小时更合理；简单策略：记到当前小时
-      hours[hour] = (hours[hour] || 0) + delta;
+      // 跨小时时把增量记在「上次所在小时」，避免挤到下一小时
+      let bucket = hour;
+      if (
+        typeof snap.lastHour === 'number' &&
+        snap.lastHour >= 0 &&
+        snap.lastHour < 24 &&
+        snap.lastHour !== hour
+      ) {
+        bucket = snap.lastHour;
+      }
+      hours[bucket] = (hours[bucket] || 0) + delta;
     }
   } else {
-    // 新的一天，重置
     hours = Array(24).fill(0);
     baseline = remain;
   }
@@ -488,40 +493,41 @@ function makeBarChartSVG(hourlyMB, options) {
   options = options || {};
   const w = options.width || 120;
   const h = options.height || 32;
+  // hours[0] = 0:00–0:59, hours[21] = 21:00–21:59（从左数第22根）
   const hours = Array.isArray(hourlyMB) && hourlyMB.length === 24
     ? hourlyMB.map((v) => Math.max(0, Number(v) || 0))
     : Array(24).fill(0);
 
   const maxV = Math.max.apply(null, hours.concat([0.01]));
-  const gap = 1.2;
+  const gap = 1.0;
   const bw = (w - gap * 23) / 24;
   let rects = '';
-
-  // 当前上海小时，高亮
-  let curHour = new Date().getHours();
-  try {
-    const parts = new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'Asia/Shanghai',
-      hour: '2-digit',
-      hour12: false,
-    }).formatToParts(new Date());
-    const hv = (parts.find((p) => p.type === 'hour') || {}).value;
-    curHour = parseInt(hv, 10);
-    if (curHour === 24) curHour = 0;
-  } catch (e) {}
+  const curHour = getLocalHour();
 
   for (let i = 0; i < 24; i++) {
     const ratio = hours[i] / maxV;
-    // 无数据时给一个极小底，有数据按比例；当前小时之后的空柱更淡
-    let bh = Math.max(hours[i] > 0 ? 3 : 1.5, Math.round(ratio * (h - 2)));
-    if (hours[i] <= 0 && i > curHour) bh = 1.2;
+    // 每根都可见：无数据也有底座，避免数错位置
+    let bh;
+    if (hours[i] > 0) {
+      bh = Math.max(4, Math.round(ratio * (h - 2)));
+    } else if (i <= curHour) {
+      bh = 2.5;
+    } else {
+      bh = 2;
+    }
     const x = i * (bw + gap);
     const y = h - bh;
-    let color = '#5BBEDE';
-    if (i === curHour) color = '#1E8FB5';
-    else if (hours[i] <= 0) color = '#5BBEDE33';
-    else if (i > curHour) color = '#5BBEDE55';
-    rects += `<rect x='${x.toFixed(2)}' y='${y}' width='${bw.toFixed(2)}' height='${bh}' rx='0.8' fill='${color}'/>`;
+    let color;
+    if (i === curHour) {
+      color = '#1E8FB5'; // 当前小时：最深
+    } else if (hours[i] > 0) {
+      color = '#5BBEDE';
+    } else if (i < curHour) {
+      color = '#5BBEDE66';
+    } else {
+      color = '#5BBEDE33';
+    }
+    rects += `<rect x='${x.toFixed(2)}' y='${y}' width='${bw.toFixed(2)}' height='${bh}' rx='0.6' fill='${color}'/>`;
   }
 
   const svg =
@@ -535,6 +541,8 @@ function todayUsageLevel(flow) {
   const mb = Number(flow && flow.todayUsedMB) || 0;
   return Math.max(0.15, Math.min(1, mb / 1024));
 }
+
+
 
 /* ===================== SVG 半圆进度 ===================== */
 
