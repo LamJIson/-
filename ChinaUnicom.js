@@ -464,14 +464,34 @@ function makeBarChartSVG(level) {
 /* ===================== SVG 半圆进度 ===================== */
 
 function makeSemiGaugeSVG(percentUsed) {
+  // 按已用百分比动态绘制上半圆弧（不依赖 stroke-dashoffset，兼容更好）
   const p = Math.max(0, Math.min(100, Number(percentUsed) || 0));
-  const r = 42;
-  const circ = Math.PI * r;
-  const offset = circ * (1 - p / 100);
+  const t = p / 100;
+  const cx = 50;
+  const cy = 52;
+  const r = 40;
+  const track =
+    `M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`;
+
+  let progress = '';
+  if (t > 0.001) {
+    // 从左侧沿上半圆扫到对应比例位置
+    const endAngle = Math.PI * (1 - t); // π → 0
+    const ex = cx + r * Math.cos(endAngle);
+    const ey = cy - r * Math.sin(endAngle);
+    const large = t > 0.5 ? 1 : 0;
+    // SVG Y 向下：从左经上方到右 = sweep 1? 实际上 counter-clockwise in screen = sweep 1 when going left-to-right via top
+    // 经验：从 (cx-r,cy) 到右侧上方点，sweep-flag=1 画上半弧
+    progress =
+      `M ${cx - r} ${cy} A ${r} ${r} 0 ${large} 1 ${ex.toFixed(2)} ${ey.toFixed(2)}`;
+  }
+
   const svg =
-    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 60'>` +
-    `<path d='M 8 50 A ${r} ${r} 0 0 1 92 50' fill='none' stroke='#E8E0FF' stroke-width='10' stroke-linecap='round'/>` +
-    `<path d='M 8 50 A ${r} ${r} 0 0 1 92 50' fill='none' stroke='#8B7CF6' stroke-width='10' stroke-linecap='round' stroke-dasharray='${circ.toFixed(1)}' stroke-dashoffset='${offset.toFixed(1)}'/>` +
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 62'>` +
+    `<path d='${track}' fill='none' stroke='#E8E0FF' stroke-width='10' stroke-linecap='round'/>` +
+    (progress
+      ? `<path d='${progress}' fill='none' stroke='#8B7CF6' stroke-width='10' stroke-linecap='round'/>`
+      : '') +
     `</svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
@@ -931,9 +951,10 @@ function buildMediumWidget(data, fromCache) {
       {
         type: 'text',
         text: todayText,
-        font: { size: 'caption1', weight: 'bold' },
+        font: { size: 'title3', weight: 'bold' },
         textColor: { light: '#2E9BC0', dark: '#5BBEDE' },
         maxLines: 1,
+        minScale: 0.6,
       },
     ],
   };
@@ -1245,9 +1266,10 @@ function buildLargeWidget(data, fromCache) {
           {
             type: 'text',
             text: todayText,
-            font: { size: 'caption1', weight: 'bold' },
+            font: { size: 'title2', weight: 'bold' },
             textColor: { light: '#2E9BC0', dark: '#5BBEDE' },
             maxLines: 1,
+            minScale: 0.55,
           },
         ],
       },
@@ -1412,10 +1434,18 @@ function buildSmall(data) {
       },
       {
         type: 'text',
-        text: `今日 ${todayText}`,
-        font: { size: 'caption2', weight: 'semibold' },
-        textColor: COLORS.value,
+        text: '今日',
+        font: { size: 'caption2' },
+        textColor: COLORS.subtitle,
         maxLines: 1,
+      },
+      {
+        type: 'text',
+        text: todayText,
+        font: { size: 'headline', weight: 'bold' },
+        textColor: { light: '#2E9BC0', dark: '#5BBEDE' },
+        maxLines: 1,
+        minScale: 0.7,
       },
     ],
   };
