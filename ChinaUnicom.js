@@ -914,24 +914,15 @@ function buildMediumWidget(data, fromCache) {
       },
       {
         type: 'text',
-        text: `总量 ${totalText}`,
-        font: { size: 'caption1', weight: 'semibold' },
+        text: `总量 ${totalText} · 已用 ${usedText}`,
+        font: { size: 'caption1', weight: 'medium' },
         textColor: COLORS.value,
         maxLines: 1,
-        minScale: 0.7,
+        minScale: 0.5,
       },
     ],
   };
-      {
-        type: 'text',
-        text: `已用 ${usedText}`,
-        font: { size: 'caption1', weight: 'semibold' },
-        textColor: COLORS.value,
-        maxLines: 1,
-        minScale: 0.7,
-      },
-    ],
-  };
+
   // 右：话费语音
   const rightCol = {
     type: 'stack',
@@ -1166,7 +1157,7 @@ function buildLargeWidget(data, fromCache) {
         font: { size: 'caption1' },
         textColor: COLORS.subtitle,
         maxLines: 1,
-        minScale: 0.55,
+        minScale: 0.6,
       },
     ],
   };
