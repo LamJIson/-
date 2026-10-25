@@ -362,8 +362,25 @@ async function loadData(ctx) {
         data.flow.percentUsed = Math.min(100, Math.round((usedMB / totalMB) * 100));
         data.flow.percentRemain = Math.max(0, 100 - data.flow.percentUsed);
       }
+
+      // 今日流量使用：按当日首次记录的余量与当前余量差估算
+      data.flow.todayUsedMB = updateTodayUsage(ctx, remainMB);
+      const tu = formatFlowValue(data.flow.todayUsedMB, 'MB');
+      data.flow.todayUsedFormatted = tu;
     } catch (e) {
       // 明细失败不影响主数据
+    }
+
+    // 若明细失败，仍尝试用主接口剩余量估算今日使用
+    if (data.flow.todayUsedMB == null) {
+      const approxRemain = Number(data.flow.remainMB) || 0;
+      if (approxRemain > 0) {
+        data.flow.todayUsedMB = updateTodayUsage(ctx, approxRemain);
+        data.flow.todayUsedFormatted = formatFlowValue(data.flow.todayUsedMB, 'MB');
+      } else {
+        data.flow.todayUsedMB = 0;
+        data.flow.todayUsedFormatted = { value: 0, unit: 'MB' };
+      }
     }
 
     ctx.storage.setJSON('unicom_datasource', data);
@@ -374,6 +391,68 @@ async function loadData(ctx) {
     const cached = ctx.storage.getJSON('unicom_datasource');
     return { data: cached || null, configured: true, error: e };
   }
+}
+
+/** 按「今日首次余量 - 当前余量」估算今日已用流量（MB） */
+function updateTodayUsage(ctx, remainMB) {
+  const remain = Math.max(0, Number(remainMB) || 0);
+  const today = new Date().toLocaleDateString('en-CA', {
+    timeZone: 'Asia/Shanghai',
+  });
+  let snap = null;
+  try {
+    snap = ctx.storage.getJSON('unicom_flow_snapshot');
+  } catch (e) {}
+  snap = snap || {};
+
+  let baseline = remain;
+  if (snap.date === today && typeof snap.baselineMB === 'number') {
+    baseline = snap.baselineMB;
+  }
+
+  const todayUsedMB = Math.max(0, baseline - remain);
+
+  try {
+    ctx.storage.setJSON('unicom_flow_snapshot', {
+      date: today,
+      baselineMB: baseline,
+      remainMB: remain,
+      todayUsedMB,
+    });
+  } catch (e) {}
+
+  return todayUsedMB;
+}
+
+function formatTodayUsageText(flow) {
+  if (flow && flow.todayUsedFormatted) {
+    return `${flow.todayUsedFormatted.value} ${flow.todayUsedFormatted.unit}`;
+  }
+  if (flow && flow.todayUsedMB != null) {
+    const t = formatFlowValue(flow.todayUsedMB, 'MB');
+    return `${t.value} ${t.unit}`;
+  }
+  return '—';
+}
+
+/** 简易柱状图 SVG（装饰用，模拟广电底部样式） */
+function makeBarChartSVG() {
+  const bars = [4, 8, 14, 20, 26, 22, 28, 24, 30, 26];
+  const w = 80;
+  const h = 28;
+  const gap = 2;
+  const bw = (w - gap * (bars.length - 1)) / bars.length;
+  let rects = '';
+  bars.forEach((bh, i) => {
+    const x = i * (bw + gap);
+    const y = h - bh;
+    rects += `<rect x='${x.toFixed(1)}' y='${y}' width='${bw.toFixed(1)}' height='${bh}' rx='1.5' fill='#5B9BD5'/>`;
+  });
+  const svg =
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${w} ${h}'>` +
+    rects +
+    `</svg>`;
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
 
 /* ===================== SVG 半圆进度 ===================== */
@@ -587,6 +666,8 @@ function sideCard(iconColor, symbol, label, value, unit) {
 /* 中号布局 */
 function buildMediumWidget(data, fromCache) {
   const flow = data.flow || {};
+  const fee = data.fee || {};
+  const voice = data.voice || {};
   const percentUsed = flow.percentUsed ?? 0;
   const percentRemain = flow.percentRemain ?? 100;
   const usedText = flow.usedFormatted
@@ -595,137 +676,255 @@ function buildMediumWidget(data, fromCache) {
   const totalText = flow.totalFormatted
     ? `${flow.totalFormatted.value} ${flow.totalFormatted.unit}`
     : '—';
+  const todayText = formatTodayUsageText(flow);
 
-  const leftCard = {
+  // 顶栏：无 5G / 流量主卡
+  const topBar = {
     type: 'stack',
-    direction: 'column',
+    direction: 'row',
     alignItems: 'center',
     gap: 6,
-    padding: [10, 8, 8, 8],
-    backgroundColor: COLORS.card,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    children: [
+      {
+        type: 'image',
+        src: 'sf-symbol:antenna.radiowaves.left.and.right',
+        color: COLORS.accent,
+        width: 15,
+        height: 15,
+      },
+      {
+        type: 'text',
+        text: '中国联通',
+        font: { size: 'headline', weight: 'bold' },
+        textColor: COLORS.value,
+        maxLines: 1,
+      },
+      { type: 'spacer' },
+      {
+        type: 'text',
+        text: fromCache
+          ? `缓存 ${data.updateTime || '--:--'}`
+          : `更新 ${data.updateTime || '--:--'}`,
+        font: { size: 'caption2' },
+        textColor: COLORS.time,
+        maxLines: 1,
+      },
+    ],
+  };
+
+  // 左：剩余流量大数字
+  const leftCol = {
+    type: 'stack',
+    direction: 'column',
+    alignItems: 'start',
+    gap: 4,
+    flex: 1.3,
     children: [
       {
         type: 'stack',
         direction: 'row',
         alignItems: 'center',
-        gap: 4,
+        gap: 5,
         children: [
           {
             type: 'image',
-            src: 'sf-symbol:clock.fill',
-            color: COLORS.softPink,
-            width: 11,
-            height: 11,
+            src: 'sf-symbol:chart.pie.fill',
+            color: COLORS.accent,
+            width: 14,
+            height: 14,
           },
           {
             type: 'text',
-            text: '流量主卡',
-            font: { size: 'caption2', weight: 'medium' },
+            text: '剩余流量',
+            font: { size: 'subheadline', weight: 'semibold' },
+            textColor: COLORS.value,
+            maxLines: 1,
+          },
+        ],
+      },
+      {
+        type: 'text',
+        text: `${flow.value ?? '—'} ${flow.unit || 'GB'}`,
+        font: { size: 'title', weight: 'bold' },
+        textColor: COLORS.value,
+        maxLines: 1,
+        minScale: 0.5,
+      },
+      {
+        type: 'text',
+        text: `总量 ${totalText} · 已用 ${usedText}`,
+        font: { size: 'caption2' },
+        textColor: COLORS.subtitle,
+        maxLines: 1,
+        minScale: 0.7,
+      },
+    ],
+  };
+
+  // 中：剩余% + 半圆进度 + 已用%
+  const centerCol = {
+    type: 'stack',
+    direction: 'column',
+    alignItems: 'center',
+    gap: 2,
+    flex: 0.9,
+    children: [
+      {
+        type: 'text',
+        text: `${percentRemain}% 剩余`,
+        font: { size: 'caption1', weight: 'semibold' },
+        textColor: {
+          light: '#7B6CF0',
+          dark: '#A99BFF',
+        },
+        maxLines: 1,
+      },
+      {
+        type: 'image',
+        src: makeSemiGaugeSVG(percentUsed),
+        width: 64,
+        height: 38,
+      },
+      {
+        type: 'text',
+        text: `${percentUsed}% 已用`,
+        font: { size: 'caption2', weight: 'semibold' },
+        textColor: {
+          light: '#7B6CF0',
+          dark: '#A99BFF',
+        },
+        maxLines: 1,
+      },
+    ],
+  };
+
+  // 右：话费 + 语音
+  const rightCol = {
+    type: 'stack',
+    direction: 'column',
+    alignItems: 'start',
+    gap: 8,
+    flex: 0.95,
+    children: [
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        gap: 5,
+        children: [
+          {
+            type: 'image',
+            src: 'sf-symbol:yensign.circle.fill',
+            color: COLORS.orange.light,
+            width: 14,
+            height: 14,
+          },
+          {
+            type: 'text',
+            text: '话费',
+            font: { size: 'caption1' },
+            textColor: COLORS.subtitle,
+            maxLines: 1,
+          },
+          {
+            type: 'text',
+            text: `¥${fee.value ?? '--'}`,
+            font: { size: 'subheadline', weight: 'bold' },
+            textColor: COLORS.value,
+            maxLines: 1,
+          },
+        ],
+      },
+      {
+        type: 'stack',
+        direction: 'row',
+        alignItems: 'center',
+        gap: 5,
+        children: [
+          {
+            type: 'image',
+            src: 'sf-symbol:phone.fill',
+            color: {
+              light: '#7B6CF0',
+              dark: '#A99BFF',
+            },
+            width: 13,
+            height: 13,
+          },
+          {
+            type: 'text',
+            text: '语音',
+            font: { size: 'caption1' },
+            textColor: COLORS.subtitle,
+            maxLines: 1,
+          },
+          {
+            type: 'text',
+            text: `${voice.value ?? '--'} 分`,
+            font: { size: 'subheadline', weight: 'bold' },
+            textColor: COLORS.value,
+            maxLines: 1,
+          },
+        ],
+      },
+    ],
+  };
+
+  const mainRow = {
+    type: 'stack',
+    direction: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flex: 1,
+    children: [leftCol, centerCol, rightCol],
+  };
+
+  // 底部：柱状图 + 今日流量使用
+  const bottomRow = {
+    type: 'stack',
+    direction: 'row',
+    alignItems: 'center',
+    gap: 10,
+    children: [
+      {
+        type: 'image',
+        src: makeBarChartSVG(),
+        width: 72,
+        height: 24,
+      },
+      {
+        type: 'stack',
+        direction: 'column',
+        alignItems: 'start',
+        gap: 1,
+        flex: 1,
+        children: [
+          {
+            type: 'text',
+            text: '今日流量使用',
+            font: { size: 'caption1', weight: 'semibold' },
+            textColor: COLORS.value,
+            maxLines: 1,
+          },
+          {
+            type: 'text',
+            text: '按今日已记录余量变化估算',
+            font: { size: 'caption2' },
             textColor: COLORS.subtitle,
             maxLines: 1,
           },
         ],
       },
       {
-        type: 'image',
-        src: makeSemiGaugeSVG(percentUsed),
-        width: 76,
-        height: 46,
-      },
-      {
         type: 'text',
-        text: `${percentUsed}% 已用`,
-        font: { size: 'caption2', weight: 'semibold' },
-        textColor: COLORS.softPink,
+        text: todayText,
+        font: { size: 'subheadline', weight: 'bold' },
+        textColor: {
+          light: '#2E6B9E',
+          dark: '#6BB3E0',
+        },
         maxLines: 1,
       },
-    ],
-  };
-
-  const centerBlock = {
-    type: 'stack',
-    direction: 'column',
-    alignItems: 'center',
-    gap: 4,
-    flex: 1,
-    children: [
-      {
-        type: 'stack',
-        padding: [3, 10, 3, 10],
-        borderRadius: 10,
-        backgroundColor: COLORS.badgeBg,
-        children: [
-          {
-            type: 'text',
-            text: `${percentRemain}% 剩余`,
-            font: { size: 'caption2', weight: 'semibold' },
-            textColor: COLORS.accent,
-            maxLines: 1,
-          },
-        ],
-      },
-      {
-        type: 'stack',
-        direction: 'row',
-        alignItems: 'center',
-        gap: 4,
-        children: [
-          {
-            type: 'text',
-            text: String(flow.value ?? '—'),
-            font: { size: 'title', weight: 'bold' },
-            textColor: COLORS.value,
-            maxLines: 1,
-            minScale: 0.5,
-          },
-          {
-            type: 'text',
-            text: flow.unit || 'GB',
-            font: { size: 'title3', weight: 'semibold' },
-            textColor: COLORS.value,
-            maxLines: 1,
-          },
-        ],
-      },
-      {
-        type: 'text',
-        text: `已用 ${usedText}`,
-        font: { size: 'caption1' },
-        textColor: COLORS.subtitle,
-        maxLines: 1,
-      },
-      {
-        type: 'text',
-        text: `套餐 ${totalText}`,
-        font: { size: 'caption2' },
-        textColor: COLORS.subtitle,
-        maxLines: 1,
-      },
-    ],
-  };
-
-  const rightColumn = {
-    type: 'stack',
-    direction: 'column',
-    gap: 8,
-    children: [
-      sideCard(
-        '#FF9500',
-        'sf-symbol:yensign.circle.fill',
-        '话费',
-        data.fee?.value ?? '—',
-        data.fee?.unit === '元' ? '元' : data.fee?.unit || '元'
-      ),
-      sideCard(
-        '#34C759',
-        'sf-symbol:phone.fill',
-        '语音',
-        data.voice?.value ?? '—',
-        data.voice?.unit === '分钟' ? '分' : data.voice?.unit || '分'
-      ),
     ],
   };
 
@@ -733,20 +932,15 @@ function buildMediumWidget(data, fromCache) {
     type: 'widget',
     padding: [12, 14, 12, 14],
     gap: 10,
-    backgroundColor: COLORS.bg,
+    backgroundColor: {
+      light: '#FFFFFF',
+      dark: '#1C1C1E',
+    },
     refreshAfter: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
-    children: [
-      headerRow(data.updateTime, fromCache),
-      {
-        type: 'stack',
-        direction: 'row',
-        alignItems: 'center',
-        gap: 10,
-        children: [leftCard, centerBlock, rightColumn],
-      },
-    ],
+    children: [topBar, mainRow, bottomRow],
   };
 }
+
 
 /* 大号 / 超大号：仪表盘三栏布局（仅用官方支持的 DSL 属性） */
 function buildLargeWidget(data, fromCache) {
@@ -779,7 +973,7 @@ function buildLargeWidget(data, fromCache) {
   const feeNum = fee.value ?? '--';
   const voiceNum = voice.value ?? '--';
 
-  // 顶栏：信号 + 中国联通 + 流量主卡徽章 + 更新时间
+  // 顶栏：信号 + 中国联通 + 更新时间（无 5G / 流量主卡）
   const topBar = {
     type: 'stack',
     direction: 'row',
@@ -799,27 +993,6 @@ function buildLargeWidget(data, fromCache) {
         font: { size: 'headline', weight: 'bold' },
         textColor: COLORS.value,
         maxLines: 1,
-      },
-      {
-        type: 'stack',
-        padding: [3, 8, 3, 8],
-        borderRadius: 10,
-        backgroundColor: {
-          light: '#FFE5EC',
-          dark: '#3A1F2A',
-        },
-        children: [
-          {
-            type: 'text',
-            text: '流量主卡',
-            font: { size: 'caption2', weight: 'semibold' },
-            textColor: {
-              light: '#E60012',
-              dark: '#FF6B8A',
-            },
-            maxLines: 1,
-          },
-        ],
       },
       { type: 'spacer' },
       {
@@ -1075,11 +1248,12 @@ function buildSmall(data) {
   const flow = data.flow || {};
   const percentUsed = flow.percentUsed ?? 0;
   const percentRemain = flow.percentRemain ?? 100;
+  const todayText = formatTodayUsageText(flow);
 
   return {
     type: 'widget',
     padding: [10, 10, 10, 10],
-    gap: 8,
+    gap: 6,
     backgroundColor: COLORS.bg,
     refreshAfter: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
     children: [
@@ -1152,6 +1326,16 @@ function buildSmall(data) {
             text: `${percentRemain}% 剩余 · ${percentUsed}% 已用`,
             font: { size: 'caption2' },
             textColor: COLORS.softPink,
+            maxLines: 1,
+          },
+          {
+            type: 'text',
+            text: `今日 ${todayText}`,
+            font: { size: 'caption2' },
+            textColor: {
+              light: '#2E6B9E',
+              dark: '#6BB3E0',
+            },
             maxLines: 1,
           },
         ],
