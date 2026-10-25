@@ -1158,7 +1158,7 @@ function buildLargeWidget(data, fromCache) {
         font: { size: 'caption1' },
         textColor: COLORS.subtitle,
         maxLines: 1,
-        minScale: 0.6,
+        minScale: 0.55,
       },
     ],
   };
