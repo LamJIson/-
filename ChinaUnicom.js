@@ -874,7 +874,7 @@ function buildMediumWidget(data, fromCache) {
       },
       {
         type: 'text',
-        text: `${percentUsed}% 已用`,
+        text: `$已用 {percentUsed}%`,
         font: { size: 'caption1', weight: 'bold' },
         textColor: { light: '#8B7CF6', dark: '#A99BFF' },
         maxLines: 1,
@@ -892,7 +892,7 @@ function buildMediumWidget(data, fromCache) {
     children: [
       {
         type: 'text',
-        text: `${percentRemain}% 剩余`,
+        text: `$剩余 {percentRemain}%`,
         font: { size: 'caption1', weight: 'semibold' },
         textColor: { light: '#8B7CF6', dark: '#A99BFF' },
         maxLines: 1,
@@ -918,7 +918,7 @@ function buildMediumWidget(data, fromCache) {
         font: { size: 'caption1', weight: 'medium' },
         textColor: COLORS.value,
         maxLines: 1,
-        minScale: 0.5,
+        minScale: 0.6,
       },
     ],
   };
@@ -1170,7 +1170,7 @@ function buildLargeWidget(data, fromCache) {
     children: [
       {
         type: 'text',
-        text: `${percentRemain}% 剩余`,
+        text: `$剩余 {percentRemain}%`,
         font: { size: 'caption1', weight: 'semibold' },
         textColor: { light: '#8B7CF6', dark: '#A99BFF' },
         maxLines: 1,
@@ -1183,7 +1183,7 @@ function buildLargeWidget(data, fromCache) {
       },
       {
         type: 'text',
-        text: `${percentUsed}% 已用`,
+        text: `$已用 {percentUsed}%`,
         font: { size: 'caption1', weight: 'bold' },
         textColor: { light: '#8B7CF6', dark: '#A99BFF' },
         maxLines: 1,
@@ -1480,7 +1480,7 @@ function buildSmall(data) {
           },
           {
             type: 'text',
-            text: `${percentRemain}%剩 · ${percentUsed}%已用`,
+            text: `$剩{percentRemain}% · $已用{percentUsed}%`,
             font: { size: 'caption2', weight: 'semibold' },
             textColor: { light: '#8B7CF6', dark: '#A99BFF' },
             maxLines: 1,
