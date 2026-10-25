@@ -915,10 +915,9 @@ function buildMediumWidget(data, fromCache) {
       {
         type: 'text',
         text: `总量 ${totalText} · 已用 ${usedText}`,
-        font: { size: 'caption1', weight: 'medium' },
+        font: { size: 'caption1', weight: 'bold' },
         textColor: COLORS.value,
         maxLines: 1,
-        minScale: 0.5,
       },
     ],
   };
