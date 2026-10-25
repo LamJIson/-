@@ -491,28 +491,58 @@ function formatTodayUsageText(flow) {
 }
 
 /** 简易柱状图 SVG（装饰用，模拟广电底部样式） */
+/** 中国联通「中国结」标识（简化 SVG） */
+function unicomLogoSVG() {
+  // 简化中国结：双环交错 + 中心结，联通红
+  const svg =
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>` +
+    `<g fill='none' stroke='#E60012' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'>` +
+    // 左环
+    `<path d='M20 18 C10 18 8 28 8 32 C8 42 16 48 24 48 C30 48 34 44 34 38'/>` +
+    // 右环
+    `<path d='M44 18 C54 18 56 28 56 32 C56 42 48 48 40 48 C34 48 30 44 30 38'/>` +
+    // 上弧连接
+    `<path d='M20 18 C24 10 40 10 44 18'/>` +
+    // 中心交叉结
+    `<path d='M26 32 C30 26 34 26 38 32'/>` +
+    `<path d='M26 32 C30 38 34 38 38 32'/>` +
+    // 下方两脚
+    `<path d='M24 48 L20 58'/>` +
+    `<path d='M40 48 L44 58'/>` +
+    `</g>` +
+    // 实心点缀
+    `<circle cx='32' cy='32' r='3.2' fill='#E60012'/>` +
+    `</svg>`;
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+}
+
 function makeBarChartSVG(hourlyMB, options) {
   options = options || {};
   const w = options.width || 120;
   const h = options.height || 32;
-  // 柱 i 对应本地 i:00–i:59（i=0…23）
+  // 柱 i = 本地 i:00–i:59 用量
   const hours = Array.isArray(hourlyMB) && hourlyMB.length === 24
     ? hourlyMB.map((v) => Math.max(0, Number(v) || 0))
     : Array(24).fill(0);
 
-  const maxV = Math.max.apply(null, hours.concat([0.01]));
+  // 按「当天总用量」占比定高度：该小时 / 今日合计
+  let total = 0;
+  for (let i = 0; i < 24; i++) total += hours[i];
+  if (total <= 0) total = 1;
+
   const gap = 1.0;
   const bw = (w - gap * 23) / 24;
   let rects = '';
   const curHour = getLocalHour();
 
   for (let i = 0; i < 24; i++) {
-    const ratio = hours[i] / maxV;
+    const share = hours[i] / total; // 占当日已记录总量的比例
     let bh;
     if (hours[i] > 0) {
-      bh = Math.max(4, Math.round(ratio * (h - 2)));
+      // 高度 = 该小时占当日总量的比例（开方让小用量也能看见）
+      bh = Math.min(h - 1, Math.max(4, Math.round(Math.sqrt(share) * (h - 2))));
     } else if (i === curHour) {
-      bh = 3.5; // 当前小时即使无数据也略高，方便对位
+      bh = 3.5;
     } else if (i < curHour) {
       bh = 2.5;
     } else {
@@ -522,7 +552,6 @@ function makeBarChartSVG(hourlyMB, options) {
     const y = h - bh;
     let color;
     if (i === curHour) {
-      // 当前小时：高亮，便于确认「21点=从左数第22根」
       color = '#FF9F0A';
     } else if (hours[i] > 0) {
       color = '#5BBEDE';
@@ -545,6 +574,8 @@ function todayUsageLevel(flow) {
   const mb = Number(flow && flow.todayUsedMB) || 0;
   return Math.max(0.15, Math.min(1, mb / 1024));
 }
+
+
 
 
 
@@ -805,10 +836,9 @@ function buildMediumWidget(data, fromCache) {
     children: [
       {
         type: 'image',
-        src: 'sf-symbol:antenna.radiowaves.left.and.right',
-        color: COLORS.accent,
-        width: 13,
-        height: 13,
+        src: unicomLogoSVG(),
+        width: 16,
+        height: 16,
       },
       {
         type: 'text',
@@ -1069,10 +1099,9 @@ function buildLargeWidget(data, fromCache) {
     children: [
       {
         type: 'image',
-        src: 'sf-symbol:antenna.radiowaves.left.and.right',
-        color: COLORS.accent,
-        width: 14,
-        height: 14,
+        src: unicomLogoSVG(),
+        width: 18,
+        height: 18,
       },
       {
         type: 'text',
@@ -1427,10 +1456,9 @@ function buildSmall(data) {
     children: [
       {
         type: 'image',
-        src: 'sf-symbol:antenna.radiowaves.left.and.right',
-        color: COLORS.accent,
-        width: 13,
-        height: 13,
+        src: unicomLogoSVG(),
+        width: 16,
+        height: 16,
       },
       {
         type: 'text',
