@@ -1,7 +1,7 @@
 ##原作者为IBL3ND#####
 name: 中国联通小组件
 description: 中国联通 话费 语音 流量小组件 流量小时图（含定时保活）
-author: ian
+author: Grok
 icon: https://iili.io/nEuB6Jt.png
 compat_arguments:
   cuCapture: 'true'
