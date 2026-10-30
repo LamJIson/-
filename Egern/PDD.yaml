@@ -4,6 +4,27 @@ author: 怎么肥事 walala
 icon: https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/App/PinDuoDuo.png
 
 rules:
+- and:
+    match:
+    - url_regex:
+        match: ^http://((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/d(\d)?
+    - user_agent:
+        match: '*com.xunmeng.pinduoduo*'
+    policy: REJECT
+- and:
+    match:
+    - url_regex:
+        match: ^http://\[[0-9a-fA-F:]+\]/d(\d)?\?
+    - user_agent:
+        match: '*com.xunmeng.pinduoduo*'
+    policy: REJECT
+- and:
+    match:
+    - domain:
+        match: api.pinduoduo.com
+    - protocol:
+        match: QUIC
+    policy: REJECT
 - domain:
     match: sdk.1rtb.net
     policy: REJECT
@@ -32,21 +53,21 @@ rules:
     match: 183.194.214.14/32
     policy: REJECT
 rewrites:
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/engels\/wait\/receive\/review
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/aristotle\/unrated_order_for_unreceived_tab\?
   actions:
   - respond:
       status: 200
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/aristotle\/unrated_order_for_unreceived_tab
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/aristotle\/query_order_list_tabs_element\?
   actions:
   - respond:
       status: 200
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/aristotle\/query_order_list_tabs_element
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/leporis\/notification\/clear_tab_red_dot\?
   actions:
   - respond:
       status: 200
@@ -60,125 +81,181 @@ rewrites:
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/order_express_group
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/alexa\/goods\/back_up\?
   actions:
   - respond:
       status: 200
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/search_hotquery
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/(?:likes|personal|my_order_group|new_chat_group|order_express_group|personal)\?
   actions:
   - respond:
       status: 200
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/zaire_biz\/chat\/resource\/get_list_data
+- match: ^https:\/\/api\.pinduoduo\.com\/search_hotquery\?
   actions:
   - respond:
       status: 200
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/new_chat_group
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/zaire_biz\/chat\/resource\/get_list_data\?
   actions:
   - respond:
       status: 200
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/alexa\/goods\/back_up
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/brand-olay\/goods_detail\/bybt_guide\?
   actions:
   - respond:
       status: 200
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/personal
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/engels\/reviews\/require\/append\?
   actions:
   - respond:
       status: 200
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/brand-olay\/goods_detail\/bybt_guide
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/phantom\/gbdbpdv\/extra\?
   actions:
   - respond:
       status: 200
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/engels\/reviews\/require\/append
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/manufacturer\/cross\/shortcut\/list\?
   actions:
   - respond:
       status: 200
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/my_order_group
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/dunkirk\/liveactivity\/push\/create\/url\/report\?
   actions:
   - respond:
       status: 200
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/likes
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/growth\/nagato\/app\/index\/gather\?
   actions:
   - respond:
       status: 200
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/phantom\/gbdbpdv\/extra
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/engels\/wait\/receive\/review\?
   actions:
   - respond:
       status: 200
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/manufacturer\/cross\/shortcut\/list
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/buffon\/nasus\/recommend\?
   actions:
   - respond:
       status: 200
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/dunkirk\/liveactivity\/push\/create\/url\/report
+- match: ^https:\/\/api\.(?:pinduoduo|yangkeduo)\.com\/api\/cappuccino\/splash\?
   actions:
   - respond:
       status: 200
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/growth\/nagato\/app\/index\/gather
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/social\/mall\/follow\/hot\/recommend\?
   actions:
   - respond:
       status: 200
       headers:
         Content-Type: application/json
       body: '{}'
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/alexa\/homepage\/hub
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/flow\/hungary\/window\/global\/v2\?
+  actions:
+  - respond:
+      status: 200
+      headers:
+        Content-Type: application/json
+      body: '{}'
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/alexa\/homepage\/hub\?
   actions:
   - response_body:
-      jq: del(.result.icon_set, .result.search_bar_hot_query, .result.dy_module.irregular_banner_dy,.result.dy_module.recommend_fresh_info) | if .result.bottom_tabs then .result.bottom_tabs |= map(select(.link == "index.html" or .link == "chat_list.html" or .link == "personal.html")) else . end
-- match: ^https:\/\/api\.pinduoduo\.com\/search
+      jq: delpaths([["result","icon_set"]])
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/alexa\/homepage\/hub\?
   actions:
   - response_body:
-      jq: del(.expansion)
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/philo\/personal\/hub
+      jq: delpaths([["result","search_bar_hot_query"]])
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/alexa\/homepage\/hub\?
   actions:
   - response_body:
-      jq: del(.monthly_card_entrance, .personal_center_style_v2_vo, .icon_set.icons, .icon_set.top_personal_icons)
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/oak\/integration\/render
+      jq: delpaths([["result","dy_module","irregular_banner_dy"]])
+- match: ^https:\/\/api\.pinduoduo\.com\/search\?
   actions:
   - response_body:
-      jq: del(.bottom_section_list, .ui.bottom_section, .ui.live_section.float_info)
-- match: ^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/order_detail_group
+      jq: delpaths([["expansion"]])
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/alexa\/homepage\/hub\?
   actions:
   - response_body:
-      jq: del(.data.goods_list)
+      jq: .result.bottom_tabs? |= map(select(.link | IN("index.html","chat_list.html","personal.html"))) | .result.buffer_bottom_tabs? |= map(select(.link | IN("index.html","chat_list.html","personal.html"))) | .result.all_top_opts = [] | .result.module_order? |= map(select(.module_name | IN("irregular_banner","ad_module","timeline") | not))
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/philo\/personal\/hub\?
+  actions:
+  - response_body:
+      jq: delpaths([["monthly_card_entrance"]])
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/philo\/personal\/hub\?
+  actions:
+  - response_body:
+      jq: delpaths([["personal_center_style_v2_vo"]])
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/philo\/personal\/hub\?
+  actions:
+  - response_body:
+      jq: delpaths([["icon_set","icons"]])
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/philo\/personal\/hub\?
+  actions:
+  - response_body:
+      jq: delpaths([["icon_set","top_personal_icons"]])
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/philo\/personal\/hub\?
+  actions:
+  - response_body:
+      jq: delpaths([["title_bar_items"]])
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/philo\/personal\/hub\?
+  actions:
+  - response_body:
+      jq: delpaths([["personal_banner"]])
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/oak\/integration\/render\?
+  actions:
+  - response_body:
+      jq: delpaths([["bottom_section_list"]])
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/oak\/integration\/render\?
+  actions:
+  - response_body:
+      jq: delpaths([["ui","bottom_section"]])
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/oak\/integration\/render\?
+  actions:
+  - response_body:
+      jq: delpaths([["ui","live_section","float_info"]])
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/caterham\/v3\/query\/order_detail_group\?
+  actions:
+  - response_body:
+      jq: delpaths([["goods_list"]])
+- match: ^https:\/\/api\.pinduoduo\.com\/order\/\d+-\d+\/shipping
+  actions:
+  - response_body:
+      jq: delpaths([["shipping","banner_above_recommend"]])
+- match: ^https:\/\/api\.pinduoduo\.com\/api\/aristotle\/order_list_v4\?
+  actions:
+  - response_body:
+      jq: .orders |= map(.order_buttons |= map(del(.order_growth_tip)))
 mitm:
   hostnames:
     includes:
     - api.pinduoduo.com
+    - api.yangkeduo.com
