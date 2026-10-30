@@ -1,5 +1,6 @@
 name: 高德地图去广告@ddgksf2013
 description: 高德地图应用净化
+author: ddgksf2013
 icon: https://resource.wuyra.com/Icon/App_icon/120px/Amap.png
 dns: {}
 rules:
