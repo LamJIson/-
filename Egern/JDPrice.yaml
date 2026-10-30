@@ -1,0 +1,26 @@
+name: 京东历史比价功能增强
+description: 慢慢买获取ck后使用
+author: @wf021325
+icon: https://raw.githubusercontent.com/Thelongdarkorg/loon-plugins/main/icons/jd.jpg
+
+scriptings:
+  - http_response:
+      name: jd_price
+      match: ^https?:\/\/in\.m\.jd\.com\/product\/graphext\/\d+\.html
+      script_url: https://raw.githubusercontent.com/wf021325/qx/master/js/jd_price.js
+      max_size: -1
+      timeout: 60
+      body_required: true
+  - http_request:
+      name: jd_price
+      match: ^https?:\/\/apapia-sqk-weblogic\.manmanbuy\.com\/baoliao\/center\/menu$
+      script_url: https://raw.githubusercontent.com/wf021325/qx/master/js/jd_price.js
+      max_size: -1
+      timeout: 60
+      body_required: true
+
+mitm:
+  hostnames:
+    includes:
+      - in.m.jd.com
+      - apapia-sqk-weblogic.manmanbuy.com
