@@ -1,0 +1,134 @@
+name: 高德地图去广告@ddgksf2013
+description: 高德地图应用净化
+icon: https://resource.wuyra.com/Icon/App_icon/120px/Amap.png
+dns: {}
+rules:
+- domain_suffix:
+    match: optimus-ads.amap.com
+    policy: DIRECT
+rewrites:
+- match: ^https?:\/\/.*\.amap\.com\/ws\/aos\/alimama\/splash_screen
+  actions:
+  - respond:
+      status: 200
+      body: ' '
+- match: ^https?:\/\/.*\.amap\.com\/v\d\/ai_rec\/
+  actions:
+  - respond:
+      status: 200
+      headers:
+        Content-Type: application/json
+      body: '{}'
+- match: ^https?:\/\/.*\.amap\.com\/ws\/faas\/amap-navigation\/card-service-route-plan\?
+  actions:
+  - respond:
+      status: 200
+      headers:
+        Content-Type: application/json
+      body: '{}'
+- match: ^https?:\/\/.*\.amap\.com\/ws\/boss\/order_web\/\w{8}_information
+  actions:
+  - respond:
+      status: 200
+      body: ' '
+- match: ^https?:\/\/.*\.amap\.com\/ws\/shield\/scene\/recommend
+  actions:
+  - respond:
+      status: 200
+      headers:
+        Content-Type: application/json
+      body: '{}'
+- match: ^https?:\/\/.*\.amap\.com\/uploadimg\/\w+\.gif
+  actions:
+  - respond:
+      status: 200
+- match: ^https?:\/\/.*\.amap\.com\/ws\/valueadded\/weather
+  actions:
+  - respond:
+      status: 200
+      headers:
+        Content-Type: application/json
+      body: '{}'
+- match: ^https?:\/\/.*\.amap\.com\/ws\/asa\/ads_attribution
+  actions:
+  - respond:
+      status: 404
+scriptings:
+- http_response:
+    name: amdc
+    match: ^http:\/\/amdc\.m\.taobao\.com
+    script_url: https://raw.githubusercontent.com/ddgksf2013/Scripts/refs/heads/master/amdc.js
+    max_size: -1
+    timeout: 60
+    body_required: true
+- http_response:
+    name: amap
+    match: ^https?:\/\/.*\.amap\.com\/ws\/message\/notice\/list
+    script_url: https://raw.githubusercontent.com/ddgksf2013/Scripts/refs/heads/master/amap.js
+    max_size: -1
+    timeout: 60
+    body_required: true
+- http_response:
+    name: amap
+    match: ^https?:\/\/.*\.amap\.com\/ws\/shield\/frogserver\/aocs\/updatable
+    script_url: https://raw.githubusercontent.com/ddgksf2013/Scripts/refs/heads/master/amap.js
+    max_size: -1
+    timeout: 60
+    body_required: true
+- http_response:
+    name: amap
+    match: ^https?:\/\/.*\.amap\.com\/ws\/shield\/search\/nearbyrec_smart
+    script_url: https://raw.githubusercontent.com/ddgksf2013/Scripts/refs/heads/master/amap.js
+    max_size: -1
+    timeout: 60
+    body_required: true
+- http_response:
+    name: amap
+    match: ^https?:\/\/.*\.amap\.com\/ws\/promotion-web\/resource
+    script_url: https://raw.githubusercontent.com/ddgksf2013/Scripts/refs/heads/master/amap.js
+    max_size: -1
+    timeout: 60
+    body_required: true
+- http_response:
+    name: amap
+    match: ^https?:\/\/.*\.amap\.com\/ws\/faas\/amap-navigation\/main-page
+    script_url: https://raw.githubusercontent.com/ddgksf2013/Scripts/refs/heads/master/amap.js
+    max_size: -1
+    timeout: 60
+    body_required: true
+- http_response:
+    name: amap
+    match: ^https?:\/\/.*\.amap\.com\/ws\/valueadded\/alimama\/splash_screen
+    script_url: https://raw.githubusercontent.com/ddgksf2013/Scripts/refs/heads/master/amap.js
+    max_size: -1
+    timeout: 60
+    body_required: true
+- http_response:
+    name: amap
+    match: ^https?:\/\/.*\.amap\.com\/ws\/msgbox\/pull
+    script_url: https://raw.githubusercontent.com/ddgksf2013/Scripts/refs/heads/master/amap.js
+    max_size: -1
+    timeout: 60
+    body_required: true
+- http_response:
+    name: amap
+    match: ^https?:\/\/.*\.amap\.com\/ws\/shield\/dsp\/profile\/index\/nodefaas
+    script_url: https://raw.githubusercontent.com/ddgksf2013/Scripts/refs/heads/master/amap.js
+    max_size: -1
+    timeout: 60
+    body_required: true
+- http_response:
+    name: amap
+    match: ^https?:\/\/.*\.amap\.com\/ws\/shield\/search\/new_hotword
+    script_url: https://raw.githubusercontent.com/ddgksf2013/Scripts/refs/heads/master/amap.js
+    max_size: -1
+    timeout: 60
+    body_required: true
+mitm:
+  hostnames:
+    includes:
+    - m5.amap.com
+    - m5-zb.amap.com
+    - center.amap.com
+    - amap-aos-info-nogw.amap.com
+    - ai.amap.com
