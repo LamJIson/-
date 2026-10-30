@@ -3,11 +3,11 @@ description: 微信110解锁被屏蔽的URL、去广告解锁内容隐藏
 author: @zZPiglet @ddgksf2013
 icon: https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/App/WeChat.png
 rewrites:
-- match: ^https?:\/\/api\.blibee\.com\/cvsnotify-api\/cvs\/notify\/app\/banner\/v\d+$
+  - match: ^https?:\/\/api\.blibee\.com\/cvsnotify-api\/cvs\/notify\/app\/banner\/v\d+$
   actions:
   - respond:
       status: 200
-- match: ^https?:\/\/ucmp\.sf-express\.com\/proxy\/operation-platform\/info-flow-adver\/query$
+  - match: ^https?:\/\/ucmp\.sf-express\.com\/proxy\/operation-platform\/info-flow-adver\/query$
   actions:
   - respond:
       status: 200
