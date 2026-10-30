@@ -1,0 +1,16 @@
+name: 微信功能增强@zZPiglet
+description: 微信110解锁被屏蔽的URL
+icon: https://raw.githubusercontent.com/sooyaaabo/IconLibrary/main/App/WeChat.png
+scriptings:
+- http_response:
+    name: weixin110
+    match: ^https\:\/\/(weixin110\.qq|security.wechat)\.com\/cgi-bin\/mmspamsupport-bin\/newredirectconfirmcgi\?
+    script_url: https://raw.githubusercontent.com/ddgksf2013/Scripts/refs/heads/master/weixin110.js
+    max_size: -1
+    timeout: 60
+    body_required: true
+mitm:
+  hostnames:
+    includes:
+    - weixin110.qq.com
+    - security.wechat.com
