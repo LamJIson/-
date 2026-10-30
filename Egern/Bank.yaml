@@ -1,0 +1,57 @@
+name: 银行去广告
+description: 去除部分银行应用的广告
+icon: https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/Bank.png
+dns: {}
+rules:
+- domain:
+    match: adv.ccb.com
+    policy: REJECT
+- url_regex:
+    match: ^http://mps\.95508\.com/mps/icppweb/images/mps/migration/mpspics/
+    policy: REJECT
+rewrites:
+- match: (?i)^https://static\.95508\.com/icppweb/images/modelMaterial/advertising/
+  actions:
+  - respond:
+      status: 404
+- match: (?i)^https://unionsr\.chinalifeonline\.com\.cn/gslm/upload/
+  actions:
+  - respond:
+      status: 200
+- match: (?i)^https://imcs\.citicbank\.com/cloud/([a-fA-F0-9]{32})\.(jpg|png)\?width=(1125|1242|750|563|1400|1863)&height=(2436|2688|1624|1218|3031|4032)
+  actions:
+  - respond:
+      status: 404
+- match: (?i)^https://lban\.spdb\.com\.cn/mspmk-web-component/getAdvertisementList\.ah$
+  actions:
+  - respond:
+      status: 200
+      headers:
+        Content-Type: application/json
+      body: '{}'
+- match: (?i)^https://lban\.spdb\.com\.cn/mspmk-web-component/getAdvList\.ah$
+  actions:
+  - respond:
+      status: 200
+      headers:
+        Content-Type: application/json
+      body: '{}'
+- match: (?i)^https://lban\.spdb\.com\.cn/mspmk-web-component/prefetchAdvList\.ah
+  actions:
+  - respond:
+      status: 200
+      headers:
+        Content-Type: application/json
+      body: '{}'
+- match: (?i)^https://s3gw\.cmbimg\.com/mbappinitads/
+  actions:
+  - respond:
+      status: 404
+mitm:
+  hostnames:
+    includes:
+    - static.95508.com
+    - unionsr.chinalifeonline.com.cn
+    - imcs.citicbank.com
+    - lban.spdb.com.cn
+    - s3gw.cmbimg.com
