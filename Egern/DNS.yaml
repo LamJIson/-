@@ -1,0 +1,78 @@
+name: DNS防泄露
+description: 专为小白设计的DNS防泄露
+compat_arguments:
+  PROXY: PROXY
+compat_arguments_schema:
+  PROXY:
+    name: PROXY
+    description: 代理规则使用的策略
+    default_value: PROXY
+icon: https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/Prevent_DNS_Leaks.png
+dns: {}
+rules:
+- domain_suffix:
+    match: dnsleaktest.com
+    policy: PROXY
+- domain_suffix:
+    match: dnsleak.com
+    policy: PROXY
+- domain_suffix:
+    match: expressvpn.com
+    policy: PROXY
+- domain_suffix:
+    match: nordvpn.com
+    policy: PROXY
+- domain_suffix:
+    match: surfshark.com
+    policy: PROXY
+- domain_suffix:
+    match: ipleak.net
+    policy: PROXY
+- domain_suffix:
+    match: perfect-privacy.com
+    policy: PROXY
+- domain_suffix:
+    match: browserleaks.com
+    policy: PROXY
+- domain_suffix:
+    match: browserleaks.org
+    policy: PROXY
+- domain_suffix:
+    match: vpnunlimited.com
+    policy: PROXY
+- domain_suffix:
+    match: whoer.net
+    policy: PROXY
+- domain_suffix:
+    match: whrq.net
+    policy: PROXY
+- domain_suffix:
+    match: astrill.com
+    policy: PROXY
+- domain_suffix:
+    match: astrill.org
+    policy: PROXY
+- domain_suffix:
+    match: dnsleak.asn247.net
+    policy: PROXY
+- domain_suffix:
+    match: surfshark.com
+    policy: PROXY
+- domain_suffix:
+    match: surfsharkdns.com
+    policy: PROXY
+- domain_suffix:
+    match: pixelscan.net
+    policy: PROXY
+- domain:
+    match: ipv4.ping0.cc
+    policy: PROXY
+- domain:
+    match: ipv6.ping0.cc
+    policy: PROXY
+- domain_suffix:
+    match: ipapi.co
+    policy: PROXY
+- domain:
+    match: ip-scan.adspower.net
+    policy: PROXY
