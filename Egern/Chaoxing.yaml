@@ -1,0 +1,52 @@
+name: 学习通去广告
+description: 移除开屏广告
+icon: https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ChaoXingStudy.png
+rewrites:
+- match: (?i)^https://learn\.chaoxing\.com/apis/service/appConfig\?
+  actions:
+  - response_body:
+      jq: delpaths([["data","ad"]])
+- match: (?i)^https://home-yd\.chaoxing\.com/apis/data/getAdsRecommend\?
+  actions:
+  - respond:
+      status: 200
+      headers:
+        Content-Type: application/json
+      body: '{}'
+- match: (?i)^https://home-yd\.chaoxing\.com/apis/banner/getConfigInfoForXsqy\?
+  actions:
+  - respond:
+      status: 200
+      headers:
+        Content-Type: application/json
+      body: '{}'
+- match: (?i)^https://apps\.chaoxing\.com/apis/home/getHpXsqy\.jspx\?
+  actions:
+  - response_body:
+      jq: .data.list |= map(select(.pid == 4 or .pid == 44)) | .data.list_xsqy |= map(select(.pid == 4 or .pid == 44)) | .data.list_xysqbj |= map(select(.pid == 4 or .pid == 44)) | .data.lanmu |= map(select(.id == 4 or .id == 44))
+- match: (?i)^https://apps\.chaoxing\.com/apis/home/getHpXsqy\.jspx\?
+  actions:
+  - response_body:
+      jq: delpaths([["data","list_timeapp"]])
+- match: (?i)^https://groupyd2\.chaoxing\.com/apis/activity/getActivitys_attention\?
+  actions:
+  - respond:
+      status: 200
+      headers:
+        Content-Type: application/json
+      body: '{}'
+- match: (?i)^https://appswh\.chaoxing\.com/apis/activity/getNoteTopicList\?
+  actions:
+  - respond:
+      status: 200
+      headers:
+        Content-Type: application/json
+      body: '{}'
+mitm:
+  hostnames:
+    includes:
+    - learn.chaoxing.com
+    - home-yd.chaoxing.com
+    - apps.chaoxing.com
+    - groupyd2.chaoxing.com
+    - appswh.chaoxing.com
